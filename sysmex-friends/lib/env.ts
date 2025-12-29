@@ -1,12 +1,21 @@
 import { z } from "zod";
 
+/**
+ * Centralizovaná validace env proměnných.
+ * Pozn.: Držíme jen to, co je opravdu nutné pro běh aplikace.
+ * Ostatní je optional, aby šel projekt spustit i v dev režimu bez Cloudinary.
+ */
 const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
-  CLOUDINARY_CLOUD_NAME: z.string().min(1),
-  CLOUDINARY_API_KEY: z.string().min(1),
-  CLOUDINARY_API_SECRET: z.string().min(1),
-  REVALIDATE_SECRET: z.string().min(1),
-  // Zde povolujeme development, production nebo test
+  DATABASE_URL: z.string().min(1),
+
+  // Cloudinary (volitelné – použiješ až při napojení galerie / uploadů)
+  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().min(1).optional(),
+  CLOUDINARY_API_KEY: z.string().min(1).optional(),
+  CLOUDINARY_API_SECRET: z.string().min(1).optional(),
+
+  // Secret pro případné revalidate endpointy (volitelné)
+  REVALIDATE_SECRET: z.string().min(1).optional(),
+
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 

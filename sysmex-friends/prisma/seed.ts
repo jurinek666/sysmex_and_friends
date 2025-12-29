@@ -130,6 +130,39 @@ Děkujeme všem fanouškům za podporu!
     ],
   });
 
+  // 6. Vytvoření Galerie (Album + Photo)
+  const album = await prisma.album.create({
+    data: {
+      title: "Kvízový večer — říjen 2024",
+      dateTaken: new Date("2024-10-15"),
+      cloudinaryFolder: "demo/sysmex-friends/2024-10-15",
+      coverPublicId: "demo/sysmex-friends/cover",
+    },
+  });
+
+  await prisma.photo.createMany({
+    data: [
+      {
+        albumId: album.id,
+        cloudinaryPublicId: "demo/sysmex-friends/photo-1",
+        caption: "Příprava před startem",
+        sortOrder: 1,
+      },
+      {
+        albumId: album.id,
+        cloudinaryPublicId: "demo/sysmex-friends/photo-2",
+        caption: "Tým v akci",
+        sortOrder: 2,
+      },
+      {
+        albumId: album.id,
+        cloudinaryPublicId: "demo/sysmex-friends/photo-3",
+        caption: "Moment vítězství",
+        sortOrder: 3,
+      },
+    ],
+  });
+
   console.log('✅ Databáze byla úspěšně naplněna!');
 }
 
