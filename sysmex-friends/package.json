@@ -6,11 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "postinstall": "prisma generate",
     "lint": "eslint .",
     "check": "npm run lint && tsc --noEmit && npm run build",
-    "postinstall": "prisma generate",
     "migrate:deploy": "prisma migrate deploy"
   },
+  
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "@tailwindcss/postcss": "^4.1.18",

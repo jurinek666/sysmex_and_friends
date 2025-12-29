@@ -54,6 +54,15 @@ npm run dev
 - `/tym`
 - `/galerie`
 
+### Admin (interní)
+Admin je na `/admin` a je chráněný HTTP Basic Auth přes `middleware.ts`.
+
+V `.env` / Render nastav:
+- `ADMIN_USER`
+- `ADMIN_PASSWORD`
+
+Pokud nejsou proměnné nastavené, `/admin` se v dev režimu neblokuje.
+
 ### Lint / Typecheck / Build
 ```bash
 npm run lint

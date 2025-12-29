@@ -26,18 +26,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="cs" className="h-full"> {/* Přidáno h-full pro sticky footer */}
+    <html lang="cs" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-900 flex flex-col min-h-full`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-900 min-h-full`}
       >
-        <Navbar />
-        
-        {/* Hlavní obsah se roztáhne, aby vytlačil footer dolů */}
-        <div className="flex-grow">
-          {children}
+        <div className="flex min-h-full flex-col">
+          <Navbar />
+          <main className="flex-grow">{children}</main>
+          <Footer />
         </div>
-
-        <Footer />
       </body>
     </html>
   );
