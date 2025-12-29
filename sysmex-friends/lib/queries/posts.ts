@@ -1,10 +1,15 @@
 import { prisma } from "@/lib/prisma";
 
 export async function getFeaturedPost() {
-  return prisma.post.findFirst({
-    where: { isFeatured: true },
-    orderBy: { publishedAt: "desc" },
-  });
+  try {
+    return await prisma.post.findFirst({
+      where: { isFeatured: true },
+      orderBy: { publishedAt: "desc" },
+    });
+  } catch {
+    // dev fallback: bez DB app poběží (jen nebude featured post)
+    return null;
+  }
 }
 
 export async function getRecentPosts(limit = 20) {
