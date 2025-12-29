@@ -12,38 +12,71 @@ export default async function ClanekDetailPage({
 }: {
   params: { slug: string };
 }) {
-  const post = await getPostBySlug(params.slug);
+  const { slug } = await params; // Next.js 15 requires awaiting params if using generic layout
+  const post = await getPostBySlug(slug);
+
   if (!post) return notFound();
 
   return (
-    <main className="min-h-screen bg-white px-6 py-14">
-      <div className="mx-auto max-w-3xl">
-        <div className="flex items-center justify-between gap-4">
-          <Link href="/clanky" className="text-blue-600 font-semibold hover:underline">
-            ← Zpět na články
-          </Link>
-          <Link href="/" className="text-gray-600 hover:underline">
-            Úvod
+    <main className="min-h-screen pt-32 pb-20 px-4 md:px-8">
+      <div className="max-w-4xl mx-auto">
+        
+        {/* NAVIGACE ZPĚT */}
+        <div className="mb-8">
+          <Link 
+            href="/clanky" 
+            className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-neon-cyan transition-colors"
+          >
+            ← Zpět do archivu
           </Link>
         </div>
 
-        <header className="mt-10 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-extrabold text-gray-900">{post.title}</h1>
-              <p className="mt-2 text-gray-600">{post.excerpt}</p>
-              <p className="mt-4 text-sm text-gray-500">
-                Publikováno{" "}
+        {/* HLAVIČKA ČLÁNKU */}
+        <header className="mb-12 text-center md:text-left border-b border-white/10 pb-10">
+          <div className="flex flex-wrap gap-3 mb-6 justify-center md:justify-start">
+             <span className="px-3 py-1 rounded-full border border-neon-cyan/30 bg-neon-cyan/5 text-neon-cyan text-xs font-bold uppercase tracking-wider">
                 {format(new Date(post.publishedAt), "d. MMMM yyyy", { locale: cs })}
-                {post.isFeatured ? " • 🔥 zvýrazněno" : ""}
-              </p>
-            </div>
+             </span>
+             {post.isFeatured && (
+                <span className="px-3 py-1 rounded-full border border-neon-magenta/30 bg-neon-magenta/5 text-neon-magenta text-xs font-bold uppercase tracking-wider">
+                  Featured
+                </span>
+             )}
           </div>
+
+          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight leading-[1.1] mb-6 drop-shadow-lg">
+            {post.title}
+          </h1>
+
+          <p className="text-xl text-gray-300 leading-relaxed max-w-3xl">
+            {post.excerpt}
+          </p>
         </header>
 
-        <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm prose prose-gray max-w-none">
-          <ReactMarkdown>{post.content}</ReactMarkdown>
-        </section>
+        {/* OBSAH (MARKDOWN) */}
+        {/* Používáme prose-invert pro dark mode a vlastní styly pro barvy */}
+        <article className="bento-card p-8 md:p-12 bg-sysmex-900/20">
+          <div className="prose prose-lg prose-invert max-w-none 
+            prose-headings:text-white prose-headings:font-bold 
+            prose-a:text-neon-cyan prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-neon-gold
+            prose-blockquote:border-l-neon-magenta prose-blockquote:bg-white/5 prose-blockquote:py-2 prose-blockquote:pr-4
+            prose-code:text-neon-cyan prose-code:bg-black/30 prose-code:rounded prose-code:px-1
+          ">
+            <ReactMarkdown>{post.content}</ReactMarkdown>
+          </div>
+        </article>
+
+        {/* PATIČKA ČLÁNKU */}
+        <div className="mt-12 pt-8 border-t border-white/5 flex justify-center">
+            <Link 
+                href="/clanky"
+                className="px-8 py-3 rounded-full bg-white/5 text-white font-bold hover:bg-white/10 border border-white/10 transition-all"
+            >
+                Zpět na přehled
+            </Link>
+        </div>
+
       </div>
     </main>
   );
