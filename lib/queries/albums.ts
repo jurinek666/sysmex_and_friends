@@ -3,7 +3,11 @@ import { prisma } from "@/lib/prisma";
 export async function getAlbums() {
   return prisma.album.findMany({
     orderBy: { dateTaken: "desc" },
-    include: { photos: true },
+    include: {
+      _count: {
+        select: { photos: true },
+      },
+    },
   });
 }
 
