@@ -1,3 +1,4 @@
+// lib/prisma.ts
 import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
@@ -5,7 +6,7 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
-    log: ["query"], // Uvidíme v terminálu SQL dotazy (užitečné pro debug)
+    log: ["query"], // Volitelné: vypisuje SQL dotazy do konzole (fajn pro debugging)
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
