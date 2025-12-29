@@ -13,155 +13,121 @@ export default async function Home() {
     getLatestResults(3),
   ]);
 
+  const latestResult = latestResults[0]; // Vezmeme jen nejnovější výsledek pro dashboard
+
   return (
-    <main className="min-h-screen bg-white pb-20">
-      {/* --- HERO SEKCE S BANNEREM --- */}
-      <section className="relative w-full overflow-hidden border-b border-sysmex-900 bg-sysmex-900">
-        
-        {/* 1. Vrstva: Obrázek Banneru */}
-        <div className="absolute inset-0 w-full h-full">
-          <Image
-            src="https://res.cloudinary.com/gear-gaming/image/upload/v1767024968/ChatGPT_Image_29._12._2025_17_15_51_xxs857.png"
-            alt="SYSMEX & Friends Banner"
-            fill
-            className="object-cover object-center opacity-90"
-            priority
-          />
-          {/* 2. Vrstva: Tmavý gradient, aby byl text čitelný */}
-          <div className="absolute inset-0 bg-gradient-to-b from-sysmex-900/80 via-sysmex-900/60 to-sysmex-900/90" />
+    <main className="min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+      
+      {/* BENTO GRID LAYOUT */}
+      {/* Grid: Mobile 1 sloupce, Tablet 2, Desktop 3 nebo 4 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(180px,auto)]">
+
+        {/* 1. HERO BLOCK (Velký text) - Span 2 sloupce */}
+        <div className="col-span-1 md:col-span-2 row-span-2 bento-card p-8 md:p-12 flex flex-col justify-center relative group">
+           {/* Ambientní záře na pozadí */}
+           <div className="absolute top-0 right-0 w-64 h-64 bg-neon-cyan/10 blur-[100px] rounded-full group-hover:bg-neon-cyan/20 transition-all duration-700"></div>
+           
+           <div className="relative z-10 space-y-6">
+             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neon-cyan/30 bg-neon-cyan/10 text-neon-cyan text-xs font-bold uppercase tracking-wider w-fit">
+               <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-cyan opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-cyan"></span>
+                </span>
+               Online
+             </div>
+             
+             <h1 className="text-5xl md:text-7xl font-black tracking-tight text-white leading-[0.9]">
+               SYSMEX <br />
+               <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-white to-neon-magenta">
+                 & FRIENDS
+               </span>
+             </h1>
+             
+             <p className="text-lg text-gray-400 max-w-md">
+               Oficiální centrála našeho kvízového týmu. Statistiky, články a síně slávy na jednom místě.
+             </p>
+
+             <div className="flex flex-wrap gap-4 pt-4">
+               <Link href="/clanky" className="px-6 py-3 rounded-xl bg-white text-black font-bold hover:scale-105 transition-transform">
+                 Číst novinky
+               </Link>
+               <Link href="/tym" className="px-6 py-3 rounded-xl border border-white/20 hover:bg-white/5 font-semibold transition-colors">
+                 Poznat tým
+               </Link>
+             </div>
+           </div>
         </div>
 
-        {/* 3. Vrstva: Obsah */}
-        <div className="relative z-10 max-w-4xl mx-auto px-6 py-20 md:py-32 text-center">
+        {/* 2. STAT CARD (Poslední výsledek) - Span 1 */}
+        <div className="bento-card p-6 flex flex-col justify-between group hover:border-neon-gold/50">
+           <div className="flex justify-between items-start">
+             <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">Poslední hra</div>
+             <div className="text-2xl">🏆</div>
+           </div>
+           
+           {latestResult ? (
+             <div className="mt-4">
+               <div className="text-3xl font-black text-white">{latestResult.placement}. místo</div>
+               <div className="text-sm text-gray-400 mt-1">{latestResult.venue}</div>
+               <div className="mt-4 flex items-center gap-3">
+                  <div className="px-2 py-1 rounded bg-white/10 text-xs font-mono">{latestResult.score} bodů</div>
+                  <div className="text-xs text-gray-500">{format(new Date(latestResult.date), "d. M.", { locale: cs })}</div>
+               </div>
+             </div>
+           ) : (
+             <div className="mt-auto text-gray-500 italic">Žádná data</div>
+           )}
+        </div>
+
+        {/* 3. VISUAL CARD (Banner týmu) - Span 1, ale vysoká */}
+        <div className="col-span-1 row-span-2 bento-card relative group min-h-[300px]">
+           <Image
+             src="https://res.cloudinary.com/gear-gaming/image/upload/v1767024968/ChatGPT_Image_29._12._2025_17_15_51_xxs857.png"
+             alt="Tým Sysmex"
+             fill
+             className="object-cover transition-transform duration-700 group-hover:scale-110"
+           />
+           {/* Gradient overlay */}
+           <div className="absolute inset-0 bg-gradient-to-t from-sysmex-950 via-transparent to-transparent opacity-80"></div>
+           
+           <div className="absolute bottom-0 left-0 p-6">
+             <h3 className="text-white font-bold text-xl">Náš Tým</h3>
+             <p className="text-gray-300 text-sm mt-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 duration-300">
+               Společně bojujeme o každou správnou odpověď.
+             </p>
+           </div>
+        </div>
+
+        {/* 4. FEATURED POST (Novinka) - Span 2 */}
+        <div className="col-span-1 md:col-span-2 bento-card p-8 flex flex-col md:flex-row gap-8 items-center group hover:border-neon-magenta/50">
           {featuredPost ? (
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <span className="inline-block px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-neon-cyan bg-sysmex-900/50 backdrop-blur-sm rounded-full border border-neon-cyan/30 shadow-neon-thin">
-                🔥 Aktuálně
-              </span>
-
-              <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white drop-shadow-lg">
-                {featuredPost.title}
-              </h1>
-
-              <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-                {featuredPost.excerpt}
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                <Link
-                  href={`/clanky/${featuredPost.slug}`}
-                  className="btn-readmore h-12 px-8 text-base shadow-glass-top hover:scale-105 transition-transform"
-                >
-                  Číst článek
-                </Link>
-                
-                <Link
-                  href="/clanky"
-                  className="inline-flex items-center justify-center h-12 px-8 rounded-full border border-white/20 bg-white/5 text-white font-bold backdrop-blur-sm hover:bg-white/10 hover:border-white/40 transition duration-200"
-                >
-                  Archiv článků
-                </Link>
+            <>
+              <div className="flex-1 space-y-4">
+                 <div className="flex items-center gap-2 text-neon-magenta text-sm font-bold uppercase">
+                    <span>🔥 Top Článek</span>
+                    <span className="w-12 h-px bg-neon-magenta/50"></span>
+                 </div>
+                 <h2 className="text-2xl md:text-3xl font-bold text-white group-hover:text-neon-magenta transition-colors">
+                    {featuredPost.title}
+                 </h2>
+                 <p className="text-gray-400 line-clamp-2">
+                    {featuredPost.excerpt}
+                 </p>
+                 <Link href={`/clanky/${featuredPost.slug}`} className="inline-flex items-center gap-2 text-white font-semibold hover:gap-3 transition-all mt-2">
+                    Číst dál <span>→</span>
+                 </Link>
               </div>
-
-              <p className="text-sm text-gray-400 font-medium">
-                Publikováno{" "}
-                {format(new Date(featuredPost.publishedAt), "d. MMMM yyyy", {
-                  locale: cs,
-                })}
-              </p>
-            </div>
+              {/* Zde by mohl být náhledový obrázek článku, kdybychom ho měli v DB */}
+              <div className="w-full md:w-48 h-32 rounded-2xl bg-gradient-to-br from-sysmex-800 to-sysmex-900 flex items-center justify-center border border-white/5">
+                 <span className="text-4xl">📝</span>
+              </div>
+            </>
           ) : (
-            <div className="space-y-6 animate-in fade-in duration-700">
-              <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white drop-shadow-lg">
-                Vítejte v týmu
-                <span className="block text-transparent bg-clip-text bg-gradient-neon mt-2">
-                  SYSMEX & Friends
-                </span>
-              </h1>
-              <p className="text-lg text-gray-300 max-w-xl mx-auto">
-                Zatím tu není žádný hlavní článek, ale brzy se tu objeví novinky z našich kvízových bitev.
-              </p>
-              <Link
-                href="/clanky"
-                className="btn-readmore"
-              >
-                Přejít na články
-              </Link>
-            </div>
+             <div className="text-gray-500">Zatím žádný zvýrazněný článek.</div>
           )}
         </div>
 
-        {/* Dekorativní linka dole */}
-        <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-neon opacity-50" />
-      </section>
-
-      {/* --- SEKCE VÝSLEDKY (Zůstává na bílém, čistá) --- */}
-      <section className="max-w-4xl mx-auto px-6 py-16">
-        <div className="flex items-end justify-between mb-10 border-b border-gray-100 pb-4">
-          <h2 className="text-3xl font-extrabold text-sysmex-900 tracking-tight">
-            Poslední výsledky
-          </h2>
-          <Link
-            href="/vysledky"
-            className="text-sysmex-700 font-bold hover:text-neon-magenta transition-colors duration-200 mb-1"
-          >
-            Tabulka →
-          </Link>
-        </div>
-
-        {latestResults.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50/50 p-8 text-center text-gray-500">
-            Zatím nejsou zadané žádné výsledky.
-          </div>
-        ) : (
-          <div className="space-y-5">
-            {latestResults.map((r) => (
-              <div
-                key={r.id}
-                className="group relative rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-glass-scroll"
-              >
-                {/* Hover efekt - spodní linka */}
-                <div className="absolute inset-x-4 bottom-0 h-0.5 bg-gradient-neon opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-full" />
-
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div>
-                    <div className="text-sm font-semibold text-neon-cyan/90 uppercase tracking-wide mb-1">
-                      {format(new Date(r.date), "d. MMMM", { locale: cs })} • {r.season.name}
-                    </div>
-                    <div className="text-xl font-bold text-sysmex-900 group-hover:text-sysmex-700 transition-colors">
-                      {r.venue} — {r.teamName}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-6 bg-gray-50 rounded-xl px-4 py-2 border border-gray-100">
-                    <div className="text-center">
-                      <span className="block text-xs text-gray-400 uppercase font-bold">Místo</span>
-                      <span className={`block text-xl font-black ${
-                        r.placement === 1 ? 'text-neon-gold drop-shadow-sm' : 
-                        r.placement <= 3 ? 'text-sysmex-700' : 'text-gray-900'
-                      }`}>
-                        {r.placement}.
-                      </span>
-                    </div>
-                    <div className="w-px h-8 bg-gray-200"></div>
-                    <div className="text-center">
-                      <span className="block text-xs text-gray-400 uppercase font-bold">Body</span>
-                      <span className="block text-xl font-black text-gray-900">
-                        {r.score}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                {r.note ? (
-                  <p className="mt-4 text-sm text-gray-500 border-t border-gray-50 pt-3">
-                    💡 {r.note}
-                  </p>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+      </div>
     </main>
   );
 }

@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const config = {
+export default {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -7,35 +7,31 @@ const config = {
   theme: {
     extend: {
       colors: {
-        // Tvoje definované barvy z globals.css
         sysmex: {
-          900: '#0B1E4B', // --ngg-nav-900
-          850: '#0E265B', // --ngg-nav-850
-          800: '#12306A', // --ngg-nav-800
-          700: '#1E4EA8', // --ngg-nav-700
+          950: '#020617', // Téměř černá (Main Background)
+          900: '#0B1E4B', // Původní tmavá modrá (Secondary BG)
+          800: '#12306A', // Card BG
+          700: '#1E4EA8', // Borders / Accents
+          100: '#E0E7FF', // Text light
         },
         neon: {
-          cyan: '#46D6FF',   // --ngg-a-cyan
-          magenta: '#FF4FD8',// --ngg-a-magenta
-          gold: '#FBD986',   // --ngg-a-gold
+          cyan: '#46D6FF',
+          magenta: '#FF4FD8',
+          gold: '#FBD986',
         }
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'card-glass': 'linear-gradient(180deg, rgba(18, 48, 106, 0.4) 0%, rgba(11, 30, 75, 0.6) 100%)',
       },
       boxShadow: {
-        'glass-top': '0 6px 18px rgba(11, 30, 75, .10)',
-        'glass-scroll': '0 14px 34px rgba(11, 30, 75, .22)',
+        'neon': '0 0 20px -5px rgba(70, 214, 255, 0.15)',
+        'glow-hover': '0 0 30px -5px rgba(70, 214, 255, 0.3)',
       },
       animation: {
-        'glow-move': 'ngg-glowMove 8s linear infinite',
-      },
-      keyframes: {
-        'ngg-glowMove': {
-           '0%': { backgroundPosition: '0% 50%' },
-           '100%': { backgroundPosition: '200% 50%' },
-        }
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       }
     },
   },
   plugins: [],
 };
-
-export default config;
