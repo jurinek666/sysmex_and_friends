@@ -16,7 +16,7 @@ export default async function Home() {
   const latestResult = latestResults[0]; // Vezmeme jen nejnovější výsledek pro dashboard
 
   return (
-    <main className="min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+    <main className="min-h-screen pt-24 md:pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
       
       {/* BENTO GRID LAYOUT */}
       {/* Grid: Mobile 1 sloupce, Tablet 2, Desktop 3 nebo 4 */}
@@ -36,7 +36,7 @@ export default async function Home() {
                Online
              </div>
              
-             <h1 className="text-5xl md:text-7xl font-black tracking-tight text-white leading-[0.9]">
+             <h1 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tight text-white leading-[0.9]">
                SYSMEX <br />
                <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-white to-neon-magenta">
                  & FRIENDS

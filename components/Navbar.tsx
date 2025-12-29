@@ -10,6 +10,7 @@ export function Navbar() {
         {/* LOGO - Absolutní pozice, aby "rozbilo" mřížku a mohlo být obří */}
         <Link 
             href="/" 
+            aria-label="Domů"
             className="absolute -left-4 top-1/2 -translate-y-1/2 w-28 h-28 rounded-full bg-sysmex-900 flex items-center justify-center overflow-hidden border-4 border-sysmex-950 shadow-neon z-20 hover:scale-105 transition-transform duration-300"
         >
             <div className="relative w-full h-full p-4"> {/* Padding uvnitř loga, aby nebylo nalepené na kraj */}
@@ -39,7 +40,7 @@ export function Navbar() {
         {/* CTA Button */}
         <Link 
             href="/vysledky" 
-            className="ml-2 px-6 py-2.5 rounded-full bg-white text-sysmex-950 text-sm font-bold hover:bg-neon-cyan transition-colors shadow-lg shadow-white/5"
+            className="ml-2 px-6 py-2.5 rounded-full bg-white text-sysmex-950 text-sm font-bold hover:bg-neon-cyan transition-colors shadow-lg shadow-white/5 hidden sm:block"
         >
             Tabulka
         </Link>
