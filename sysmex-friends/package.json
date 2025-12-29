@@ -11,10 +11,10 @@
     "check": "npm run lint && tsc --noEmit && npm run build",
     "migrate:deploy": "prisma migrate deploy"
   },
-  
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "@tailwindcss/postcss": "^4.1.18",
+    "@types/node": "^20",
     "autoprefixer": "^10.4.23",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -28,10 +28,10 @@
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18",
     "typescript": "^5",
-    "@types/node": "^20",
     "zod": "^4.2.1"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
