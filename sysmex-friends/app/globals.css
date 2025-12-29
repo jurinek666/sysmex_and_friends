@@ -1,7 +1,26 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+@theme {
+  /* Colors */
+  --color-sysmex-950: #020617;
+  --color-sysmex-900: #0B1E4B;
+  --color-sysmex-800: #12306A;
+  --color-sysmex-700: #1E4EA8;
+  --color-sysmex-100: #E0E7FF;
+  
+  --color-neon-cyan: #46D6FF;
+  --color-neon-magenta: #FF4FD8;
+  --color-neon-gold: #FBD986;
+
+  /* Shadows */
+  --shadow-neon: 0 0 20px -5px rgba(70, 214, 255, 0.15);
+  --shadow-glow-hover: 0 0 30px -5px rgba(70, 214, 255, 0.3);
+
+  /* Animations */
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Base styles */
 :root {
   --background: #020617;
   --foreground: #ffffff;
@@ -10,12 +29,12 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  /* Jemný šum na pozadí pro texturu (volitelné, dodává to prémiový vzhled) */
+  /* Optional texture */
   background-image: radial-gradient(circle at 50% 0%, #12306A 0%, transparent 40%);
   background-attachment: fixed;
 }
 
-/* Scrollbar styling */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -30,11 +49,12 @@ body {
   background: #46D6FF;
 }
 
-/* Utility pro Bento Grid karty */
-.bento-card {
+/* Custom Utilities */
+@utility bento-card {
   @apply relative overflow-hidden rounded-3xl border border-white/5 bg-sysmex-900/40 backdrop-blur-sm transition-all duration-300;
-}
 
-.bento-card:hover {
-  @apply border-white/10 shadow-neon transform -translate-y-1;
+  /* ZDE JE OPRAVA: Hover stav se píše dovnitř pomocí &:hover */
+  &:hover {
+    @apply border-white/10 shadow-neon -translate-y-1;
+  }
 }
