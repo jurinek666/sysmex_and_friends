@@ -1,69 +1,86 @@
 import Link from "next/link";
-import { getActiveMembers } from "@/lib/queries/members";
+import { getActiveMembers } from "@/lib/queries/members"; // Předpokládám, že tuto query máme nebo ji upravíme
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export default async function TymPage() {
   const members = await getActiveMembers();
 
   return (
-    <main className="min-h-screen bg-white px-6 py-14">
-      <div className="mx-auto max-w-5xl">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold text-gray-900">Tým</h1>
-            <p className="mt-2 text-gray-600">Aktivní členové a jejich role.</p>
-          </div>
-          <Link href="/" className="text-blue-600 font-semibold hover:underline">
-            ← Zpět na úvod
-          </Link>
+    <main className="min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+      
+      {/* HLAVIČKA */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-white/5 pb-8">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
+            NÁŠ <span className="text-neon-magenta">TÝM</span>
+          </h1>
+          <p className="text-gray-400 max-w-xl text-lg">
+            Mozky operace. Každý ví něco, nikdo neví všechno.
+          </p>
         </div>
+        <Link
+          href="/"
+          className="group flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors"
+        >
+          <span className="group-hover:-translate-x-1 transition-transform">←</span> Zpět na základnu
+        </Link>
+      </div>
 
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {members.length === 0 ? (
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 text-gray-600">
-              Zatím nejsou žádní členové.
-            </div>
-          ) : (
-            members.map((m) => (
-              <div
-                key={m.id}
-                className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 shrink-0 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
-                    {m.displayName.slice(0, 1).toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-gray-900">
-                      {m.displayName}
-                      {m.nickname ? (
-                        <span className="text-gray-500 font-semibold">
-                          {" "}
-                          ({m.nickname})
-                        </span>
-                      ) : null}
-                    </div>
-                    {m.role ? <div className="text-sm text-gray-600">{m.role}</div> : null}
-                    {m.specialties?.length ? (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {m.specialties.map((s) => (
-                          <span
-                            key={s}
-                            className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700"
-                          >
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-                    {m.bio ? <p className="mt-3 text-sm text-gray-600">{m.bio}</p> : null}
-                  </div>
+      {/* GRID ČLENŮ */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {members.length === 0 ? (
+          <div className="col-span-full bento-card p-12 text-center text-gray-500">
+            Zatím tu nikdo není. Tým je asi na baru.
+          </div>
+        ) : (
+          members.map((member) => (
+            <div 
+              key={member.id} 
+              className="bento-card group flex flex-col items-center text-center p-8 hover:border-neon-magenta/30 transition-all duration-500"
+            >
+              {/* Avatar / Fotka */}
+              <div className="relative w-32 h-32 mb-6">
+                <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan to-neon-magenta rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+                <div className="relative w-full h-full rounded-full bg-sysmex-800 border-2 border-white/10 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-300">
+                   {/* Zde by byl Image tag, kdybychom měli URL fotky. Pro teď iniciály. */}
+                   <span className="text-3xl font-black text-white/90">
+                     {member.displayName.slice(0, 2).toUpperCase()}
+                   </span>
                 </div>
+                
+                {/* Odznak role (pokud existuje) */}
+                {member.role && (
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-sysmex-950 border border-neon-magenta/50 rounded-full text-[10px] font-bold uppercase tracking-wider text-neon-magenta shadow-lg whitespace-nowrap">
+                    {member.role}
+                  </div>
+                )}
               </div>
-            ))
-          )}
-        </div>
+
+              {/* Jméno a Info */}
+              <h3 className="text-xl font-bold text-white mb-1">
+                {member.displayName}
+              </h3>
+              {member.nickname && (
+                <p className="text-sm text-neon-cyan font-mono mb-3">
+                  &quot;{member.nickname}&quot;
+                </p>
+              )}
+              
+              {/* Bio / Popis */}
+              <p className="text-gray-400 text-sm leading-relaxed mt-2 line-clamp-3">
+                {member.bio || "Tajemný člen týmu bez biografie."}
+              </p>
+
+              {/* Specializace (Staty) - volitelné, pokud bychom to měli v DB */}
+              {/* <div className="mt-6 w-full flex justify-center gap-2">
+                 <span className="w-2 h-2 rounded-full bg-neon-cyan" title="Věda"></span>
+                 <span className="w-2 h-2 rounded-full bg-neon-gold" title="Historie"></span>
+                 <span className="w-2 h-2 rounded-full bg-neon-magenta" title="Hudba"></span>
+              </div> */}
+            </div>
+          ))
+        )}
       </div>
     </main>
   );
