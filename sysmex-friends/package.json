@@ -23,7 +23,7 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -34,9 +34,7 @@
     "ts-node": "^10.9.2",
     "typescript": "^5"
   },
-
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"commonjs\"} prisma/seed.ts"
-    }
-    
+  }
 }
