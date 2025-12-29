@@ -16,7 +16,7 @@ export default async function ClanekDetailPage({
   if (!post) return notFound();
 
   return (
-    <main className="min-h-screen bg-gray-50 px-6 py-14">
+    <main className="min-h-screen bg-white px-6 py-14">
       <div className="mx-auto max-w-3xl">
         <div className="flex items-center justify-between gap-4">
           <Link href="/clanky" className="text-blue-600 font-semibold hover:underline">
