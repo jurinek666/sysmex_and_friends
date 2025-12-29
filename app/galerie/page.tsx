@@ -37,7 +37,7 @@ export default async function GaleriePage() {
                   {format(new Date(a.dateTaken), "d. MMMM yyyy", { locale: cs })}
                 </div>
                 <div className="mt-3 text-sm text-gray-700">
-                  Fotek: <span className="font-semibold">{a.photos.length}</span>
+                  Fotek: <span className="font-semibold">{a._count.photos}</span>
                 </div>
                 {a.cloudinaryFolder ? (
                   <div className="mt-3 text-xs text-gray-500">
