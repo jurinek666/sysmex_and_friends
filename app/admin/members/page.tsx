@@ -11,9 +11,6 @@ export default async function AdminMembersPage() {
   });
 
   // --- WRAPPERY PRO FIX TYPESCRIPTU ---
-  // Tyto funkce "spolknou" návratovou hodnotu (ok/message), 
-  // takže si formulář nebude stěžovat.
-  
   async function handleCreateMember(formData: FormData) {
     "use server";
     await adminCreateMember(formData);
@@ -26,7 +23,7 @@ export default async function AdminMembersPage() {
   // ------------------------------------
 
   return (
-    <main className="min-h-screen bg-white pb-20">
+    <main className="min-h-screen bg-white pb-20 text-gray-900">
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="flex items-end justify-between gap-6 flex-wrap">
           <div>
@@ -45,7 +42,6 @@ export default async function AdminMembersPage() {
 
         <section className="mt-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900">Nový člen</h2>
-          {/* Zde použijeme náš wrapper handleCreateMember místo přímo adminCreateMember */}
           <form action={handleCreateMember} className="mt-6 grid grid-cols-1 gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="block">
@@ -54,7 +50,7 @@ export default async function AdminMembersPage() {
                   name="displayName"
                   type="text"
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white px-3 py-2"
                 />
               </label>
               <label className="block">
@@ -62,7 +58,7 @@ export default async function AdminMembersPage() {
                 <input
                   name="nickname"
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white px-3 py-2"
                 />
               </label>
             </div>
@@ -72,7 +68,7 @@ export default async function AdminMembersPage() {
                 <span className="text-sm font-semibold text-gray-700">Pohlaví</span>
                 <select
                   name="gender"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white px-3 py-2"
                 >
                   <option value="MALE">Muž</option>
                   <option value="FEMALE">Žena</option>
@@ -83,7 +79,7 @@ export default async function AdminMembersPage() {
                 <input
                   name="role"
                   type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white px-3 py-2"
                 />
               </label>
             </div>
@@ -93,7 +89,7 @@ export default async function AdminMembersPage() {
               <textarea
                 name="bio"
                 rows={2}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 bg-white px-3 py-2"
               />
             </label>
 
@@ -139,7 +135,6 @@ export default async function AdminMembersPage() {
                         {m.gender}{m.role ? ` • ${m.role}` : ""}
                       </div>
                     </div>
-                    {/* Zde použijeme wrapper handleDeleteMember */}
                     <form action={handleDeleteMember}>
                       <input type="hidden" name="id" value={m.id} />
                       <button className="text-red-600 font-semibold hover:underline" type="submit">

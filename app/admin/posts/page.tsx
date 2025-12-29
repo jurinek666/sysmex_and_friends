@@ -11,8 +11,6 @@ export default async function AdminPostsPage() {
   });
 
   // --- WRAPPERY PRO FIX TYPESCRIPTU ---
-  // Tyto funkce "spolknou" návratovou hodnotu, aby byl formulář spokojený.
-  
   async function handleCreatePost(formData: FormData) {
     "use server";
     await adminCreatePost(formData);
@@ -25,7 +23,7 @@ export default async function AdminPostsPage() {
   // ------------------------------------
 
   return (
-    <main className="min-h-screen bg-white pb-20">
+    <main className="min-h-screen bg-white pb-20 text-gray-900">
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="flex items-end justify-between gap-6 flex-wrap">
           <div>
@@ -45,38 +43,62 @@ export default async function AdminPostsPage() {
         {/* Create */}
         <section className="mt-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900">Nový článek</h2>
-          {/* Použití wrapperu handleCreatePost */}
           <form action={handleCreatePost} className="mt-6 grid grid-cols-1 gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="block">
                 <span className="text-sm font-semibold text-gray-700">Titulek</span>
-                <input name="title" required className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2" placeholder="Např. Vítězný večer" />
+                <input 
+                  name="title" 
+                  required 
+                  className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2 text-gray-900 bg-white" 
+                  placeholder="Např. Vítězný večer" 
+                />
               </label>
 
               <label className="block">
                 <span className="text-sm font-semibold text-gray-700">Slug</span>
-                <input name="slug" required className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2" placeholder="napr-vitezny-vecer" />
+                <input 
+                  name="slug" 
+                  required 
+                  className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2 text-gray-900 bg-white" 
+                  placeholder="napr-vitezny-vecer" 
+                />
                 <span className="text-xs text-gray-500">Pouze a-z, 0-9 a pomlčky, lowercase.</span>
               </label>
             </div>
 
             <label className="block">
               <span className="text-sm font-semibold text-gray-700">Perex</span>
-              <input name="excerpt" required className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2" placeholder="Krátké shrnutí článku…" />
+              <input 
+                name="excerpt" 
+                required 
+                className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2 text-gray-900 bg-white" 
+                placeholder="Krátké shrnutí článku…" 
+              />
             </label>
 
             <label className="block">
               <span className="text-sm font-semibold text-gray-700">Cover image URL (volitelné)</span>
-              <input name="coverImageUrl" className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2" placeholder="https://…" />
+              <input 
+                name="coverImageUrl" 
+                className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2 text-gray-900 bg-white" 
+                placeholder="https://…" 
+              />
             </label>
 
             <label className="block">
               <span className="text-sm font-semibold text-gray-700">Obsah (Markdown)</span>
-              <textarea name="content" required rows={10} className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2 font-mono" placeholder="# Nadpis\n\nText…" />
+              <textarea 
+                name="content" 
+                required 
+                rows={10} 
+                className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2 font-mono text-gray-900 bg-white" 
+                placeholder="# Nadpis\n\nText…" 
+              />
             </label>
 
             <label className="inline-flex items-center gap-2">
-              <input type="checkbox" name="isFeatured" className="h-4 w-4" />
+              <input type="checkbox" name="isFeatured" className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
               <span className="text-sm font-semibold text-gray-700">Nastavit jako featured (Novinka na homepage)</span>
             </label>
 
@@ -115,7 +137,6 @@ export default async function AdminPostsPage() {
                       <Link href={`/clanky/${p.slug}`} className="text-blue-600 font-semibold hover:underline">
                         Zobrazit
                       </Link>
-                      {/* Použití wrapperu handleDeletePost */}
                       <form action={handleDeletePost}>
                         <input type="hidden" name="id" value={p.id} />
                         <button className="text-red-600 font-semibold hover:underline" type="submit">
