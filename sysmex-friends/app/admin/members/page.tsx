@@ -10,6 +10,21 @@ export default async function AdminMembersPage() {
     select: { id: true, displayName: true, nickname: true, gender: true, role: true, isActive: true },
   });
 
+  // --- WRAPPERY PRO FIX TYPESCRIPTU ---
+  // Tyto funkce "spolknou" návratovou hodnotu (ok/message), 
+  // takže si formulář nebude stěžovat.
+  
+  async function handleCreateMember(formData: FormData) {
+    "use server";
+    await adminCreateMember(formData);
+  }
+
+  async function handleDeleteMember(formData: FormData) {
+    "use server";
+    await adminDeleteMember(formData);
+  }
+  // ------------------------------------
+
   return (
     <main className="min-h-screen bg-white pb-20">
       <div className="max-w-4xl mx-auto px-6 py-12">
@@ -30,59 +45,88 @@ export default async function AdminMembersPage() {
 
         <section className="mt-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900">Nový člen</h2>
-          <form action={adminCreateMember} className="mt-6 grid grid-cols-1 gap-4">
+          {/* Zde použijeme náš wrapper handleCreateMember místo přímo adminCreateMember */}
+          <form action={handleCreateMember} className="mt-6 grid grid-cols-1 gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="block">
                 <span className="text-sm font-semibold text-gray-700">Jméno</span>
-                <input name="displayName" required className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2" placeholder="Jan Novák" />
+                <input
+                  name="displayName"
+                  type="text"
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
               </label>
-
               <label className="block">
-                <span className="text-sm font-semibold text-gray-700">Přezdívka (volitelné)</span>
-                <input name="nickname" className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2" placeholder="Kapi" />
+                <span className="text-sm font-semibold text-gray-700">Přezdívka (nepovinné)</span>
+                <input
+                  name="nickname"
+                  type="text"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
               </label>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="block">
                 <span className="text-sm font-semibold text-gray-700">Pohlaví</span>
-                <select name="gender" className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2">
+                <select
+                  name="gender"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                >
                   <option value="MALE">Muž</option>
                   <option value="FEMALE">Žena</option>
                 </select>
               </label>
-
               <label className="block">
-                <span className="text-sm font-semibold text-gray-700">Role (volitelné)</span>
-                <input name="role" className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2" placeholder="Kapitán týmu" />
+                <span className="text-sm font-semibold text-gray-700">Role (např. Kapitán)</span>
+                <input
+                  name="role"
+                  type="text"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
               </label>
             </div>
 
             <label className="block">
-              <span className="text-sm font-semibold text-gray-700">Bio (volitelné)</span>
-              <textarea name="bio" rows={4} className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2" placeholder="Krátký popis…" />
+              <span className="text-sm font-semibold text-gray-700">Bio (krátký popis)</span>
+              <textarea
+                name="bio"
+                rows={2}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
             </label>
 
-            <label className="inline-flex items-center gap-2">
-              <input type="checkbox" name="isActive" defaultChecked className="h-4 w-4" />
-              <span className="text-sm font-semibold text-gray-700">Aktivní člen</span>
-            </label>
+            <div className="flex items-center gap-2">
+              <input
+                id="isActive"
+                name="isActive"
+                type="checkbox"
+                defaultChecked
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <label htmlFor="isActive" className="text-sm text-gray-700">
+                Aktivní člen (zobrazovat na webu)
+              </label>
+            </div>
 
-            <button type="submit" className="inline-flex w-fit items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-white font-semibold shadow-sm hover:bg-blue-700 transition">
-              Přidat
+            <button
+              type="submit"
+              className="mt-2 inline-flex justify-center rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            >
+              Přidat člena
             </button>
           </form>
         </section>
 
-        <section className="mt-10">
-          <h2 className="text-xl font-bold text-gray-900">Členové</h2>
-
+        <section className="mt-12">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Seznam členů ({members.length})</h2>
           {members.length === 0 ? (
-            <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-6 text-gray-600">
+            <div className="rounded-2xl border border-gray-200 bg-white p-6 text-gray-600">
               Zatím žádní členové.
             </div>
           ) : (
-            <div className="mt-4 space-y-3">
+            <div className="space-y-3">
               {members.map((m) => (
                 <div key={m.id} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -95,7 +139,8 @@ export default async function AdminMembersPage() {
                         {m.gender}{m.role ? ` • ${m.role}` : ""}
                       </div>
                     </div>
-                    <form action={adminDeleteMember}>
+                    {/* Zde použijeme wrapper handleDeleteMember */}
+                    <form action={handleDeleteMember}>
                       <input type="hidden" name="id" value={m.id} />
                       <button className="text-red-600 font-semibold hover:underline" type="submit">
                         Smazat
