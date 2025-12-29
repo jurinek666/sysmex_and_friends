@@ -11,7 +11,7 @@ export default async function AdminMembersPage() {
   });
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20">
+    <main className="min-h-screen bg-white pb-20">
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="flex items-end justify-between gap-6 flex-wrap">
           <div>

@@ -17,7 +17,7 @@ export default async function VysledkyPage({
   ]);
 
   return (
-    <main className="min-h-screen bg-gray-50 px-6 py-14">
+    <main className="min-h-screen bg-white px-6 py-14">
       <div className="mx-auto max-w-5xl">
         <div className="flex items-end justify-between gap-4">
           <div>

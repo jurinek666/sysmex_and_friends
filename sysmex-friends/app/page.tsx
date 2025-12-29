@@ -13,7 +13,7 @@ export default async function Home() {
   ]);
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20">
+    <main className="min-h-screen bg-white pb-20">
       {/* --- HERO SEKCE (Hlavní článek) --- */}
       <section className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-6 py-16 md:py-24 text-center">
@@ -34,7 +34,7 @@ export default async function Home() {
               <div className="flex items-center justify-center gap-3">
                 <Link
                   href={`/clanky/${featuredPost.slug}`}
-                  className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-white font-semibold shadow-sm hover:bg-blue-700 transition"
+                  className="btn-readmore"
                 >
                   Čti více
                 </Link>

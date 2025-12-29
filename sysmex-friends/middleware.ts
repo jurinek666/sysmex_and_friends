@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
  * Set ADMIN_USER + ADMIN_PASSWORD in environment variables.
  * If not set, access is allowed (useful for local dev).
  */
-export function proxy(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (!pathname.startsWith("/admin")) return NextResponse.next();
 

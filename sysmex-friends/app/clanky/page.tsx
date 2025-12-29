@@ -9,7 +9,7 @@ export default async function ClankyPage() {
   const posts = await getRecentPosts(50);
 
   return (
-    <main className="min-h-screen bg-gray-50 px-6 py-14">
+    <main className="min-h-screen bg-white px-6 py-14">
       <div className="mx-auto max-w-5xl">
         <div className="flex items-end justify-between gap-4">
           <div>
@@ -55,7 +55,7 @@ export default async function ClankyPage() {
                   <div className="shrink-0">
                     <Link
                       href={`/clanky/${p.slug}`}
-                      className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-white font-semibold hover:bg-blue-700 transition"
+                      className="btn-readmore"
                     >
                       Čti více
                     </Link>
