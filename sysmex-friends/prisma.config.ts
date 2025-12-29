@@ -1,7 +1,1 @@
-import { defineConfig } from "prisma/config";
-
-export default defineConfig({
-  migrations: {
-    seed: "ts-node ./prisma/seed.ts",
-  },
-});
+// This file is not needed - Prisma config is in package.json

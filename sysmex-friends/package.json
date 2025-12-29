@@ -11,10 +11,6 @@
     "check": "npm run lint && tsc --noEmit && npm run build",
     "migrate:deploy": "prisma migrate deploy"
   },
-
-  "prisma": {
-  "seed": "ts-node prisma/seed.ts"
-  },
   
   "dependencies": {
     "@prisma/client": "^5.22.0",
