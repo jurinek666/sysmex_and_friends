@@ -53,15 +53,15 @@
   height: var(--ngg-nav-h);
   background: var(--ngg-glass-top);
   border-bottom: 1px solid rgba(255,255,255,.10);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   box-shadow: var(--ngg-sh-top);
   transition: background var(--ngg-t-med) ease, backdrop-filter var(--ngg-t-med) ease, box-shadow var(--ngg-t-med) ease;
 }
 .ngg-nav--scrolled{
   background: var(--ngg-glass-scroll);
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   box-shadow: var(--ngg-sh-scroll);
 }
 
