@@ -4,7 +4,7 @@
 .pnp.js
 
 # build output
-.next/
+/.next/
 out/
 dist/
 build/
@@ -16,13 +16,12 @@ build/
 .env.test.local
 .env.production.local
 
-# misc
+# logs & debug
 .DS_Store
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-package-lock.json
 
 # prisma
 /prisma/dev.db
@@ -38,3 +37,9 @@ package-lock.json
 
 # render
 .render/
+
+# optional
+/logs
+coverage/
+tmp/
+temp/
