@@ -31,7 +31,13 @@ export default async function AdminPostsPage() {
         {/* Create */}
         <section className="mt-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900">Nový článek</h2>
-          <form action={adminCreatePost} className="mt-6 grid grid-cols-1 gap-4">
+          <form
+            action={async (formData) => {
+              "use server";
+              await adminCreatePost(formData);
+            }}
+            className="mt-6 grid grid-cols-1 gap-4"
+          >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="block">
                 <span className="text-sm font-semibold text-gray-700">Titulek</span>
@@ -100,7 +106,12 @@ export default async function AdminPostsPage() {
                       <Link href={`/clanky/${p.slug}`} className="text-blue-600 font-semibold hover:underline">
                         Zobrazit
                       </Link>
-                      <form action={adminDeletePost}>
+                      <form
+                        action={async (formData) => {
+                          "use server";
+                          await adminDeletePost(formData);
+                        }}
+                      >
                         <input type="hidden" name="id" value={p.id} />
                         <button className="text-red-600 font-semibold hover:underline" type="submit">
                           Smazat

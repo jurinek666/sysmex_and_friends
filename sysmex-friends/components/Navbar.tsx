@@ -10,7 +10,7 @@ export function Navbar() {
         {/* LOGO - Absolutní pozice, aby "rozbilo" mřížku a mohlo být obří */}
         <Link 
             href="/" 
-            className="absolute -left-4 top-1/2 -translate-y-1/2 w-28 h-28 rounded-full bg-sysmex-900 flex items-center justify-center overflow-hidden border-4 border-sysmex-950 shadow-neon z-20 hover:scale-105 transition-transform duration-300"
+            className="absolute -left-4 top-1/2 -translate-y-1/2 w-28 h-28 rounded-full bg-sysmex-900 flex items-center justify-center overflow-hidden border-4 border-sysmex-950 shadow-neon z-20 hover:scale-105 transition-transform duration-300 focus-visible:ring-4 focus-visible:ring-neon-cyan focus-visible:outline-none"
         >
             <div className="relative w-full h-full p-4"> {/* Padding uvnitř loga, aby nebylo nalepené na kraj */}
                 <Image
@@ -39,7 +39,7 @@ export function Navbar() {
         {/* CTA Button */}
         <Link 
             href="/vysledky" 
-            className="ml-2 px-6 py-2.5 rounded-full bg-white text-sysmex-950 text-sm font-bold hover:bg-neon-cyan transition-colors shadow-lg shadow-white/5"
+            className="ml-2 px-6 py-2.5 rounded-full bg-white text-sysmex-950 text-sm font-bold hover:bg-neon-cyan transition-colors shadow-lg shadow-white/5 focus-visible:ring-4 focus-visible:ring-neon-cyan focus-visible:outline-none"
         >
             Tabulka
         </Link>
@@ -53,7 +53,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
   return (
     <Link 
       href={href} 
-      className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors relative group"
+      className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors relative group focus-visible:ring-2 focus-visible:ring-neon-cyan focus-visible:outline-none rounded-md"
     >
       {children}
       <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-neon-magenta opacity-0 group-hover:opacity-100 transition-opacity"></span>

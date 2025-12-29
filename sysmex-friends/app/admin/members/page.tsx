@@ -30,7 +30,13 @@ export default async function AdminMembersPage() {
 
         <section className="mt-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900">Nový člen</h2>
-          <form action={adminCreateMember} className="mt-6 grid grid-cols-1 gap-4">
+          <form
+            action={async (formData) => {
+              "use server";
+              await adminCreateMember(formData);
+            }}
+            className="mt-6 grid grid-cols-1 gap-4"
+          >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="block">
                 <span className="text-sm font-semibold text-gray-700">Jméno</span>
@@ -95,7 +101,12 @@ export default async function AdminMembersPage() {
                         {m.gender}{m.role ? ` • ${m.role}` : ""}
                       </div>
                     </div>
-                    <form action={adminDeleteMember}>
+                    <form
+                      action={async (formData) => {
+                        "use server";
+                        await adminDeleteMember(formData);
+                      }}
+                    >
                       <input type="hidden" name="id" value={m.id} />
                       <button className="text-red-600 font-semibold hover:underline" type="submit">
                         Smazat

@@ -37,7 +37,13 @@ export default async function AdminResultsPage() {
           {seasons.length === 0 ? (
             <p className="mt-4 text-gray-600">Neexistuje žádná sezóna. Nejprve ji přidej přes seed nebo ručně v DB.</p>
           ) : (
-            <form action={adminCreateResult} className="mt-6 grid grid-cols-1 gap-4">
+            <form
+              action={async (formData) => {
+                "use server";
+                await adminCreateResult(formData);
+              }}
+              className="mt-6 grid grid-cols-1 gap-4"
+            >
               <label className="block">
                 <span className="text-sm font-semibold text-gray-700">Sezóna</span>
                 <select name="seasonCode" className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-2">
@@ -113,7 +119,12 @@ export default async function AdminResultsPage() {
                       </div>
                       {r.note ? <p className="mt-2 text-gray-600">{r.note}</p> : null}
                     </div>
-                    <form action={adminDeleteResult}>
+                    <form
+                      action={async (formData) => {
+                        "use server";
+                        await adminDeleteResult(formData);
+                      }}
+                    >
                       <input type="hidden" name="id" value={r.id} />
                       <button className="text-red-600 font-semibold hover:underline" type="submit">
                         Smazat
