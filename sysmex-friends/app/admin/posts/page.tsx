@@ -10,6 +10,20 @@ export default async function AdminPostsPage() {
     select: { id: true, title: true, slug: true, isFeatured: true, publishedAt: true },
   });
 
+  // --- WRAPPERY PRO FIX TYPESCRIPTU ---
+  // Tyto funkce "spolknou" návratovou hodnotu, aby byl formulář spokojený.
+  
+  async function handleCreatePost(formData: FormData) {
+    "use server";
+    await adminCreatePost(formData);
+  }
+
+  async function handleDeletePost(formData: FormData) {
+    "use server";
+    await adminDeletePost(formData);
+  }
+  // ------------------------------------
+
   return (
     <main className="min-h-screen bg-white pb-20">
       <div className="max-w-4xl mx-auto px-6 py-12">
@@ -31,7 +45,8 @@ export default async function AdminPostsPage() {
         {/* Create */}
         <section className="mt-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-bold text-gray-900">Nový článek</h2>
-          <form action={adminCreatePost} className="mt-6 grid grid-cols-1 gap-4">
+          {/* Použití wrapperu handleCreatePost */}
+          <form action={handleCreatePost} className="mt-6 grid grid-cols-1 gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="block">
                 <span className="text-sm font-semibold text-gray-700">Titulek</span>
@@ -100,7 +115,8 @@ export default async function AdminPostsPage() {
                       <Link href={`/clanky/${p.slug}`} className="text-blue-600 font-semibold hover:underline">
                         Zobrazit
                       </Link>
-                      <form action={adminDeletePost}>
+                      {/* Použití wrapperu handleDeletePost */}
+                      <form action={handleDeletePost}>
                         <input type="hidden" name="id" value={p.id} />
                         <button className="text-red-600 font-semibold hover:underline" type="submit">
                           Smazat
