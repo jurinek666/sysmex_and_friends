@@ -1,96 +1,126 @@
-import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { adminUploadPhoto, adminDeletePhoto } from "../../_actions";
+import { adminAddPhoto, adminDeletePhoto } from "../../_actions";
+import { ArrowLeft, Upload, Link as LinkIcon, Trash2 } from "lucide-react";
 
-const CLOUD_NAME = "gear-gaming"; // Tvůj cloud name pro náhledy
+export const dynamic = "force-dynamic";
 
-export default async function AdminAlbumDetail({ params }: { params: { id: string } }) {
-  const { id } = await params;
+// Pomocná funkce pro získání URL obrázku (pokud nemáme nastavený CldImage v adminu)
+function getImageUrl(publicId: string) {
+  if (publicId.startsWith("http")) return publicId;
+  // Fallback: Pokud nemáme cloud name v env pro klienta, musíme doufat, že je publicId kompletní URL
+  // nebo použijeme serverovou proměnnou (což v Client Component nejde, ale toto je Server Component).
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  if (!cloudName) return publicId; // Error state
+  
+  return `https://res.cloudinary.com/${cloudName}/image/upload/c_scale,w_400/${publicId}`;
+}
+
+type Props = {
+    params: Promise<{ id: string }>; // V Next.js 15+ je params Promise
+};
+
+export default async function AdminAlbumPage(props: Props) {
+  const params = await props.params;
   const album = await prisma.album.findUnique({
-    where: { id },
-    include: { photos: { orderBy: { sortOrder: "asc" } } },
+    where: { id: params.id },
+    include: { photos: { orderBy: { createdAt: "desc" } } },
   });
 
-  if (!album) return notFound();
-
-  async function handleUpload(formData: FormData) {
-    "use server";
-    await adminUploadPhoto(formData);
-  }
-
-  async function handleDelete(formData: FormData) {
-    "use server";
-    await adminDeletePhoto(formData);
-  }
+  if (!album) return <div>Album nenalezeno</div>;
 
   return (
-    <main className="min-h-screen bg-white pb-20 text-gray-900">
-      <div className="max-w-6xl mx-auto px-6 py-12">
-        
-        {/* Navigace */}
-        <div className="mb-8">
-            <Link href="/admin/gallery" className="text-blue-600 font-bold hover:underline">← Zpět na seznam alb</Link>
-        </div>
+    <div className="max-w-6xl mx-auto px-6 py-12">
+      <Link href="/admin/gallery" className="inline-flex items-center text-sm text-gray-500 hover:text-blue-600 mb-6">
+        <ArrowLeft className="w-4 h-4 mr-1" /> Zpět na seznam alb
+      </Link>
 
-        <div className="flex justify-between items-start mb-8">
-            <div>
-                <h1 className="text-3xl font-extrabold text-gray-900">{album.title}</h1>
-                <p className="text-gray-500">Složka: {album.cloudinaryFolder} • {album.photos.length} fotek</p>
+      <h1 className="text-3xl font-bold mb-2">{album.title}</h1>
+      <p className="text-gray-500 mb-8 font-mono text-sm bg-gray-100 inline-block px-2 py-1 rounded">
+        Složka: {album.cloudinaryFolder}
+      </p>
+
+      {/* Formulář pro přidání fotky */}
+      <section className="bg-white p-6 rounded-2xl border shadow-sm mb-12">
+        <h2 className="text-xl font-bold mb-4">Přidat fotku</h2>
+        <form action={adminAddPhoto} className="space-y-4">
+          <input type="hidden" name="albumId" value={album.id} />
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Možnost A: Upload */}
+            <div className="border border-dashed border-gray-300 p-4 rounded-xl bg-gray-50">
+              <div className="flex items-center gap-2 font-semibold mb-2 text-blue-700">
+                <Upload className="w-4 h-4" /> Nahrát soubor
+              </div>
+              <input type="file" name="file" accept="image/*" className="w-full text-sm" />
+              <p className="text-xs text-gray-500 mt-2">Max 10MB. Nahraje se na Cloudinary.</p>
             </div>
-        </div>
 
-        {/* Upload Sekce */}
-        <section className="mb-12 p-6 border-2 border-dashed border-blue-200 rounded-2xl bg-blue-50/50">
-            <h3 className="font-bold text-lg mb-4 text-blue-900">Nahrát novou fotku</h3>
-            {/* Jednoduchý formulář pro upload jednoho souboru */}
-            <form action={handleUpload} className="flex gap-4 items-center">
-                <input type="hidden" name="albumId" value={album.id} />
-                <input 
-                    type="file" 
-                    name="file" 
-                    accept="image/*" 
-                    required
-                    aria-label="Vyberte soubor k nahrání"
-                    className="block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-blue-100 file:text-blue-700
-                      hover:file:bg-blue-200"
+            {/* Možnost B: URL */}
+            <div className="border border-dashed border-gray-300 p-4 rounded-xl bg-gray-50">
+              <div className="flex items-center gap-2 font-semibold mb-2 text-purple-700">
+                <LinkIcon className="w-4 h-4" /> Nebo vložit odkaz
+              </div>
+              <input 
+                name="urlInput" 
+                placeholder="https://res.cloudinary.com/..." 
+                className="w-full p-2 border rounded text-sm" 
+              />
+              <p className="text-xs text-gray-500 mt-2">Pokud už fotku máš na cloudu, vlož sem URL.</p>
+            </div>
+          </div>
+
+          <div>
+             <input 
+                name="caption" 
+                placeholder="Popisek fotky (volitelné)" 
+                className="w-full p-2 border rounded-xl" 
+              />
+          </div>
+
+          <button type="submit" className="bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 w-full">
+            Přidat do alba
+          </button>
+        </form>
+      </section>
+
+      {/* Grid fotek */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {album.photos.map((photo) => (
+          <div key={photo.id} className="group relative aspect-square bg-gray-100 rounded-xl overflow-hidden border">
+            {/* Obrázek */}
+            <div className="relative w-full h-full">
+                <Image 
+                    src={getImageUrl(photo.cloudinaryPublicId)}
+                    alt={photo.caption || "Fotka"}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 50vw, 20vw"
                 />
-                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-700 transition">
-                    Nahrát
-                </button>
-            </form>
-            <p className="text-xs text-gray-400 mt-2">Prozatím nahrávej fotky po jedné. (Limit Next.js server actions je cca 4MB na soubor).</p>
-        </section>
-
-        {/* Grid fotek */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {album.photos.map((photo: typeof album.photos[0]) => (
-                <div key={photo.id} className="relative group aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
-                    <Image 
-                        src={`https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_scale,w_300/${photo.cloudinaryPublicId}`}
-                        alt="Náhled"
-                        fill
-                        className="object-cover"
-                    />
-                    {/* Delete overlay */}
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <form action={handleDelete}>
-                            <input type="hidden" name="id" value={photo.id} />
-                            <button type="submit" className="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-red-700">
-                                Smazat
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            ))}
-        </div>
-
+            </div>
+            
+            {/* Overlay s akcemi */}
+            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
+                {photo.caption && (
+                    <p className="text-white text-xs truncate mb-2">{photo.caption}</p>
+                )}
+                <form action={adminDeletePhoto}>
+                    <input type="hidden" name="id" value={photo.id} />
+                    <button className="bg-red-600 text-white p-1.5 rounded-lg hover:bg-red-700 w-full flex justify-center items-center gap-2 text-xs">
+                        <Trash2 className="w-3 h-3" /> Smazat
+                    </button>
+                </form>
+            </div>
+          </div>
+        ))}
       </div>
-    </main>
+
+      {album.photos.length === 0 && (
+         <div className="text-center py-12 text-gray-400">
+            Album je zatím prázdné.
+         </div>
+      )}
+    </div>
   );
 }

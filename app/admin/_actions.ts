@@ -308,6 +308,129 @@ export async function adminDeletePhoto(formData: FormData) {
   return { ok: true };
 }
 
-// ---------- Results & Members (Zůstávají jednoduché) ----------
-// (Zde jen placeholder, aby kód fungoval, pokud je voláš odjinud. 
-//  Můžeš sem zkopírovat create/deleteMember z předchozí verze, pokud je potřebuješ)
+// ---------- Members (Tým) ----------
+
+const MemberSchema = z.object({
+  displayName: z.string().min(1, "Jméno je povinné"),
+  nickname: z.string().optional().or(z.literal("")),
+  gender: z.enum(["MALE", "FEMALE"]).default("MALE"),
+  role: z.string().optional().or(z.literal("")),
+  bio: z.string().optional().or(z.literal("")),
+  isActive: z.coerce.boolean().optional().default(true),
+});
+
+export async function adminCreateMember(formData: FormData) {
+  const parsed = MemberSchema.safeParse({
+    displayName: formData.get("displayName"),
+    nickname: formData.get("nickname"),
+    gender: formData.get("gender"),
+    role: formData.get("role"),
+    bio: formData.get("bio"),
+    isActive: formData.get("isActive"),
+  });
+
+  if (!parsed.success) {
+    return { ok: false, message: "Chybná data formuláře." };
+  }
+
+  try {
+    await prisma.member.create({
+      data: {
+        displayName: parsed.data.displayName,
+        nickname: parsed.data.nickname || null,
+        gender: parsed.data.gender,
+        role: parsed.data.role || null,
+        bio: parsed.data.bio || null,
+        isActive: parsed.data.isActive,
+        specialties: [], // Zatím prázdné pole
+      },
+    });
+  } catch {
+    return { ok: false, message: "Chyba při vytváření člena (možná jméno už existuje)." };
+  }
+
+  revalidatePath("/tym");
+  revalidatePath("/admin/members");
+  return { ok: true };
+}
+
+export async function adminDeleteMember(formData: FormData) {
+  const id = String(formData.get("id"));
+  try {
+    await prisma.member.delete({ where: { id } });
+    revalidatePath("/tym");
+    revalidatePath("/admin/members");
+    return { ok: true };
+  } catch {
+    return { ok: false, message: "Chyba při mazání." };
+  }
+}
+
+// ---------- Results (Výsledky) ----------
+
+const ResultSchema = z.object({
+  seasonCode: z.string().min(1),
+  date: z.string().min(1),
+  venue: z.string().min(1),
+  teamName: z.string().min(1),
+  placement: z.coerce.number().int().min(1),
+  score: z.coerce.number().int().min(0),
+  note: z.string().optional().or(z.literal("")),
+});
+
+export async function adminCreateResult(formData: FormData) {
+  const parsed = ResultSchema.safeParse({
+    seasonCode: formData.get("seasonCode"),
+    date: formData.get("date"),
+    venue: formData.get("venue"),
+    teamName: formData.get("teamName"),
+    placement: formData.get("placement"),
+    score: formData.get("score"),
+    note: formData.get("note"),
+  });
+
+  if (!parsed.success) {
+    return { ok: false, message: "Chybná data." };
+  }
+
+  // Najdeme sezónu podle kódu (např. "2023-2024")
+  const season = await prisma.season.findUnique({ 
+    where: { code: parsed.data.seasonCode } 
+  });
+  
+  if (!season) {
+    return { ok: false, message: "Sezóna s tímto kódem neexistuje." };
+  }
+
+  try {
+    await prisma.result.create({
+      data: {
+        seasonId: season.id,
+        date: new Date(parsed.data.date),
+        venue: parsed.data.venue,
+        teamName: parsed.data.teamName,
+        placement: parsed.data.placement,
+        score: parsed.data.score,
+        note: parsed.data.note || null,
+      },
+    });
+  } catch {
+    return { ok: false, message: "Chyba při ukládání výsledku." };
+  }
+
+  revalidatePath("/vysledky");
+  revalidatePath("/admin/results");
+  return { ok: true };
+}
+
+export async function adminDeleteResult(formData: FormData) {
+  const id = String(formData.get("id"));
+  try {
+    await prisma.result.delete({ where: { id } });
+    revalidatePath("/vysledky");
+    revalidatePath("/admin/results");
+    return { ok: true };
+  } catch {
+    return { ok: false, message: "Chyba při mazání." };
+  }
+}
