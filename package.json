@@ -9,7 +9,10 @@
     "postinstall": "prisma generate",
     "lint": "eslint .",
     "check": "npm run lint && tsc --noEmit && npm run build",
-    "migrate:deploy": "prisma migrate deploy"
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed"
   },
   "dependencies": {
     "@prisma/client": "dev",
@@ -37,12 +40,10 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "prisma": "dev",
     "ts-node": "^10.9.2"
-  },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"commonjs\"} prisma/seed.ts"
   }
 }
