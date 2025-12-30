@@ -13,8 +13,9 @@ export default function LoginPage() {
           </p>
         </div>
         <form className="mt-8 space-y-6">
-          <div className="rounded-md shadow-sm space-y-4">
-            <div>
+            <div className="rounded-md shadow-sm space-y-4">
+            {/* PŘIDÁNO: suppressHydrationWarning */}
+            <div suppressHydrationWarning>
               <label htmlFor="email" className="sr-only">
                 Email
               </label>
@@ -27,7 +28,9 @@ export default function LoginPage() {
                 placeholder="Emailová adresa"
               />
             </div>
-            <div>
+            
+            {/* PŘIDÁNO: suppressHydrationWarning i pro heslo, Keeper tam pravděpodobně vleze taky */}
+            <div suppressHydrationWarning>
               <label htmlFor="password" className="sr-only">
                 Heslo
               </label>
