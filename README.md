@@ -33,6 +33,10 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 npm ci
 ```
 
+## Development Rules
+- **Prisma Version**: STRICTLY use version `5.22.0`. Do not upgrade to v6 or v7 as it breaks the driver adapter configuration.
+- **Package Installation**: Always use exact versions (no `^` or `~`).
+
 2) Create `.env` from `.env.example` and set `DATABASE_URL`.
 
 3) Prisma: generate + migrate + seed (optional)
