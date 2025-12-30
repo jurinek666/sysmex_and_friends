@@ -87,3 +87,13 @@ model Photo {
   albumId            String
   album              Album   @relation(fields: [albumId], references: [id])
 }
+
+// --- 5. PLAYLISTY ---
+model Playlist {
+  id         String   @id @default(cuid())
+  title      String
+  spotifyUrl String
+  isActive   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

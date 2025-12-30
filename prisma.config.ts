@@ -1,10 +1,9 @@
 import { definePrismaConfig } from '@prisma/config';
 
 export default definePrismaConfig({
-  // Zapnutí early access funkcí pro Prisma 7
-  earlyAccess: true,
+  // Pro prostředí jako Vercel/Render je ideální 'library' engine
+  engineType: 'library',
   
-  // V Prisma 7+ je standardem 'library' engine pro lepší výkon
-  // Pokud bys měl problémy na specifickém OS, můžeš zkusit 'binary'
-  // engineType: 'library',
+  // Pokud používáš funkce z Prisma 7 early access, můžeš odkomentovat:
+  // earlyAccess: true,
 });
