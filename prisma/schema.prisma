@@ -1,7 +1,7 @@
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL") // <-- PŘIDAT TENTO ŘÁDEK
+  directUrl = env("DIRECT_URL") // Důležité pro Supabase migrace
 }
 
 generator client {
@@ -9,15 +9,15 @@ generator client {
   previewFeatures = ["driverAdapters"]
 }
 
-// --- 1. AKTUALITY ---
+// --- 1. AKTUALITY (Blog) ---
 model Post {
   id            String   @id @default(cuid())
-  slug          String   @unique
+  slug          String   @unique // URL adresa článku (např. "vanocni-vecirek-2024")
   title         String
-  excerpt       String
-  content       String
-  coverImageUrl String?
-  isFeatured    Boolean  @default(false)
+  excerpt       String   // Krátký úvod (perex)
+  content       String   // Hlavní text (Markdown)
+  coverImageUrl String?  // Úvodní obrázek
+  isFeatured    Boolean  @default(false) // "Top článek" na úvodní stránce
   publishedAt   DateTime @default(now())
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -25,11 +25,11 @@ model Post {
   @@index([slug])
 }
 
-// --- 2. VÝSLEDKY ---
+// --- 2. VÝSLEDKY A SEZÓNY ---
 model Season {
   id        String   @id @default(cuid())
-  code      String   @unique
-  name      String
+  code      String   @unique // Např. "2023-2024"
+  name      String   // Např. "Sezóna 2023/2024"
   startDate DateTime
   endDate   DateTime
   results   Result[]
@@ -38,11 +38,11 @@ model Season {
 model Result {
   id        String   @id @default(cuid())
   date      DateTime
-  venue     String
-  teamName  String
-  placement Int
-  score     Int
-  note      String?
+  venue     String   // Místo konání (např. "Hospoda U Lípy")
+  teamName  String   // Název týmu (pro případ, že hrajeme pod jiným jménem)
+  placement Int      // Umístění (1, 2, 3...)
+  score     Int      // Počet bodů
+  note      String?  // Poznámka
   seasonId  String
   season    Season   @relation(fields: [seasonId], references: [id])
   createdAt DateTime @default(now())
@@ -51,17 +51,17 @@ model Result {
   @@index([seasonId, date])
 }
 
-// --- 3. TÝM ---
+// --- 3. TÝM (Členové) ---
 model Member {
   id          String   @id @default(cuid())
-  displayName String   @unique
-  nickname    String?
+  displayName String   // Jméno zobrazované na webu
+  nickname    String?  // Přezdívka
   gender      Gender   @default(MALE)
-  role        String?
-  specialties String[]
-  bio         String?
-  avatarUrl   String?
-  isActive    Boolean  @default(true)
+  role        String?  // Např. "Kapitán", "Hudební expert"
+  specialties String[] // Co mu jde (zatím nepoužíváme, ale v DB může zůstat)
+  bio         String?  // Krátký popisek o členovi
+  avatarUrl   String?  // Fotka
+  isActive    Boolean  @default(true) // Jestli je stále členem
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -75,9 +75,10 @@ enum Gender {
 model Album {
   id               String   @id @default(cuid())
   title            String
-  dateTaken        DateTime
-  cloudinaryFolder String
-  coverPublicId    String?
+  description      String?  // Popis alba (např. "Fotky z našeho vítězství")
+  dateTaken        DateTime // Datum akce
+  cloudinaryFolder String   // Složka na Cloudinary (např. "jaro-2024")
+  coverPublicId    String?  // ID fotky, která bude na obálce alba
   photos           Photo[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -85,25 +86,24 @@ model Album {
 
 model Photo {
   id                 String   @id @default(cuid())
-  cloudinaryPublicId String
-  caption            String?
-  sortOrder          Int      @default(0)
+  cloudinaryPublicId String   // ID obrázku na Cloudinary
+  caption            String?  // Popisek fotky
+  sortOrder          Int      @default(0) // Pro řazení fotek (volitelné)
   albumId            String
-  album              Album    @relation(fields: [albumId], references: [id])
+  album              Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  @@index([albumId, sortOrder])
-  @@unique([albumId, cloudinaryPublicId])
+  @@index([albumId])
 }
 
 // --- 5. PLAYLISTY ---
 model Playlist {
   id          String   @id @default(cuid())
   title       String
-  description String?  // <-- TOTO BYLO PŘIDÁNO PRO OPRAVU BUILD CHYBY
-  spotifyUrl  String   @unique
-  isActive    Boolean  @default(false)
+  description String?  // Krátký popis (max 200 znaků)
+  spotifyUrl  String   // Zde uložíme čisté URL (src z iframe)
+  isActive    Boolean  @default(false) // Který playlist zrovna hraje na webu
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
