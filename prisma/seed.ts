@@ -1,7 +1,15 @@
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import * as fs from "fs";
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error("Chybí DATABASE_URL v prostředí (.env / Render env vars).");
+}
+
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
 
 // Jednoduchý CSV parser bez externích závislostí - s podporou quoted fields
 function parseCSV(csvData: string) {
@@ -28,7 +36,6 @@ function parseCSV(csvData: string) {
   return records;
 }
 
-// Parser pro jednotlivý řádek CSV s podporou quoted fields
 function parseCSVLine(line: string): string[] {
   const result: string[] = [];
   let current = "";
@@ -41,7 +48,7 @@ function parseCSVLine(line: string): string[] {
     if (char === '"') {
       if (insideQuotes && nextChar === '"') {
         current += '"';
-        i++; // Skip next quote
+        i++;
       } else {
         insideQuotes = !insideQuotes;
       }
@@ -60,7 +67,6 @@ function parseCSVLine(line: string): string[] {
 function safeParseSpecialties(raw: string | undefined): string[] {
   if (!raw) return [];
   try {
-    // Některé exporty mívají JSON string s escapovanými uvozovkami
     const normalized = raw.replace(/\\"/g, '"');
     const parsed = JSON.parse(normalized);
     return Array.isArray(parsed) ? parsed : [];
@@ -74,46 +80,22 @@ async function main() {
 
   // --- SEZÓNY ---
   const seasons = [
-    {
-      code: "2023",
-      name: "Sezóna 2023",
-      startDate: new Date("2023-01-01"),
-      endDate: new Date("2023-12-31"),
-    },
-    {
-      code: "2024",
-      name: "Sezóna 2024",
-      startDate: new Date("2024-01-01"),
-      endDate: new Date("2024-12-31"),
-    },
-    {
-      code: "2025",
-      name: "Sezóna 2025",
-      startDate: new Date("2025-01-01"),
-      endDate: new Date("2025-12-31"),
-    },
-    {
-      code: "2026",
-      name: "Sezóna 2026",
-      startDate: new Date("2026-01-01"),
-      endDate: new Date("2026-12-31"),
-    },
+    { code: "2023", name: "Sezóna 2023", startDate: new Date("2023-01-01"), endDate: new Date("2023-12-31") },
+    { code: "2024", name: "Sezóna 2024", startDate: new Date("2024-01-01"), endDate: new Date("2024-12-31") },
+    { code: "2025", name: "Sezóna 2025", startDate: new Date("2025-01-01"), endDate: new Date("2025-12-31") },
+    { code: "2026", name: "Sezóna 2026", startDate: new Date("2026-01-01"), endDate: new Date("2026-12-31") },
   ];
 
   for (const s of seasons) {
     await prisma.season.upsert({
       where: { code: s.code },
-      update: {
-        name: s.name,
-        startDate: s.startDate,
-        endDate: s.endDate,
-      },
+      update: { name: s.name, startDate: s.startDate, endDate: s.endDate },
       create: s,
     });
   }
   console.log(`✓ ${seasons.length} seasons upserted`);
 
-  // --- ČLENOVÉ Z CSV ---
+  // --- ČLENOVÉ Z CSV (pokud existuje) ---
   const csvPath = "./members_import.csv";
   if (fs.existsSync(csvPath)) {
     console.log("Importing members from CSV...");
@@ -121,42 +103,34 @@ async function main() {
     const records = parseCSV(csvData);
 
     for (const record of records) {
+      if (!record.displayName) continue;
+
       const specialties = safeParseSpecialties(record.specialties);
       const isActive = record.isActive === "TRUE" || record.isActive === "true";
-
       const gender = record.gender === "Female" ? "FEMALE" : "MALE";
 
-      const existingMember = await prisma.member.findUnique({
+      await prisma.member.upsert({
         where: { displayName: record.displayName },
+        update: {
+          nickname: record.nickname || null,
+          gender,
+          role: record.role || null,
+          specialties,
+          bio: record.bio || null,
+          avatarUrl: record.avatarUrl || null,
+          isActive,
+        },
+        create: {
+          displayName: record.displayName,
+          nickname: record.nickname || null,
+          gender,
+          role: record.role || null,
+          specialties,
+          bio: record.bio || null,
+          avatarUrl: record.avatarUrl || null,
+          isActive,
+        },
       });
-
-      if (existingMember) {
-        await prisma.member.update({
-          where: { id: existingMember.id },
-          data: {
-            nickname: record.nickname || null,
-            gender,
-            role: record.role || null,
-            specialties,
-            bio: record.bio || null,
-            avatarUrl: record.avatarUrl || null,
-            isActive,
-          },
-        });
-      } else {
-        await prisma.member.create({
-          data: {
-            displayName: record.displayName,
-            nickname: record.nickname || null,
-            gender,
-            role: record.role || null,
-            specialties,
-            bio: record.bio || null,
-            avatarUrl: record.avatarUrl || null,
-            isActive,
-          },
-        });
-      }
     }
 
     console.log(`✓ ${records.length} members upserted`);
