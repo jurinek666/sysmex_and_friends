@@ -1,32 +1,42 @@
-// /lib/prisma.ts
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
+import pg from "pg";
+
+const { Pool } = pg;
 
 declare global {
    
   var prisma: PrismaClient | undefined;
    
-  var prismaPool: Pool | undefined;
+  var prismaPool: pg.Pool | undefined;
 }
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  throw new Error("Chybí DATABASE_URL v prostředí (.env / Render env vars).");
+function ensureParam(url: string, key: string, value: string) {
+  const u = new URL(url);
+  if (!u.searchParams.has(key)) u.searchParams.set(key, value);
+  return u.toString();
 }
 
-// Render/managed Postgres často vyžaduje SSL; lokální DB obvykle ne.
+let connectionString = process.env.DATABASE_URL;
+if (!connectionString) throw new Error("Chybí DATABASE_URL v prostředí.");
+
 const isLocal = /localhost|127\.0\.0\.1/i.test(connectionString);
+
+// Pokud nejsi na lokální DB, přidej pgbouncer=true (řeší prepared statements u poolerů)
+if (!isLocal) {
+  connectionString = ensureParam(connectionString, "pgbouncer", "true");
+}
 
 const pool =
   globalThis.prismaPool ||
   new Pool({
     connectionString,
     ssl: isLocal ? undefined : { rejectUnauthorized: false },
-    max: 5,
+    max: process.env.NODE_ENV === "production" ? 5 : 2,
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis: 10_000,
+    keepAlive: true,
   });
 
 const adapter = new PrismaPg(pool);
