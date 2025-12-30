@@ -9,10 +9,14 @@
     "postinstall": "prisma generate",
     "lint": "eslint .",
     "check": "npm run lint && tsc --noEmit && npm run build",
-    "migrate:deploy": "prisma migrate deploy"
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed"
   },
   "dependencies": {
-    "@prisma/client": "latest",
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "dev",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^20",
     "autoprefixer": "^10.4.23",
@@ -24,6 +28,7 @@
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
     "next-cloudinary": "^6.17.5",
+    "pg": "^8.16.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-markdown": "^10.1.0",
@@ -33,16 +38,14 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
-    "@prisma/config": "latest",
+    "@prisma/config": "dev",
     "@tailwindcss/typography": "^0.5.19",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
-    "prisma": "latest",
+    "prisma": "dev",
     "ts-node": "^10.9.2"
-  },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"commonjs\"} prisma/seed.ts"
   }
 }

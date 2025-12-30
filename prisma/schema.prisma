@@ -1,10 +1,10 @@
 generator client {
   provider = "prisma-client-js"
+  engineType = "library"  // Change from "client" to "library"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // --- 1. AKTUALITY ---
@@ -45,12 +45,14 @@ model Result {
   season    Season   @relation(fields: [seasonId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([seasonId, date])
 }
 
 // --- 3. TÝM ---
 model Member {
   id          String   @id @default(cuid())
-  displayName String
+  displayName String   @unique
   nickname    String?
   gender      Gender   @default(MALE)
   role        String?
@@ -80,12 +82,17 @@ model Album {
 }
 
 model Photo {
-  id                 String  @id @default(cuid())
+  id                 String   @id @default(cuid())
   cloudinaryPublicId String
   caption            String?
-  sortOrder          Int     @default(0)
+  sortOrder          Int      @default(0)
   albumId            String
-  album              Album   @relation(fields: [albumId], references: [id])
+  album              Album    @relation(fields: [albumId], references: [id])
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([albumId, sortOrder])
+  @@unique([albumId, cloudinaryPublicId])
 }
 
 // --- 5. PLAYLISTY ---
@@ -96,4 +103,4 @@ model Playlist {
   isActive   Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-} 
+}

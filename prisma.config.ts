@@ -1,10 +1,15 @@
-import { definePrismaConfig } from '@prisma/config';
+import "dotenv/config";
+import { defineConfig } from "prisma/config";
 
-export default definePrismaConfig({
-  // Zapnutí early access funkcí pro Prisma 7
-  earlyAccess: true,
-  
-  // V Prisma 7+ je standardem 'library' engine pro lepší výkon
-  // Pokud bys měl problémy na specifickém OS, můžeš zkusit 'binary'
-  // engineType: 'library',
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  migrations: {
+    path: "prisma/migrations",
+    // Prisma 7 už nebere seed z package.json -> definujeme tady
+    seed: 'ts-node --compiler-options {"module":"commonjs"} prisma/seed.ts',
+  },
+  // V Prisma 7 patří DB URL sem (a schema.prisma už ji nemá)
+  datasource: {
+    url: process.env.DATABASE_URL,
+  },
 });
