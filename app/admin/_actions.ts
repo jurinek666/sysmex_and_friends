@@ -335,6 +335,7 @@ export async function adminDeletePhoto(formData: FormData) {
 const PlaylistCreateSchema = z.object({
   title: z.string().min(1),
   spotifyUrl: z.string().url(),
+  description: z.string().max(200).optional().or(z.literal("")), // <-- PŘIDAT VALIDACI
   isActive: z.coerce.boolean().optional().default(false),
 });
 
@@ -342,6 +343,7 @@ export async function adminCreatePlaylist(formData: FormData) {
   const parsed = PlaylistCreateSchema.safeParse({
     title: formData.get("title"),
     spotifyUrl: formData.get("spotifyUrl"),
+    description: formData.get("description"), // <-- NAČÍST Z FORMULÁŘE
     isActive: formData.get("isActive"),
   });
 
@@ -349,10 +351,10 @@ export async function adminCreatePlaylist(formData: FormData) {
     return { ok: false, message: parsed.error.issues.map((i) => i.message).join(" | ") };
   }
 
-  const { title, spotifyUrl, isActive } = parsed.data;
+  // Destrukturalizace vč. description
+  const { title, spotifyUrl, description, isActive } = parsed.data;
 
   try {
-    // Pokud je nový playlist aktivní, vypneme ostatní
     if (isActive) {
       await prisma.playlist.updateMany({
         where: { isActive: true },
@@ -364,6 +366,7 @@ export async function adminCreatePlaylist(formData: FormData) {
       data: {
         title,
         spotifyUrl,
+        description: description || null, // <-- ULOŽIT DO DB
         isActive,
       },
     });
@@ -383,6 +386,7 @@ export async function adminUpdatePlaylist(formData: FormData) {
   const parsed = PlaylistCreateSchema.safeParse({
     title: formData.get("title"),
     spotifyUrl: formData.get("spotifyUrl"),
+    description: formData.get("description"), // <-- NAČÍST Z FORMULÁŘE
     isActive: formData.get("isActive"),
   });
 
@@ -390,10 +394,9 @@ export async function adminUpdatePlaylist(formData: FormData) {
     return { ok: false, message: parsed.error.issues.map((i) => i.message).join(" | ") };
   }
 
-  const { title, spotifyUrl, isActive } = parsed.data;
+  const { title, spotifyUrl, description, isActive } = parsed.data;
 
   try {
-    // Pokud je playlist aktivní, vypneme ostatní
     if (isActive) {
       await prisma.playlist.updateMany({
         where: { AND: [{ isActive: true }, { id: { not: id } }] },
@@ -406,6 +409,7 @@ export async function adminUpdatePlaylist(formData: FormData) {
       data: {
         title,
         spotifyUrl,
+        description: description || null, // <-- ULOŽIT DO DB
         isActive,
       },
     });
@@ -416,19 +420,4 @@ export async function adminUpdatePlaylist(formData: FormData) {
   revalidatePath("/admin/playlists");
   revalidatePath("/", "layout");
   return { ok: true };
-}
-
-export async function adminDeletePlaylist(formData: FormData) {
-  const id = String(formData.get("id") || "");
-  if (!id) return { ok: false, message: "Chybí ID." };
-
-  try {
-    await prisma.playlist.delete({ where: { id } });
-  } catch {
-    return { ok: false, message: "Chyba při mazání playlistu." };
-  }
-
-  revalidatePath("/admin/playlists");
-  revalidatePath("/", "layout");
-  return { ok: true };
-}
+} 

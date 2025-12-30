@@ -9,26 +9,12 @@ export default async function AdminPlaylistsPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  // --- WRAPPERY PRO FIX TYPESCRIPTU ---
-  // --- WRAPPERY PRO FIX TYPESCRIPTU ---
-  async function handleCreatePlaylist(formData: FormData) {
-    "use server";
-    await adminCreatePlaylist(formData);
-  }
-
-  async function handleDeletePlaylist(formData: FormData) {
-    "use server";
-    await adminDeletePlaylist(formData);
-  }
-  // ------------------------------------
-  // ------------------------------------
-
   async function handleCreate(formData: FormData) {
     "use server";
     await adminCreatePlaylist(formData);
   }
 
-  async function handleDelete(formData: FormData) {
+  async function handleDeletePlaylist(formData: FormData) {
     "use server";
     await adminDeletePlaylist(formData);
   }
@@ -128,7 +114,7 @@ export default async function AdminPlaylistsPage() {
                       )}
                     </div>
                     <div className="text-sm text-gray-500 mt-1 line-clamp-1">
-                      {p.description}
+                     {p.spotifyUrl?.replace("https://open.spotify.com/", "open.spotify.com/")}
                     </div>
                   </div>
                   

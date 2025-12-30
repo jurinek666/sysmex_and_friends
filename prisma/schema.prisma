@@ -1,12 +1,11 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// --- 1. AKTUALITY ---
+datasource db {
+  provider = "postgresql"
+}
+
 model Post {
   id            String   @id @default(cuid())
   slug          String   @unique
@@ -22,7 +21,6 @@ model Post {
   @@index([slug])
 }
 
-// --- 2. VÝSLEDKY ---
 model Season {
   id        String   @id @default(cuid())
   code      String   @unique
@@ -41,14 +39,13 @@ model Result {
   score     Int
   note      String?
   seasonId  String
-  season    Season   @relation(fields: [seasonId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  season    Season   @relation(fields: [seasonId], references: [id])
 
   @@index([seasonId, date])
 }
 
-// --- 3. TÝM ---
 model Member {
   id          String   @id @default(cuid())
   displayName String   @unique
@@ -63,21 +60,15 @@ model Member {
   updatedAt   DateTime @updatedAt
 }
 
-enum Gender {
-  MALE
-  FEMALE
-}
-
-// --- 4. GALERIE ---
 model Album {
   id               String   @id @default(cuid())
   title            String
   dateTaken        DateTime
   cloudinaryFolder String
   coverPublicId    String?
-  photos           Photo[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  photos           Photo[]
 }
 
 model Photo {
@@ -86,20 +77,26 @@ model Photo {
   caption            String?
   sortOrder          Int      @default(0)
   albumId            String
-  album              Album    @relation(fields: [albumId], references: [id])
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  album              Album    @relation(fields: [albumId], references: [id])
 
-  @@index([albumId, sortOrder])
   @@unique([albumId, cloudinaryPublicId])
+  @@index([albumId, sortOrder])
 }
 
 // --- 5. PLAYLISTY ---
 model Playlist {
-  id         String   @id @default(cuid())
-  title      String
-  spotifyUrl String   @unique
-  isActive   Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(cuid())
+  title       String
+  description String?  // <-- PŘIDAT TOTO (otazník znamená, že může být prázdné)
+  spotifyUrl  String   @unique
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Gender {
+  MALE
+  FEMALE
 }

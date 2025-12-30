@@ -32,9 +32,7 @@ const pool = new Pool({
 });
 
 const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({
-  adapter,
-});
+const prisma = new PrismaClient({ adapter });
 
 // --- CSV helpers (zůstává) ---
 function parseCSV(csvData: string) {
@@ -250,4 +248,4 @@ main()
     await prisma.$disconnect();
     await pool.end();
     process.exit(1);
-  });
+  })
