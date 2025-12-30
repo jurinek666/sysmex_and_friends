@@ -54,3 +54,12 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export default prisma;
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
