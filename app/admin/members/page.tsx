@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { PendingButton } from "@/components/ui/PendingButton";
 import { adminCreateMember, adminDeleteMember } from "../_actions";
 
 export const dynamic = "force-dynamic";
@@ -106,12 +107,11 @@ export default async function AdminMembersPage() {
               </label>
             </div>
 
-            <button
-              type="submit"
+            <PendingButton
               className="mt-2 inline-flex justify-center rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             >
               Přidat člena
-            </button>
+            </PendingButton>
           </form>
         </section>
 
