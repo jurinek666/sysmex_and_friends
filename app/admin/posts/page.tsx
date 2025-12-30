@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { PendingButton } from "@/components/ui/PendingButton";
 import { adminCreatePost, adminDeletePost } from "../_actions";
 
 export const dynamic = "force-dynamic";
@@ -102,9 +103,9 @@ export default async function AdminPostsPage() {
               <span className="text-sm font-semibold text-gray-700">Nastavit jako featured (Novinka na homepage)</span>
             </label>
 
-            <button type="submit" className="inline-flex w-fit items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-white font-semibold shadow-sm hover:bg-blue-700 transition">
+            <PendingButton className="inline-flex w-fit items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-white font-semibold shadow-sm hover:bg-blue-700 transition">
               Uložit
-            </button>
+            </PendingButton>
 
             <p className="text-xs text-gray-500">
               Pozn.: Pokud nastavíš více featured článků, homepage vezme nejnovější.

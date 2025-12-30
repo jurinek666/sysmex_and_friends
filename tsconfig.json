@@ -36,8 +36,10 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts",
-    "next.config.mjs"
-, "middleware.ts.bak"  ],
+    "next.config.mjs",
+    "middleware.ts.bak",
+    ".next/dev/dev/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules"
   ]
