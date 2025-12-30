@@ -49,6 +49,47 @@ export async function adminCreatePost(formData: FormData) {
   return { ok: true };
 }
 
+export async function adminUpdatePost(formData: FormData) {
+  const id = String(formData.get("id") || "");
+  if (!id) return { ok: false, message: "Chybí ID." };
+
+  const parsed = PostCreateSchema.safeParse({
+    title: formData.get("title"),
+    slug: formData.get("slug"),
+    excerpt: formData.get("excerpt"),
+    content: formData.get("content"),
+    isFeatured: formData.get("isFeatured"),
+    coverImageUrl: formData.get("coverImageUrl"),
+  });
+
+  if (!parsed.success) {
+    return { ok: false, message: parsed.error.issues.map((i) => i.message).join(" | ") };
+  }
+
+  const { title, slug, excerpt, content, isFeatured, coverImageUrl } = parsed.data;
+
+  try {
+    await prisma.post.update({
+      where: { id },
+      data: {
+        title,
+        slug,
+        excerpt,
+        content,
+        isFeatured,
+        coverImageUrl: coverImageUrl || null,
+      },
+    });
+  } catch {
+    return { ok: false, message: "Chyba při úpravě (možná duplicitní slug?)" };
+  }
+
+  revalidatePath("/clanky");
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/posts");
+  return { ok: true };
+}
+
 export async function adminDeletePost(formData: FormData) {
   const id = String(formData.get("id") || "");
   if (!id) return { ok: false, message: "Chybí id" };
@@ -288,4 +329,106 @@ export async function adminDeletePhoto(formData: FormData) {
     // Revalidace (musíme zjistit albumId, ale pro zjednodušení revalidujeme cestu)
     revalidatePath("/galerie"); 
     return { ok: true };
+}
+
+// ---------- Playlists ----------
+const PlaylistCreateSchema = z.object({
+  title: z.string().min(1),
+  spotifyUrl: z.string().url(),
+  isActive: z.coerce.boolean().optional().default(false),
+});
+
+export async function adminCreatePlaylist(formData: FormData) {
+  const parsed = PlaylistCreateSchema.safeParse({
+    title: formData.get("title"),
+    spotifyUrl: formData.get("spotifyUrl"),
+    isActive: formData.get("isActive"),
+  });
+
+  if (!parsed.success) {
+    return { ok: false, message: parsed.error.issues.map((i) => i.message).join(" | ") };
+  }
+
+  const { title, spotifyUrl, isActive } = parsed.data;
+
+  try {
+    // Pokud je nový playlist aktivní, vypneme ostatní
+    if (isActive) {
+      await prisma.playlist.updateMany({
+        where: { isActive: true },
+        data: { isActive: false },
+      });
+    }
+
+    await prisma.playlist.create({
+      data: {
+        title,
+        spotifyUrl,
+        isActive,
+      },
+    });
+  } catch {
+    return { ok: false, message: "Chyba při vytváření playlistu." };
+  }
+
+  revalidatePath("/admin/playlists");
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function adminUpdatePlaylist(formData: FormData) {
+  const id = String(formData.get("id") || "");
+  if (!id) return { ok: false, message: "Chybí ID." };
+
+  const parsed = PlaylistCreateSchema.safeParse({
+    title: formData.get("title"),
+    spotifyUrl: formData.get("spotifyUrl"),
+    isActive: formData.get("isActive"),
+  });
+
+  if (!parsed.success) {
+    return { ok: false, message: parsed.error.issues.map((i) => i.message).join(" | ") };
+  }
+
+  const { title, spotifyUrl, isActive } = parsed.data;
+
+  try {
+    // Pokud je playlist aktivní, vypneme ostatní
+    if (isActive) {
+      await prisma.playlist.updateMany({
+        where: { AND: [{ isActive: true }, { id: { not: id } }] },
+        data: { isActive: false },
+      });
+    }
+
+    await prisma.playlist.update({
+      where: { id },
+      data: {
+        title,
+        spotifyUrl,
+        isActive,
+      },
+    });
+  } catch {
+    return { ok: false, message: "Chyba při úpravě playlistu." };
+  }
+
+  revalidatePath("/admin/playlists");
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function adminDeletePlaylist(formData: FormData) {
+  const id = String(formData.get("id") || "");
+  if (!id) return { ok: false, message: "Chybí ID." };
+
+  try {
+    await prisma.playlist.delete({ where: { id } });
+  } catch {
+    return { ok: false, message: "Chyba při mazání playlistu." };
+  }
+
+  revalidatePath("/admin/playlists");
+  revalidatePath("/", "layout");
+  return { ok: true };
 }
