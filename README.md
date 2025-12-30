@@ -1,5 +1,7 @@
 # SYSMEX & Friends
 
+# SYSMEX & Friends
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -26,12 +28,15 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ### Requirements
 
+
 - Node.js 20.9+ recommended (LTS)
 - PostgreSQL database (Prisma)
 
 ### Setup (local)
 
+
 1) Install deps
+
 
 ```bash
 npm ci
@@ -49,11 +54,14 @@ npx prisma db seed
 
 1) Run dev server
 
+1) Run dev server
+
 ```bash
 npm run dev
 ```
 
 ### Routes implemented
+
 
 - `/` (home)
 - `/clanky` + `/clanky/[slug]`
@@ -63,9 +71,11 @@ npm run dev
 
 ### Admin (interní)
 
+
 Admin je na `/admin` a je chráněný HTTP Basic Auth přes `middleware.ts`.
 
 V `.env` / Render nastav:
+
 
 - `ADMIN_USER`
 - `ADMIN_PASSWORD`
@@ -73,6 +83,7 @@ V `.env` / Render nastav:
 Pokud nejsou proměnné nastavené, `/admin` se v dev režimu neblokuje.
 
 ### Lint / Typecheck / Build
+
 
 ```bash
 npm run lint
