@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { adminUploadPhoto, adminDeletePhoto } from "../../../_actions";
+import { adminUploadPhoto, adminDeletePhoto } from "../../_actions";
 
 const CLOUD_NAME = "gear-gaming"; // Tvůj cloud name pro náhledy
 
@@ -10,7 +10,7 @@ export default async function AdminAlbumDetail({ params }: { params: { id: strin
   const { id } = await params;
   const album = await prisma.album.findUnique({
     where: { id },
-    include: { photos: { orderBy: { createdAt: "desc" } } },
+    include: { photos: { orderBy: { sortOrder: "asc" } } },
   });
 
   if (!album) return notFound();
@@ -52,6 +52,7 @@ export default async function AdminAlbumDetail({ params }: { params: { id: strin
                     name="file" 
                     accept="image/*" 
                     required
+                    aria-label="Vyberte soubor k nahrání"
                     className="block w-full text-sm text-gray-500
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-full file:border-0
@@ -68,7 +69,7 @@ export default async function AdminAlbumDetail({ params }: { params: { id: strin
 
         {/* Grid fotek */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {album.photos.map(photo => (
+            {album.photos.map((photo: typeof album.photos[0]) => (
                 <div key={photo.id} className="relative group aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
                     <Image 
                         src={`https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_scale,w_300/${photo.cloudinaryPublicId}`}

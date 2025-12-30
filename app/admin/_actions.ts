@@ -220,7 +220,7 @@ export async function adminDeleteAlbum(formData: FormData) {
     revalidatePath("/galerie");
     revalidatePath("/admin/gallery");
     return { ok: true };
-  } catch (error) {
+  } catch {
     return { ok: false, message: "Nelze smazat album (možná obsahuje fotky)." };
   }
 }
@@ -244,20 +244,22 @@ export async function adminUploadPhoto(formData: FormData) {
     const buffer = Buffer.from(arrayBuffer);
 
     // 2. Nahrajeme na Cloudinary (pomocí Promise wrapperu)
-    const result = await new Promise<any>((resolve, reject) => {
+    const result = await new Promise<{ public_id: string }>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: album.cloudinaryFolder, // Složka alba na Cloudinary
         },
         (error, result) => {
           if (error) reject(error);
-          else resolve(result);
+          else if (result) resolve(result as { public_id: string });
+          else reject(new Error("No result from upload"));
         }
       );
       // Odešleme data
-      const { Readable } = require("stream");
-      const stream = Readable.from(buffer);
-      stream.pipe(uploadStream);
+      import("stream").then(({ Readable }) => {
+        const stream = Readable.from(buffer);
+        stream.pipe(uploadStream);
+      }).catch(reject);
     });
 
     // 3. Uložíme odkaz do DB
