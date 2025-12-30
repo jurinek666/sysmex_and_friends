@@ -1,10 +1,9 @@
-generator client {
-  provider = "prisma-client-js"
-  engineType = "library"  // Change from "client" to "library"
-}
-
 datasource db {
   provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
 }
 
 // --- 1. AKTUALITY ---
@@ -99,7 +98,7 @@ model Photo {
 model Playlist {
   id         String   @id @default(cuid())
   title      String
-  spotifyUrl String
+  spotifyUrl String   @unique
   isActive   Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

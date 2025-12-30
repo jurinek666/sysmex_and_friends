@@ -43,3 +43,6 @@ pnpm-debug.log*
 coverage/
 tmp/
 temp/
+
+# prisma studio
+# prisma.config.ts
