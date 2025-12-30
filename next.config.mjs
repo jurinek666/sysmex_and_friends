@@ -9,6 +9,11 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '5mb', // Navýšil jsem raději na 5MB pro rezervu
+    },
+  },
 };
 
 export default nextConfig;
