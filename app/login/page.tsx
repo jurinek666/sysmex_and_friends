@@ -1,6 +1,26 @@
+"use client"; // <-- Důležité: Označí komponentu jako klientskou
+
+import { useEffect, useState } from "react";
 import { login } from "./actions";
 
 export default function LoginPage() {
+  const [mounted, setMounted] = useState(false);
+
+  // Počkáme, až se komponenta "namountuje" v prohlížeči
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Dokud nejsme v prohlížeči, zobrazíme jen prázdné pozadí nebo loading
+  // Tím zabráníme Hydration Erroru, protože HTML ze serveru bude jednoduché
+  if (!mounted) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="animate-pulse bg-white p-8 rounded-2xl shadow-lg h-64 w-full max-w-md"></div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
@@ -8,14 +28,11 @@ export default function LoginPage() {
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
             Admin Přihlášení
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sysmex & Friends
-          </p>
+          <p className="mt-2 text-sm text-gray-600">Sysmex & Friends</p>
         </div>
         <form className="mt-8 space-y-6">
-            <div className="rounded-md shadow-sm space-y-4">
-            {/* PŘIDÁNO: suppressHydrationWarning */}
-            <div suppressHydrationWarning>
+          <div className="rounded-md shadow-sm space-y-4">
+            <div>
               <label htmlFor="email" className="sr-only">
                 Email
               </label>
@@ -28,9 +45,7 @@ export default function LoginPage() {
                 placeholder="Emailová adresa"
               />
             </div>
-            
-            {/* PŘIDÁNO: suppressHydrationWarning i pro heslo, Keeper tam pravděpodobně vleze taky */}
-            <div suppressHydrationWarning>
+            <div>
               <label htmlFor="password" className="sr-only">
                 Heslo
               </label>
