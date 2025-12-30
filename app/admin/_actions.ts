@@ -168,3 +168,122 @@ export async function adminDeleteMember(formData: FormData) {
   revalidatePath("/admin/members");
   return { ok: true };
 }
+
+import { v2 as cloudinary } from "cloudinary";
+
+// Konfigurace Cloudinary (použije proměnné z .env)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// ---------- Galerie / Alba ----------
+
+const AlbumCreateSchema = z.object({
+  title: z.string().min(3),
+  dateTaken: z.string(), // Datum z inputu type="date"
+  cloudinaryFolder: z.string().min(1), // Složka na Cloudinary (např. "vanoce-2023")
+});
+
+export async function adminCreateAlbum(formData: FormData) {
+  const parsed = AlbumCreateSchema.safeParse({
+    title: formData.get("title"),
+    dateTaken: formData.get("dateTaken"),
+    cloudinaryFolder: formData.get("cloudinaryFolder"),
+  });
+
+  if (!parsed.success) {
+    return { ok: false, message: "Chybná data formuláře." };
+  }
+
+  await prisma.album.create({
+    data: {
+      title: parsed.data.title,
+      dateTaken: new Date(parsed.data.dateTaken),
+      cloudinaryFolder: parsed.data.cloudinaryFolder,
+    },
+  });
+
+  revalidatePath("/galerie");
+  revalidatePath("/admin/gallery");
+  return { ok: true };
+}
+
+export async function adminDeleteAlbum(formData: FormData) {
+  const id = String(formData.get("id"));
+  
+  // Poznámka: Zde bychom ideálně měli smazat i fotky na Cloudinary, 
+  // ale pro bezpečí zatím smažeme jen záznam v DB.
+  try {
+    await prisma.album.delete({ where: { id } });
+    revalidatePath("/galerie");
+    revalidatePath("/admin/gallery");
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, message: "Nelze smazat album (možná obsahuje fotky)." };
+  }
+}
+
+// Upload fotky
+export async function adminUploadPhoto(formData: FormData) {
+  const albumId = String(formData.get("albumId"));
+  const file = formData.get("file") as File;
+
+  if (!file || file.size === 0) {
+    return { ok: false, message: "Žádný soubor." };
+  }
+
+  // Najdeme album, abychom věděli, do jaké složky nahrávat
+  const album = await prisma.album.findUnique({ where: { id: albumId } });
+  if (!album) return { ok: false, message: "Album nenalezeno." };
+
+  try {
+    // 1. Převedeme File na Buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // 2. Nahrajeme na Cloudinary (pomocí Promise wrapperu)
+    const result = await new Promise<any>((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: album.cloudinaryFolder, // Složka alba na Cloudinary
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      // Odešleme data
+      const { Readable } = require("stream");
+      const stream = Readable.from(buffer);
+      stream.pipe(uploadStream);
+    });
+
+    // 3. Uložíme odkaz do DB
+    await prisma.photo.create({
+      data: {
+        albumId: album.id,
+        cloudinaryPublicId: result.public_id, // TOTO je ten odkaz, ne soubor
+        caption: file.name, // Jako popisek dáme název souboru
+      },
+    });
+
+    revalidatePath(`/galerie/${album.id}`);
+    revalidatePath(`/admin/gallery/${album.id}`);
+    return { ok: true };
+
+  } catch (error) {
+    console.error("Upload error:", error);
+    return { ok: false, message: "Chyba při nahrávání na Cloudinary." };
+  }
+}
+
+export async function adminDeletePhoto(formData: FormData) {
+    const id = String(formData.get("id"));
+    // Opět: Prozatím mažeme jen z DB reference
+    await prisma.photo.delete({ where: { id } });
+    // Revalidace (musíme zjistit albumId, ale pro zjednodušení revalidujeme cestu)
+    revalidatePath("/galerie"); 
+    return { ok: true };
+}

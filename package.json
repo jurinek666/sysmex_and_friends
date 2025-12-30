@@ -16,6 +16,7 @@
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^20",
     "autoprefixer": "^10.4.23",
+    "cloudinary": "^2.8.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.26",
