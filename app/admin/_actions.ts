@@ -4,6 +4,14 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { Gender } from "@prisma/client";
+import { v2 as cloudinary } from "cloudinary";
+
+// Konfigurace Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // ---------- Posts ----------
 const PostCreateSchema = z.object({
@@ -31,17 +39,22 @@ export async function adminCreatePost(formData: FormData) {
 
   const { title, slug, excerpt, content, isFeatured, coverImageUrl } = parsed.data;
 
-  await prisma.post.create({
-    data: {
-      title,
-      slug,
-      excerpt,
-      content,
-      isFeatured,
-      coverImageUrl: coverImageUrl || null,
-      publishedAt: new Date(),
-    },
-  });
+  try {
+    await prisma.post.create({
+      data: {
+        title,
+        slug,
+        excerpt,
+        content,
+        isFeatured,
+        coverImageUrl: coverImageUrl || null,
+        publishedAt: new Date(),
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    return { ok: false, message: "Chyba při vytváření článku (možná duplicitní slug?)." };
+  }
 
   revalidatePath("/clanky");
   revalidatePath("/", "layout");
@@ -94,7 +107,12 @@ export async function adminDeletePost(formData: FormData) {
   const id = String(formData.get("id") || "");
   if (!id) return { ok: false, message: "Chybí id" };
 
-  await prisma.post.delete({ where: { id } });
+  try {
+    await prisma.post.delete({ where: { id } });
+  } catch {
+    return { ok: false, message: "Chyba při mazání článku." };
+  }
+  
   revalidatePath("/clanky");
   revalidatePath("/", "layout");
   revalidatePath("/admin/posts");
@@ -210,14 +228,6 @@ export async function adminDeleteMember(formData: FormData) {
   return { ok: true };
 }
 
-import { v2 as cloudinary } from "cloudinary";
-
-// Konfigurace Cloudinary (použije proměnné z .env)
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 // ---------- Galerie / Alba ----------
 
@@ -335,7 +345,7 @@ export async function adminDeletePhoto(formData: FormData) {
 const PlaylistCreateSchema = z.object({
   title: z.string().min(1),
   spotifyUrl: z.string().url(),
-  description: z.string().max(200).optional().or(z.literal("")), // <-- PŘIDAT VALIDACI
+  description: z.string().max(200).optional().or(z.literal("")),
   isActive: z.coerce.boolean().optional().default(false),
 });
 
@@ -343,7 +353,7 @@ export async function adminCreatePlaylist(formData: FormData) {
   const parsed = PlaylistCreateSchema.safeParse({
     title: formData.get("title"),
     spotifyUrl: formData.get("spotifyUrl"),
-    description: formData.get("description"), // <-- NAČÍST Z FORMULÁŘE
+    description: formData.get("description"),
     isActive: formData.get("isActive"),
   });
 
@@ -351,10 +361,10 @@ export async function adminCreatePlaylist(formData: FormData) {
     return { ok: false, message: parsed.error.issues.map((i) => i.message).join(" | ") };
   }
 
-  // Destrukturalizace vč. description
   const { title, spotifyUrl, description, isActive } = parsed.data;
 
   try {
+    // Pokud je nový playlist aktivní, vypneme ostatní
     if (isActive) {
       await prisma.playlist.updateMany({
         where: { isActive: true },
@@ -366,7 +376,7 @@ export async function adminCreatePlaylist(formData: FormData) {
       data: {
         title,
         spotifyUrl,
-        description: description || null, // <-- ULOŽIT DO DB
+        description: description || null,
         isActive,
       },
     });
@@ -386,7 +396,7 @@ export async function adminUpdatePlaylist(formData: FormData) {
   const parsed = PlaylistCreateSchema.safeParse({
     title: formData.get("title"),
     spotifyUrl: formData.get("spotifyUrl"),
-    description: formData.get("description"), // <-- NAČÍST Z FORMULÁŘE
+    description: formData.get("description"),
     isActive: formData.get("isActive"),
   });
 
@@ -397,6 +407,7 @@ export async function adminUpdatePlaylist(formData: FormData) {
   const { title, spotifyUrl, description, isActive } = parsed.data;
 
   try {
+    // Pokud je playlist aktivní, vypneme ostatní
     if (isActive) {
       await prisma.playlist.updateMany({
         where: { AND: [{ isActive: true }, { id: { not: id } }] },
@@ -409,7 +420,7 @@ export async function adminUpdatePlaylist(formData: FormData) {
       data: {
         title,
         spotifyUrl,
-        description: description || null, // <-- ULOŽIT DO DB
+        description: description || null,
         isActive,
       },
     });
@@ -420,4 +431,19 @@ export async function adminUpdatePlaylist(formData: FormData) {
   revalidatePath("/admin/playlists");
   revalidatePath("/", "layout");
   return { ok: true };
-} 
+}
+
+export async function adminDeletePlaylist(formData: FormData) {
+  const id = String(formData.get("id") || "");
+  if (!id) return { ok: false, message: "Chybí ID." };
+
+  try {
+    await prisma.playlist.delete({ where: { id } });
+  } catch {
+    return { ok: false, message: "Chyba při mazání playlistu." };
+  }
+
+  revalidatePath("/admin/playlists");
+  revalidatePath("/", "layout");
+  return { ok: true };
+}

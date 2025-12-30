@@ -20,38 +20,44 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-
 ## Project notes (SYSMEX & Friends)
 
 ### Requirements
+
 - Node.js 20.9+ recommended (LTS)
 - PostgreSQL database (Prisma)
 
 ### Setup (local)
+
 1) Install deps
+
 ```bash
 npm ci
 ```
 
 ## Development Rules
+
 - **Prisma Version**: STRICTLY use version `5.22.0`. Do not upgrade to v6 or v7 as it breaks the driver adapter configuration.
 - **Package Installation**: Always use exact versions (no `^` or `~`).
 
-2) Create `.env` from `.env.example` and set `DATABASE_URL`.
+1) Create `.env` from `.env.example` and set `DATABASE_URL`.
 
-3) Prisma: generate + migrate + seed (optional)
+2) Prisma: generate + migrate + seed (optional)
+
 ```bash
 npx prisma generate
 npx prisma migrate dev
 npx prisma db seed
 ```
 
-4) Run dev server
+1) Run dev server
+
 ```bash
 npm run dev
 ```
 
 ### Routes implemented
+
 - `/` (home)
 - `/clanky` + `/clanky/[slug]`
 - `/vysledky` (filter via `?season=CODE`)
@@ -59,15 +65,18 @@ npm run dev
 - `/galerie`
 
 ### Admin (interní)
+
 Admin je na `/admin` a je chráněný HTTP Basic Auth přes `middleware.ts`.
 
 V `.env` / Render nastav:
+
 - `ADMIN_USER`
 - `ADMIN_PASSWORD`
 
 Pokud nejsou proměnné nastavené, `/admin` se v dev režimu neblokuje.
 
 ### Lint / Typecheck / Build
+
 ```bash
 npm run lint
 npm run check
