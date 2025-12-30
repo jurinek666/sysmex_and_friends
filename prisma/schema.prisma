@@ -1,11 +1,12 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // <-- PŘIDAT TENTO ŘÁDEK
 }
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"] // Pro jistotu u verze 5.x
+  previewFeatures = ["driverAdapters"]
 }
 
 // --- 1. AKTUALITY ---
