@@ -11,28 +11,22 @@ if (!connectionString) {
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
-// Jednoduchý CSV parser bez externích závislostí - s podporou quoted fields
+// Jednoduchý CSV parser (zachováváme pro případný import)
 function parseCSV(csvData: string) {
   const lines = csvData.trim().split("\n");
   if (lines.length === 0) return [];
-
   const headers = parseCSVLine(lines[0]);
   const records = [];
-
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i];
     if (!line.trim()) continue;
-
     const values = parseCSVLine(line);
     const record: Record<string, string> = {};
-
     headers.forEach((header, index) => {
       record[header] = values[index] || "";
     });
-
     records.push(record);
   }
-
   return records;
 }
 
@@ -40,11 +34,9 @@ function parseCSVLine(line: string): string[] {
   const result: string[] = [];
   let current = "";
   let insideQuotes = false;
-
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
     const nextChar = line[i + 1];
-
     if (char === '"') {
       if (insideQuotes && nextChar === '"') {
         current += '"';
@@ -59,7 +51,6 @@ function parseCSVLine(line: string): string[] {
       current += char;
     }
   }
-
   result.push(current.trim());
   return result;
 }
@@ -76,10 +67,14 @@ function safeParseSpecialties(raw: string | undefined): string[] {
 }
 
 async function main() {
-  console.log("Start seeding...");
+  console.log("🌱 Start seeding...");
 
   // --- SEZÓNY ---
   const seasons = [
+    { code: "2023", name: "Sezóna 2023", startDate: new Date("2023-01-01"), endDate: new Date("2023-12-31") },
+    { code: "2024", name: "Sezóna 2024", startDate: new Date("2024-01-01"), endDate: new Date("2024-12-31") },
+    { code: "2025", name: "Sezóna 2025", startDate: new Date("2025-01-01"), endDate: new Date("2025-12-31") },
+    { code: "2026", name: "Sezóna 2026", startDate: new Date("2026-01-01"), endDate: new Date("2026-12-31") },
     { code: "2023", name: "Sezóna 2023", startDate: new Date("2023-01-01"), endDate: new Date("2023-12-31") },
     { code: "2024", name: "Sezóna 2024", startDate: new Date("2024-01-01"), endDate: new Date("2024-12-31") },
     { code: "2025", name: "Sezóna 2025", startDate: new Date("2025-01-01"), endDate: new Date("2025-12-31") },
@@ -138,7 +133,7 @@ async function main() {
     console.log("members_import.csv nenalezen – seed vytvořil pouze sezóny.");
   }
 
-  console.log("Seeding finished.");
+  console.log("✅ Seeding finished.");
 }
 
 main()
