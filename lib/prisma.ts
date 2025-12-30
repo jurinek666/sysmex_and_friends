@@ -6,10 +6,8 @@ import pg from "pg";
 const { Pool } = pg;
 
 declare global {
-   
-  var prisma: PrismaClient | undefined;
-   
-  var prismaPool: pg.Pool | undefined;
+  let prisma: PrismaClient | undefined;
+  let prismaPool: pg.Pool | undefined;
 }
 
 function ensureParam(url: string, key: string, value: string) {
@@ -54,12 +52,3 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export default prisma;
-
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
