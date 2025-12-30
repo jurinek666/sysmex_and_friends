@@ -5,13 +5,18 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
-        pathname: '/**',
+        port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com', // Pro jistotu, kdybychom použili placeholder
       },
     ],
   },
+  // Povolení server actions (ve verzi 15+ už je default, ale pro jistotu)
   experimental: {
     serverActions: {
-      bodySizeLimit: '5mb', // Navýšil jsem raději na 5MB pro rezervu
+      bodySizeLimit: '10mb', // Zvětšíme limit pro upload fotek
     },
   },
 };
