@@ -6,7 +6,6 @@ import { z } from "zod";
  * Ostatní je optional, aby šel projekt spustit i v dev režimu bez Cloudinary.
  */
 const envSchema = z.object({
-  DATABASE_URL: z.string().min(1),
 
   // Cloudinary (volitelné – použiješ až při napojení galerie / uploadů)
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().min(1).optional(),

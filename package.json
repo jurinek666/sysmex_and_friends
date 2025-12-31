@@ -6,17 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "postinstall": "prisma generate",
     "lint": "eslint .",
-    "check": "npm run lint && tsc --noEmit && npm run build",
-    "migrate:dev": "prisma migrate dev",
-    "migrate:deploy": "prisma migrate deploy",
-    "db:push": "prisma db push",
-    "db:seed": "prisma db seed"
+    "check": "npm run lint && tsc --noEmit && npm run build"
   },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"commonjs\"} prisma/seed.ts"
-  },
+
   "dependencies": {
     "@supabase/ssr": "0.8.0",
     "@supabase/supabase-js": "2.89.0",
@@ -40,7 +33,6 @@
   "devDependencies": {
     "@tailwindcss/typography": "0.5.19",
     "@types/node": "20.17.10",
-    "@types/pg": "8.16.0",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
     "dotenv": "16.4.5",
