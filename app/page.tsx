@@ -28,10 +28,23 @@ export default async function Home() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(180px,auto)]">
 
         {/* 1. HERO BLOCK */}
-        <div className="col-span-1 md:col-span-2 row-span-2 bento-card p-8 md:p-12 flex flex-col justify-center relative group">
-           <div className="absolute top-0 right-0 w-64 h-64 bg-neon-cyan/10 blur-[100px] rounded-full group-hover:bg-neon-cyan/20 transition-all duration-700"></div>
+        <div className="col-span-1 md:col-span-2 row-span-2 bento-card p-8 md:p-12 flex flex-col justify-center relative group overflow-hidden">
+           {/* Background Image */}
+           <Image
+             src="https://res.cloudinary.com/gear-gaming/image/upload/v1767024968/ChatGPT_Image_29._12._2025_17_15_51_xxs857.png"
+             alt="Tým Sysmex"
+             fill
+             className="object-cover opacity-50"
+             priority
+           />
            
-           <div className="relative z-10 space-y-6">
+           {/* Gradient blur overlay */}
+           <div className="absolute top-0 right-0 w-64 h-64 bg-neon-cyan/10 blur-[100px] rounded-full group-hover:bg-neon-cyan/20 transition-all duration-700 z-[5]"></div>
+           
+           {/* Overlay shape pod text */}
+           <div className="absolute inset-0 bg-sysmex-950 opacity-[0.55] z-10"></div>
+           
+           <div className="relative z-20 space-y-6">
              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neon-cyan/30 bg-neon-cyan/10 text-neon-cyan text-xs font-bold uppercase tracking-wider w-fit">
                <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-cyan opacity-75"></span>
@@ -47,7 +60,7 @@ export default async function Home() {
                </span>
              </h1>
              
-             <p className="text-lg text-gray-400 max-w-md">
+             <p className="text-lg text-white font-bold max-w-md">
                Oficiální centrála našeho kvízového týmu. Statistiky, články a síně slávy na jednom místě.
              </p>
 
@@ -55,7 +68,7 @@ export default async function Home() {
                <Link href="/posts" className="px-6 py-3 rounded-xl bg-white text-black font-bold hover:scale-105 transition-transform">
                  Číst novinky
                </Link>
-               <Link href="/team" className="px-6 py-3 rounded-xl border border-white/20 hover:bg-white/5 font-semibold transition-colors">
+               <Link href="/team" className="px-6 py-3 rounded-xl bg-white/20 border-2 border-white/40 hover:bg-white/30 hover:border-white/60 font-bold text-white backdrop-blur-sm transition-all">
                  Poznat tým
                </Link>
              </div>
