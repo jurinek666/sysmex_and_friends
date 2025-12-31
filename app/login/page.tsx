@@ -1,4 +1,5 @@
 import { login } from "./actions";
+import { PendingButton } from "@/components/ui/PendingButton";
 
 export default function LoginPage() {
   return (
@@ -37,12 +38,12 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <button
+          <PendingButton
             formAction={login}
             className="w-full py-3 px-4 border border-transparent rounded-xl text-white bg-blue-600 hover:bg-blue-700 font-medium transition-colors"
           >
             Přihlásit se
-          </button>
+          </PendingButton>
         </form>
       </div>
     </div>
