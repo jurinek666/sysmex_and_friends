@@ -72,11 +72,29 @@ export default async function Home() {
                 <p className="text-sm text-gray-400 line-clamp-2">{activePlaylist.description}</p>
               )}
               
-              <div className="mt-4 w-full">
-                <div 
-                  dangerouslySetInnerHTML={{ __html: activePlaylist.spotifyUrl }}
-                  className="w-full"
-                />
+              <div className="mt-4 w-full overflow-hidden rounded-lg">
+                {activePlaylist.spotifyUrl ? (
+                  <div className="w-full">
+                    {activePlaylist.spotifyUrl.includes('<iframe') ? (
+                      <div 
+                        dangerouslySetInnerHTML={{ __html: activePlaylist.spotifyUrl }}
+                        className="w-full [&>iframe]:w-full [&>iframe]:h-[352px] [&>iframe]:rounded-lg [&>iframe]:border-0 [&>iframe]:min-h-[352px]"
+                      />
+                    ) : (
+                      <iframe
+                        src={activePlaylist.spotifyUrl}
+                        width="100%"
+                        height="352"
+                        frameBorder="0"
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy"
+                        className="w-full h-[352px] rounded-lg border-0"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-gray-500 text-sm italic p-4 text-center">Playlist není k dispozici</div>
+                )}
               </div>
             </div>
           </div>
