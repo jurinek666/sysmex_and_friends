@@ -4,13 +4,15 @@ import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { getFeaturedPost } from "@/lib/queries/posts";
 import { getLatestResults } from "@/lib/queries/results";
+import { getActivePlaylist } from "@/lib/queries/playlists";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  const [featuredPost, latestResults] = await Promise.all([
+  const [featuredPost, latestResults, activePlaylist] = await Promise.all([
     getFeaturedPost(),
     getLatestResults(3),
+    getActivePlaylist(),
   ]);
 
   const latestResult = latestResults[0]; 
@@ -56,7 +58,31 @@ export default async function Home() {
            </div>
         </div>
 
-        {/* 2. STAT CARD */}
+        {/* 2. PLAYLIST CARD */}
+        {activePlaylist && (
+          <div className="bento-card p-6 flex flex-col group hover:border-neon-cyan/50">
+            <div className="flex justify-between items-start mb-4">
+              <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">Playlist</div>
+              <div className="text-2xl">🎵</div>
+            </div>
+            
+            <div className="space-y-3 flex-1">
+              <h3 className="text-xl font-bold text-white">{activePlaylist.title}</h3>
+              {activePlaylist.description && (
+                <p className="text-sm text-gray-400 line-clamp-2">{activePlaylist.description}</p>
+              )}
+              
+              <div className="mt-4 w-full">
+                <div 
+                  dangerouslySetInnerHTML={{ __html: activePlaylist.spotifyUrl }}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 3. STAT CARD */}
         <div className="bento-card p-6 flex flex-col justify-between group hover:border-neon-gold/50">
            <div className="flex justify-between items-start">
              <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">Poslední hra</div>
@@ -77,7 +103,7 @@ export default async function Home() {
            )}
         </div>
 
-        {/* 3. VISUAL CARD */}
+        {/* 4. VISUAL CARD */}
         <div className="col-span-1 row-span-2 bento-card relative group min-h-[300px]">
            <Image
              src="https://res.cloudinary.com/gear-gaming/image/upload/v1767024968/ChatGPT_Image_29._12._2025_17_15_51_xxs857.png"
@@ -95,7 +121,7 @@ export default async function Home() {
            </div>
         </div>
 
-        {/* 4. FEATURED POST */}
+        {/* 5. FEATURED POST */}
         <div className="col-span-1 md:col-span-2 bento-card p-8 flex flex-col md:flex-row gap-8 items-center group hover:border-neon-magenta/50">
           {featuredPost ? (
             <>
