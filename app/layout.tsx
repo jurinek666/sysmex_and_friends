@@ -5,6 +5,7 @@ import "./globals.css";
 // ✅ Navbar i Footer musí být v kadeřavých závorkách
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
           {children}
         </div>
         <Footer />
+        <ScrollToTop />
       </body>
     </html>
   );

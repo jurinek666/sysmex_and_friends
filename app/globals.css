@@ -20,6 +20,36 @@
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Custom animations for navbar buttons */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(70, 214, 255, 0.5), 0 0 20px rgba(70, 214, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(70, 214, 255, 0.8), 0 0 40px rgba(70, 214, 255, 0.5);
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* Base styles */
 :root {
   --background: #020617;
