@@ -1,29 +1,25 @@
 import Link from "next/link";
 
+// ✅ Používáme pojmenovaný export (Named Export)
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="relative mt-32 bg-sysmex-950 pb-12 pt-16 overflow-hidden">
-      
-      {/* 1. Dekorativní "Laser" linka nahoře */}
+      {/* Laser line dekorace */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon-cyan/50 to-transparent shadow-[0_0_15px_rgba(70,214,255,0.5)]"></div>
       
       <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
-        
-        {/* 2. Brand sekce */}
         <div className="mb-10">
             <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter mb-4">
               SYSMEX <span className="text-neon-cyan">&</span> FRIENDS
             </h2>
             <p className="text-sysmex-100/50 max-w-lg mx-auto text-sm leading-relaxed">
               Databáze našich úspěchů, pádů a vypitých piv. 
-              Oficiální stránky kvízového týmu, který ví všechno, 
-              kromě toho, co je zrovna v otázce.
+              Oficiální stránky kvízového týmu, který ví všechno.
             </p>
         </div>
 
-        {/* 3. Navigace */}
         <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-12">
           <FooterLink href="/tym">Náš tým</FooterLink>
           <FooterLink href="/vysledky">Výsledky</FooterLink>
@@ -31,24 +27,17 @@ export function Footer() {
           <FooterLink href="/galerie">Galerie</FooterLink>
         </nav>
 
-        {/* 4. Spodní lišta (Copyright) */}
         <div className="w-full max-w-2xl border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-600">
-          <p>
-            &copy; {currentYear} Sysmex & Friends. Všechna práva (a levá taky) vyhrazena.
-          </p>
+          <p>&copy; {currentYear} Sysmex & Friends. Všechna práva vyhrazena.</p>
           <p className="flex items-center gap-1">
             Built with <span className="text-red-500">♥</span> & Next.js
           </p>
         </div>
       </div>
-
-      {/* Ambientní záře na pozadí dole (velmi jemná) */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-sysmex-900/20 blur-[100px] rounded-full pointer-events-none"></div>
     </footer>
   );
 }
 
-// Pomocná komponenta pro odkazy v patičce
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link 
