@@ -5,8 +5,21 @@ import { getAlbums } from "@/lib/queries/albums";
 
 export const revalidate = 300;
 
+// Definujeme typ pro Album, abychom předešli chybám při buildu
+interface Album {
+  id: string;
+  title: string;
+  dateTaken: string; // Supabase vrací datum jako string
+  cloudinaryFolder: string;
+  _count: {
+    photos: number;
+  };
+}
+
 export default async function GaleriePage() {
-  const albums = await getAlbums();
+  // Načteme data a přetypujeme je, aby TypeScript věděl, co má v 'a' čekat
+  const rawAlbums = await getAlbums();
+  const albums = (rawAlbums || []) as Album[];
 
   return (
     <main className="min-h-screen bg-white px-6 py-14">
@@ -34,6 +47,7 @@ export default async function GaleriePage() {
               >
                 <div className="text-lg font-bold text-gray-900">{a.title}</div>
                 <div className="mt-1 text-sm text-gray-500">
+                  {/* Převedeme ISO string na Date objekt pro formátování */}
                   {format(new Date(a.dateTaken), "d. MMMM yyyy", { locale: cs })}
                 </div>
                 <div className="mt-3 text-sm text-gray-700">

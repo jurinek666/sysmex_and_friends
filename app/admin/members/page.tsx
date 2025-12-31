@@ -1,12 +1,32 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 import { adminCreateMember, adminDeleteMember } from "../_actions";
 import { ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
+// Definujeme typ pro člena, aby TypeScript nekřičel
+interface Member {
+  id: string;
+  displayName: string;
+  nickname: string | null;
+  role: string | null;
+  gender: string;
+  bio: string | null;
+  isActive: boolean;
+}
+
 export default async function AdminMembersPage() {
-  const members = await prisma.member.findMany({ orderBy: { createdAt: "desc" } });
+  const supabase = await createClient();
+
+  // Nahrazeno prisma.member.findMany(...)
+  const { data: members } = await supabase
+    .from("Member")
+    .select("*")
+    .order("createdAt", { ascending: false });
+
+  // Převedeme na náš typ a zajistíme, že to není null
+  const safeMembers = (members || []) as Member[];
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-24">
@@ -60,7 +80,7 @@ export default async function AdminMembersPage() {
       </section>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {members.map((m) => (
+        {safeMembers.map((m) => (
           <div key={m.id} className="border p-4 rounded-xl bg-white flex justify-between items-start shadow-sm">
             <div>
               <div className="font-bold text-lg">{m.displayName}</div>
@@ -73,7 +93,7 @@ export default async function AdminMembersPage() {
             </form>
           </div>
         ))}
-        {members.length === 0 && <div className="col-span-2 text-center text-gray-400 py-8">Zatím žádní členové.</div>}
+        {safeMembers.length === 0 && <div className="col-span-2 text-center text-gray-400 py-8">Zatím žádní členové.</div>}
       </div>
     </div>
   );

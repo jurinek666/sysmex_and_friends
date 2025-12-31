@@ -1,12 +1,34 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 import { adminCreatePost, adminDeletePost } from "../_actions";
 import { ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
+// Definujeme typ pro článek podle databáze
+interface Post {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  coverImageUrl: string | null;
+  isFeatured: boolean;
+  publishedAt: string;
+  createdAt: string;
+}
+
 export default async function AdminPostsPage() {
-  const posts = await prisma.post.findMany({ orderBy: { createdAt: "desc" } });
+  const supabase = await createClient();
+  
+  // Nahrazeno prisma.post.findMany(...)
+  const { data: posts } = await supabase
+    .from("Post")
+    .select("*")
+    .order("createdAt", { ascending: false });
+
+  // Převedeme na náš typ a zajistíme, že to není null
+  const safePosts = (posts || []) as Post[];
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-24">
@@ -55,7 +77,7 @@ export default async function AdminPostsPage() {
       </section>
 
       <div className="space-y-4">
-        {posts.map((post) => (
+        {safePosts.map((post) => (
           <div key={post.id} className="border p-5 rounded-2xl bg-white flex justify-between items-center shadow-sm hover:shadow-md transition-shadow">
             <div>
               <div className="font-bold text-lg mb-1">{post.title}</div>
@@ -68,7 +90,7 @@ export default async function AdminPostsPage() {
             </form>
           </div>
         ))}
-        {posts.length === 0 && <div className="text-center text-gray-400 py-12">Zatím žádné články.</div>}
+        {safePosts.length === 0 && <div className="text-center text-gray-400 py-12">Zatím žádné články.</div>}
       </div>
     </div>
   );

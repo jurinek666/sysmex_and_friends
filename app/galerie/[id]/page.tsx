@@ -11,17 +11,40 @@ export const revalidate = 300;
 const CLOUD_NAME = "gear-gaming";
 
 // Pomocná funkce pro generování URL z Cloudinary
-// Přidáváme transformace: f_auto (automatický formát), q_auto (automatická kvalita), w_800 (šířka max 800px pro rychlost)
 function getCloudinaryUrl(publicId: string) {
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_800/${publicId}`;
 }
 
-export default async function AlbumDetailPage({ params }: { params: { id: string } }) {
-  // Await params pro Next.js 15+
-  const { id } = await params;
-  const album = await getAlbum(id);
+// 1. Definujeme typy pro data z databáze
+interface Photo {
+  id: string;
+  cloudinaryPublicId: string;
+  caption: string | null;
+}
 
-  if (!album) return notFound();
+interface Album {
+  id: string;
+  title: string;
+  dateTaken: string; // Supabase vrací datum jako string
+  photos: Photo[];
+}
+
+// Next.js 15+ očekává, že params je Promise
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function AlbumDetailPage(props: PageProps) {
+  // Await params
+  const { id } = await props.params;
+  
+  // Načteme data (zatím jako 'any')
+  const rawAlbum = await getAlbum(id);
+
+  if (!rawAlbum) return notFound();
+
+  // 2. Přetypujeme data na náš interface
+  const album = rawAlbum as Album;
 
   return (
     <main className="min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
@@ -66,7 +89,7 @@ export default async function AlbumDetailPage({ params }: { params: { id: string
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
               
-              {/* Overlay s popiskem (pokud existuje) */}
+              {/* Overlay s popiskem */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                 {photo.caption && (
                   <p className="text-white text-sm font-medium line-clamp-2">

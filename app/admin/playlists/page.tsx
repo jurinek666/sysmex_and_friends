@@ -1,12 +1,21 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server"; // Změna importu
 import { adminCreatePlaylist, adminDeletePlaylist } from "../_actions";
 import { ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPlaylistsPage() {
-  const playlists = await prisma.playlist.findMany({ orderBy: { createdAt: "desc" } });
+  const supabase = await createClient();
+  
+  // Nahrazeno prisma.playlist.findMany(...)
+  const { data: playlists } = await supabase
+    .from("Playlist")
+    .select("*")
+    .order("createdAt", { ascending: false });
+
+  // Fallback, kdyby data byla null (např. chyba sítě)
+  const safePlaylists = playlists || [];
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-24">
@@ -53,7 +62,7 @@ export default async function AdminPlaylistsPage() {
       </section>
 
       <div className="space-y-4">
-        {playlists.map((p) => (
+        {safePlaylists.map((p) => (
           <div key={p.id} className={`border p-5 rounded-2xl bg-white flex justify-between items-center shadow-sm ${p.isActive ? 'border-green-500 ring-1 ring-green-500' : ''}`}>
             <div>
               <div className="font-bold text-lg flex items-center gap-2">
@@ -68,7 +77,7 @@ export default async function AdminPlaylistsPage() {
             </form>
           </div>
         ))}
-        {playlists.length === 0 && <div className="text-center text-gray-400 py-12">Zatím žádné playlisty.</div>}
+        {safePlaylists.length === 0 && <div className="text-center text-gray-400 py-12">Zatím žádné playlisty.</div>}
       </div>
     </div>
   );

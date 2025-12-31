@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
   try {
-    await prisma.$queryRaw`SELECT 1`;
-    return NextResponse.json({ ok: true, db: "up" }, { status: 200 });
-  } catch {
+    const supabase = await createClient();
+    
+    // Zkusíme jednoduchý dotaz, třeba počet záznamů v tabulce Season (nebo jen check spojení)
+    const { error } = await supabase.from("Season").select("count", { count: "exact", head: true });
+
+    if (error) throw error;
+
+    return NextResponse.json({ ok: true, db: "up (supabase)" }, { status: 200 });
+  } catch (e) {
     return NextResponse.json(
       { ok: false, db: "down", error: "DB unreachable" },
       { status: 503 }
