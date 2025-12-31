@@ -5,14 +5,18 @@ import { cs } from "date-fns/locale";
 import { getFeaturedPost } from "@/lib/queries/posts";
 import { getLatestResults } from "@/lib/queries/results";
 import { getActivePlaylist } from "@/lib/queries/playlists";
+import { getActiveMembers } from "@/lib/queries/members";
+import { getAlbums } from "@/lib/queries/albums";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  const [featuredPost, latestResults, activePlaylist] = await Promise.all([
+  const [featuredPost, latestResults, activePlaylist, members, albums] = await Promise.all([
     getFeaturedPost(),
     getLatestResults(3),
     getActivePlaylist(),
+    getActiveMembers(),
+    getAlbums(),
   ]);
 
   const latestResult = latestResults[0]; 
@@ -121,26 +125,8 @@ export default async function Home() {
            )}
         </div>
 
-        {/* 4. VISUAL CARD */}
-        <div className="col-span-1 row-span-2 bento-card relative group min-h-[300px]">
-           <Image
-             src="https://res.cloudinary.com/gear-gaming/image/upload/v1767024968/ChatGPT_Image_29._12._2025_17_15_51_xxs857.png"
-             alt="Tým Sysmex"
-             fill
-             className="object-cover transition-transform duration-700 group-hover:scale-110"
-           />
-           <div className="absolute inset-0 bg-gradient-to-t from-sysmex-950 via-transparent to-transparent opacity-80"></div>
-           
-           <div className="absolute bottom-0 left-0 p-6">
-             <h3 className="text-white font-bold text-xl">Náš Tým</h3>
-             <p className="text-gray-300 text-sm mt-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 duration-300">
-               Společně bojujeme o každou správnou odpověď.
-             </p>
-           </div>
-        </div>
-
-        {/* 5. FEATURED POST */}
-        <div className="col-span-1 md:col-span-2 bento-card p-8 flex flex-col md:flex-row gap-8 items-center group hover:border-neon-magenta/50">
+        {/* 4. FEATURED POST */}
+        <div className="col-span-3 bento-card p-8 flex flex-col md:flex-row gap-8 items-center group hover:border-neon-magenta/50">
           {featuredPost ? (
             <>
               <div className="flex-1 space-y-4">
@@ -164,6 +150,98 @@ export default async function Home() {
             </>
           ) : (
              <div className="text-gray-500">Zatím žádný zvýrazněný článek.</div>
+          )}
+        </div>
+
+        {/* 5. TEAM LIST CARD */}
+        <div className="col-span-3 bento-card p-8 group hover:border-neon-magenta/50">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Náš Tým</h2>
+              <p className="text-gray-400 text-sm">Mozky operace. Každý ví něco, nikdo neví všechno.</p>
+            </div>
+            <Link 
+              href="/team" 
+              className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/5 font-semibold text-sm transition-colors"
+            >
+              Zobrazit všechny →
+            </Link>
+          </div>
+          
+          {members.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {members.slice(0, 10).map((member) => (
+                <div 
+                  key={member.id} 
+                  className="flex flex-col items-center text-center p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group/item"
+                >
+                  <div className="relative w-16 h-16 mb-3">
+                    <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan to-neon-magenta rounded-full blur opacity-20 group-hover/item:opacity-40 transition-opacity"></div>
+                    <div className="relative w-full h-full rounded-full bg-sysmex-800 border-2 border-white/10 flex items-center justify-center overflow-hidden">
+                      <span className="text-lg font-black text-white/90">
+                        {member.displayName.slice(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                    {member.role && (
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-sysmex-950 border border-neon-magenta/50 rounded-full text-[8px] font-bold uppercase text-neon-magenta">
+                        {member.role}
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-sm font-bold text-white mb-1 line-clamp-1">
+                    {member.displayName}
+                  </h3>
+                  {member.nickname && (
+                    <p className="text-xs text-neon-cyan font-mono line-clamp-1">
+                      &quot;{member.nickname}&quot;
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 py-8">Zatím tu nikdo není. Tým je asi na baru.</div>
+          )}
+        </div>
+
+        {/* 6. GALLERY CARD */}
+        <div className="col-span-3 bento-card p-8 group hover:border-neon-cyan/50">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Galerie</h2>
+              <p className="text-gray-400 text-sm">Alba a fotky z akcí.</p>
+            </div>
+            <Link 
+              href="/galerie" 
+              className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/5 font-semibold text-sm transition-colors"
+            >
+              Zobrazit všechny →
+            </Link>
+          </div>
+          
+          {albums && albums.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {albums.slice(0, 4).map((album: any) => (
+                <Link
+                  key={album.id}
+                  href={`/galerie/${album.id}`}
+                  className="group/item rounded-lg bg-white/5 hover:bg-white/10 p-4 transition-all border border-white/5 hover:border-neon-cyan/30"
+                >
+                  <div className="aspect-square rounded-lg bg-gradient-to-br from-sysmex-800 to-sysmex-900 mb-3 flex items-center justify-center border border-white/5 group-hover/item:border-neon-cyan/30 transition-colors">
+                    <span className="text-4xl">📷</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-1 line-clamp-1">
+                    {album.title}
+                  </h3>
+                  <div className="flex items-center justify-between text-xs text-gray-400">
+                    <span>{format(new Date(album.dateTaken), "d. M. yyyy", { locale: cs })}</span>
+                    <span className="font-semibold">{album._count?.photos || 0} fotek</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 py-8">Zatím nejsou žádná alba.</div>
           )}
         </div>
 
