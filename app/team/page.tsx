@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { getActiveMembers } from "@/lib/queries/members"; // Předpokládám, že tuto query máme nebo ji upravíme
+import { getActiveMembers } from "@/lib/queries/members"; 
 
 export const revalidate = 60;
 
-export default async function TymPage() {
+export default async function TeamPage() {
   const members = await getActiveMembers();
 
   return (
@@ -43,7 +43,6 @@ export default async function TymPage() {
               <div className="relative w-32 h-32 mb-6">
                 <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan to-neon-magenta rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
                 <div className="relative w-full h-full rounded-full bg-sysmex-800 border-2 border-white/10 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-300">
-                   {/* Zde by byl Image tag, kdybychom měli URL fotky. Pro teď iniciály. */}
                    <span className="text-3xl font-black text-white/90">
                      {member.displayName.slice(0, 2).toUpperCase()}
                    </span>
@@ -71,17 +70,10 @@ export default async function TymPage() {
               <p className="text-gray-400 text-sm leading-relaxed mt-2 line-clamp-3">
                 {member.bio || "Tajemný člen týmu bez biografie."}
               </p>
-
-              {/* Specializace (Staty) - volitelné, pokud bychom to měli v DB */}
-              {/* <div className="mt-6 w-full flex justify-center gap-2">
-                 <span className="w-2 h-2 rounded-full bg-neon-cyan" title="Věda"></span>
-                 <span className="w-2 h-2 rounded-full bg-neon-gold" title="Historie"></span>
-                 <span className="w-2 h-2 rounded-full bg-neon-magenta" title="Hudba"></span>
-              </div> */}
             </div>
           ))
         )}
       </div>
     </main>
   );
-}
+} 

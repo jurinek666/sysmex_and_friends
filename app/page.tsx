@@ -13,18 +13,16 @@ export default async function Home() {
     getLatestResults(3),
   ]);
 
-  const latestResult = latestResults[0]; // Vezmeme jen nejnovější výsledek pro dashboard
+  const latestResult = latestResults[0]; 
 
   return (
     <main className="min-h-screen pt-24 md:pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
       
       {/* BENTO GRID LAYOUT */}
-      {/* Grid: Mobile 1 sloupce, Tablet 2, Desktop 3 nebo 4 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(180px,auto)]">
 
-        {/* 1. HERO BLOCK (Velký text) - Span 2 sloupce */}
+        {/* 1. HERO BLOCK */}
         <div className="col-span-1 md:col-span-2 row-span-2 bento-card p-8 md:p-12 flex flex-col justify-center relative group">
-           {/* Ambientní záře na pozadí */}
            <div className="absolute top-0 right-0 w-64 h-64 bg-neon-cyan/10 blur-[100px] rounded-full group-hover:bg-neon-cyan/20 transition-all duration-700"></div>
            
            <div className="relative z-10 space-y-6">
@@ -48,17 +46,17 @@ export default async function Home() {
              </p>
 
              <div className="flex flex-wrap gap-4 pt-4">
-               <Link href="/clanky" className="px-6 py-3 rounded-xl bg-white text-black font-bold hover:scale-105 transition-transform">
+               <Link href="/posts" className="px-6 py-3 rounded-xl bg-white text-black font-bold hover:scale-105 transition-transform">
                  Číst novinky
                </Link>
-               <Link href="/tym" className="px-6 py-3 rounded-xl border border-white/20 hover:bg-white/5 font-semibold transition-colors">
+               <Link href="/team" className="px-6 py-3 rounded-xl border border-white/20 hover:bg-white/5 font-semibold transition-colors">
                  Poznat tým
                </Link>
              </div>
            </div>
         </div>
 
-        {/* 2. STAT CARD (Poslední výsledek) - Span 1 */}
+        {/* 2. STAT CARD */}
         <div className="bento-card p-6 flex flex-col justify-between group hover:border-neon-gold/50">
            <div className="flex justify-between items-start">
              <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">Poslední hra</div>
@@ -79,7 +77,7 @@ export default async function Home() {
            )}
         </div>
 
-        {/* 3. VISUAL CARD (Banner týmu) - Span 1, ale vysoká */}
+        {/* 3. VISUAL CARD */}
         <div className="col-span-1 row-span-2 bento-card relative group min-h-[300px]">
            <Image
              src="https://res.cloudinary.com/gear-gaming/image/upload/v1767024968/ChatGPT_Image_29._12._2025_17_15_51_xxs857.png"
@@ -87,7 +85,6 @@ export default async function Home() {
              fill
              className="object-cover transition-transform duration-700 group-hover:scale-110"
            />
-           {/* Gradient overlay */}
            <div className="absolute inset-0 bg-gradient-to-t from-sysmex-950 via-transparent to-transparent opacity-80"></div>
            
            <div className="absolute bottom-0 left-0 p-6">
@@ -98,7 +95,7 @@ export default async function Home() {
            </div>
         </div>
 
-        {/* 4. FEATURED POST (Novinka) - Span 2 */}
+        {/* 4. FEATURED POST */}
         <div className="col-span-1 md:col-span-2 bento-card p-8 flex flex-col md:flex-row gap-8 items-center group hover:border-neon-magenta/50">
           {featuredPost ? (
             <>
@@ -113,11 +110,10 @@ export default async function Home() {
                  <p className="text-gray-400 line-clamp-2">
                     {featuredPost.excerpt}
                  </p>
-                 <Link href={`/clanky/${featuredPost.slug}`} className="inline-flex items-center gap-2 text-white font-semibold hover:gap-3 transition-all mt-2">
+                 <Link href={`/posts/${featuredPost.slug}`} className="inline-flex items-center gap-2 text-white font-semibold hover:gap-3 transition-all mt-2">
                     Číst dál <span>→</span>
                  </Link>
               </div>
-              {/* Zde by mohl být náhledový obrázek článku, kdybychom ho měli v DB */}
               <div className="w-full md:w-48 h-32 rounded-2xl bg-gradient-to-br from-sysmex-800 to-sysmex-900 flex items-center justify-center border border-white/5">
                  <span className="text-4xl">📝</span>
               </div>

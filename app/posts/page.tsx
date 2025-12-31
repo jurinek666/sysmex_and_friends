@@ -1,75 +1,82 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
-import { adminCreatePost, adminDeletePost } from "../_actions";
-import { ArrowLeft } from "lucide-react";
+import { format } from "date-fns";
+import { cs } from "date-fns/locale";
+import { getRecentPosts } from "@/lib/queries/posts";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
-export default async function AdminPostsPage() {
-  const posts = await prisma.post.findMany({ orderBy: { createdAt: "desc" } });
+export default async function PostsPage() {
+  const posts = await getRecentPosts(50);
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-24">
+    <main className="min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
       
-      <div className="mb-8">
-        <Link 
-          href="/admin" 
-          className="inline-flex items-center text-gray-500 hover:text-blue-600 font-medium transition-colors bg-white px-4 py-2 rounded-full shadow-sm border"
+      {/* HLAVIČKA SEKCE */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-white/5 pb-8">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
+            KRONIKA <span className="text-neon-cyan">TÝMU</span>
+          </h1>
+          <p className="text-gray-400 max-w-xl text-lg">
+            Reporty ze zápasů, analýzy proher a legendární momenty, které se (ne)staly.
+          </p>
+        </div>
+        <Link
+          href="/"
+          className="group flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Zpět na nástěnku
+          <span className="group-hover:-translate-x-1 transition-transform">←</span> Zpět na základnu
         </Link>
       </div>
 
-      <h1 className="text-3xl font-bold mb-8">Admin • Články</h1>
-
-      <section className="bg-white p-6 rounded-2xl border shadow-sm mb-12">
-        <h2 className="text-xl font-bold mb-4">Nový článek</h2>
-        <form action={adminCreatePost} className="space-y-4">
-          <input name="title" placeholder="Nadpis" required className="w-full p-3 border rounded-xl" />
-          <input name="slug" placeholder="slug-url-adresy" required className="w-full p-3 border rounded-xl font-mono text-sm bg-gray-50" />
-          <textarea name="excerpt" placeholder="Krátký úvod (perex)" required rows={3} className="w-full p-3 border rounded-xl" />
-          
-          <div className="bg-blue-50 p-4 rounded-xl text-sm text-blue-800 space-y-1">
-            <p className="font-bold mb-2">💡 Formátování textu (Markdown):</p>
-            <ul className="grid grid-cols-2 gap-2">
-              <li><code># Nadpis 1</code></li>
-              <li><code>## Nadpis 2</code></li>
-              <li><code>**Tučný text**</code></li>
-              <li><code>*Kurzíva*</code></li>
-              <li><code>- Odrážka</code></li>
-              <li><code>[Text](https://...)</code></li>
-            </ul>
+      {/* GRID ČLÁNKŮ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.length === 0 ? (
+          <div className="col-span-full bento-card p-12 text-center border-dashed border-gray-700">
+            <div className="text-4xl mb-4">📭</div>
+            <h3 className="text-xl font-bold text-white">Zatím žádné záznamy</h3>
+            <p className="text-gray-500 mt-2">Náš kronikář asi zaspal. Zkus to později.</p>
           </div>
-          
-          <textarea name="content" placeholder="Hlavní text článku..." required rows={10} className="w-full p-3 border rounded-xl font-mono text-sm" />
-          <input name="coverImageUrl" placeholder="URL úvodního obrázku (volitelné)" className="w-full p-3 border rounded-xl" />
-          
-          <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
-            <input type="checkbox" name="isFeatured" className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" />
-            <span className="font-medium">Hlavní článek (zobrazit velký na úvodu)</span>
-          </label>
+        ) : (
+          posts.map((p) => (
+            <Link
+              key={p.id}
+              href={`/posts/${p.slug}`}
+              className="bento-card group flex flex-col h-full p-6 no-underline"
+            >
+              {/* Datum a Tag */}
+              <div className="flex justify-between items-start mb-4">
+                <span className="text-xs font-mono text-neon-cyan/80 uppercase tracking-wider bg-neon-cyan/10 px-2 py-1 rounded">
+                  {format(new Date(p.publishedAt), "d. MMM yyyy", { locale: cs })}
+                </span>
+                {p.isFeatured && (
+                  <span className="text-xs font-bold text-neon-magenta animate-pulse">
+                    ★ TOP
+                  </span>
+                )}
+              </div>
 
-          <button type="submit" className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 font-medium transition-colors">Publikovat článek</button>
-        </form>
-      </section>
+              {/* Titulek */}
+              <h2 className="text-xl font-bold text-white mb-3 leading-snug group-hover:text-neon-cyan transition-colors">
+                {p.title}
+              </h2>
 
-      <div className="space-y-4">
-        {posts.map((post) => (
-          <div key={post.id} className="border p-5 rounded-2xl bg-white flex justify-between items-center shadow-sm hover:shadow-md transition-shadow">
-            <div>
-              <div className="font-bold text-lg mb-1">{post.title}</div>
-              <div className="text-xs text-gray-500 font-mono bg-gray-100 inline-block px-2 py-1 rounded">/{post.slug}</div>
-              {post.isFeatured && <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold">★ Featured</span>}
-            </div>
-            <form action={adminDeletePost}>
-              <input type="hidden" name="id" value={post.id} />
-              <button className="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors">Smazat</button>
-            </form>
-          </div>
-        ))}
-        {posts.length === 0 && <div className="text-center text-gray-400 py-12">Zatím žádné články.</div>}
+              {/* Perex */}
+              <p className="text-gray-400 text-sm line-clamp-3 mb-6 flex-grow">
+                {p.excerpt}
+              </p>
+
+              {/* Patička karty */}
+              <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between text-sm">
+                <span className="text-gray-500 font-medium">Číst záznam</span>
+                <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-neon-cyan group-hover:text-black transition-all">
+                  →
+                </span>
+              </div>
+            </Link>
+          ))
+        )}
       </div>
-    </div>
+    </main>
   );
 }

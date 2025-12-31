@@ -7,12 +7,12 @@ import { getPostBySlug } from "@/lib/queries/posts";
 
 export const revalidate = 60;
 
-export default async function ClanekDetailPage({
+export default async function PostDetailPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const { slug } = await params; // Next.js 15 requires awaiting params if using generic layout
+  const { slug } = await params;
   const post = await getPostBySlug(slug);
 
   if (!post) return notFound();
@@ -24,7 +24,7 @@ export default async function ClanekDetailPage({
         {/* NAVIGACE ZPĚT */}
         <div className="mb-8">
           <Link 
-            href="/clanky" 
+            href="/posts" 
             className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-neon-cyan transition-colors"
           >
             ← Zpět do archivu
@@ -54,7 +54,6 @@ export default async function ClanekDetailPage({
         </header>
 
         {/* OBSAH (MARKDOWN) */}
-        {/* Používáme prose-invert pro dark mode a vlastní styly pro barvy */}
         <article className="bento-card p-8 md:p-12 bg-sysmex-900/20">
           <div className="prose prose-lg prose-invert max-w-none 
             prose-headings:text-white prose-headings:font-bold 
@@ -70,7 +69,7 @@ export default async function ClanekDetailPage({
         {/* PATIČKA ČLÁNKU */}
         <div className="mt-12 pt-8 border-t border-white/5 flex justify-center">
             <Link 
-                href="/clanky"
+                href="/posts"
                 className="px-8 py-3 rounded-full bg-white/5 text-white font-bold hover:bg-white/10 border border-white/10 transition-all"
             >
                 Zpět na přehled

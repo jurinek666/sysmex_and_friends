@@ -57,14 +57,14 @@ export function Navbar() {
 
         {/* Odkazy */}
         <div className="flex items-center gap-1">
-            <NavLink href="/tym">Tým</NavLink>
-            <NavLink href="/vysledky">Výsledky</NavLink>
-            <NavLink href="/clanky">Články</NavLink>
+            <NavLink href="/team">Tým</NavLink>
+            <NavLink href="/results">Výsledky</NavLink>
+            <NavLink href="/posts">Články</NavLink>
         </div>
 
         {/* CTA Button */}
         <Link 
-            href="/vysledky" 
+            href="/results" 
             className="ml-2 px-6 py-2.5 rounded-full bg-white text-sysmex-950 text-sm font-bold hover:bg-neon-cyan transition-colors shadow-lg shadow-white/5 hidden sm:block"
         >
             Tabulka

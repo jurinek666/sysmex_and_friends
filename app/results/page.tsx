@@ -5,7 +5,7 @@ import { getResultsBySeasonCode, getSeasons } from "@/lib/queries/results";
 
 export const revalidate = 60;
 
-export default async function VysledkyPage() {
+export default async function ResultsPage() {
   const [seasons, allResults] = await Promise.all([
     getSeasons(),
     getResultsBySeasonCode(),
@@ -47,7 +47,6 @@ export default async function VysledkyPage() {
           seasonsData.map((seasonGroup: typeof seasonsData[number]) => (
             <section key={seasonGroup.season.id} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
               
-              {/* Název sezóny */}
               <div className="flex items-center gap-4 mb-6">
                 <h2 className="text-2xl font-bold text-white uppercase tracking-wider">
                   {seasonGroup.season.name}
@@ -55,7 +54,6 @@ export default async function VysledkyPage() {
                 <span className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent"></span>
               </div>
 
-              {/* Tabulka (jako Grid karet pro mobil, Tabulka pro desktop) */}
               <div className="bento-card overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
