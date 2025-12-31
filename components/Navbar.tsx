@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
-import { Menu, X, ArrowUp } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,62 +20,66 @@ export function Navbar() {
 
   const isActive = (path: string) => pathname.startsWith(path);
 
-  const handleTopClick = () => {
-    if (pathname === "/") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      router.push("/");
-    }
-    setIsOpen(false);
-  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-sysmex-950/90 backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-24 md:h-28">
           
           {/* LOGO */}
-          <Link href="/" className="flex items-center gap-3 group" onClick={() => setIsOpen(false)}>
-            <div className="relative w-10 h-10 overflow-hidden rounded-lg border border-white/10 group-hover:border-neon-cyan/50 transition-colors">
+          <Link href="/" className="flex items-center gap-4 group" onClick={() => setIsOpen(false)}>
+            <div className="relative w-20 h-20 overflow-hidden rounded-lg border border-white/10 group-hover:border-neon-cyan/50 transition-colors">
               <Image
-                src="https://res.cloudinary.com/gear-gaming/image/upload/v1767024968/ChatGPT_Image_29._12._2025_17_15_51_xxs857.png"
+                src="https://res.cloudinary.com/gear-gaming/image/upload/v1767027787/SYS_and_friends_logo_dark_dxtorn.png"
                 alt="Logo"
                 fill
                 className="object-cover"
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-white font-bold tracking-tight leading-none group-hover:text-neon-cyan transition-colors">
+              <span className="text-2xl text-white font-black tracking-tight leading-none group-hover:text-neon-cyan transition-colors">
                 SYSMEX
               </span>
-              <span className="text-xs text-gray-400 tracking-wider group-hover:text-white transition-colors">
+              <span className="text-base text-gray-400 tracking-wider group-hover:text-white transition-colors">
                 & FRIENDS
               </span>
             </div>
           </Link>
 
           {/* DESKTOP NAV */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-bold uppercase tracking-wider transition-colors hover:text-neon-cyan ${
-                  isActive(link.href) ? "text-neon-cyan" : "text-gray-300"
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-
-            {/* Tlačítko TOP */}
-            <button
-              onClick={handleTopClick}
-              className="flex items-center gap-2 px-5 py-2 bg-neon-cyan text-sysmex-950 font-black uppercase tracking-wider rounded-lg hover:bg-white hover:scale-105 transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] ml-4"
-            >
-              <span>TOP</span>
-              <ArrowUp className="w-4 h-4" strokeWidth={3} />
-            </button>
+          <div className="hidden md:flex items-center gap-4">
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`
+                    relative px-6 py-3 rounded-xl font-black uppercase tracking-wider text-sm
+                    transition-all duration-500 ease-out overflow-hidden
+                    group/btn
+                    ${
+                      active
+                        ? "text-white bg-gradient-to-r from-neon-cyan/20 via-neon-cyan/30 to-neon-magenta/20 border-2 border-neon-cyan shadow-[0_0_20px_rgba(70,214,255,0.6)] animate-[glow-pulse_2s_ease-in-out_infinite]"
+                        : "text-gray-300 bg-white/5 border-2 border-transparent hover:border-neon-cyan/50 hover:bg-white/10 hover:text-white hover:shadow-[0_0_15px_rgba(70,214,255,0.4)] hover:scale-105"
+                    }
+                    before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-neon-cyan/0 before:via-neon-cyan/30 before:to-neon-magenta/0
+                    before:opacity-0 group-hover/btn:before:opacity-100 before:transition-opacity before:duration-500
+                    after:absolute after:inset-0 after:rounded-xl after:bg-gradient-to-r after:from-transparent after:via-white/20 after:to-transparent
+                    after:translate-x-[-100%] group-hover/btn:after:translate-x-[100%] after:transition-transform after:duration-1000 after:ease-in-out
+                  `}
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    <span className="relative inline-block">
+                      {link.name}
+                      {active && (
+                        <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-neon-cyan animate-pulse"></span>
+                      )}
+                    </span>
+                  </span>
+                </Link>
+              );
+            })}
           </div>
 
           {/* MOBILE MENU TOGGLE */}
@@ -92,26 +96,27 @@ export function Navbar() {
       {isOpen && (
         <div className="md:hidden bg-sysmex-950 border-t border-white/10 absolute w-full left-0 shadow-2xl">
           <div className="flex flex-col p-4 space-y-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-lg font-bold uppercase tracking-wider px-4 py-2 rounded-lg ${
-                  isActive(link.href) ? "text-neon-cyan bg-white/5" : "text-gray-300 hover:bg-white/5"
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
-            
-            <button
-              onClick={handleTopClick}
-              className="flex items-center justify-center gap-2 w-full px-5 py-3 bg-neon-cyan text-sysmex-950 font-black uppercase tracking-wider rounded-lg mt-4"
-            >
-               <span>TOP</span>
-               <ArrowUp className="w-4 h-4" strokeWidth={3} />
-            </button>
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`
+                    relative px-5 py-3 rounded-xl font-black uppercase tracking-wider text-base
+                    transition-all duration-300
+                    ${
+                      active
+                        ? "text-white bg-gradient-to-r from-neon-cyan/20 via-neon-cyan/30 to-neon-magenta/20 border-2 border-neon-cyan shadow-[0_0_20px_rgba(70,214,255,0.6)]"
+                        : "text-gray-300 bg-white/5 border-2 border-transparent hover:border-neon-cyan/50 hover:bg-white/10 hover:text-white hover:shadow-[0_0_15px_rgba(70,214,255,0.4)]"
+                    }
+                  `}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}
