@@ -74,7 +74,7 @@ export function Navbar() {
             </Link>
 
             {/* DESKTOP NAV with 3D hover effects */}
-            <div className="hidden lg:flex items-center gap-2">
+            <div className="hidden lg:flex items-center gap-3">
               {navLinks.map((link, index) => {
                 const active = isActive(link.href);
                 return (
@@ -97,13 +97,13 @@ export function Navbar() {
                         whileTap={{ scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 400, damping: 15 }}
                         className={`
-                          relative px-4 py-2.5 rounded-xl font-bold uppercase tracking-wide text-[10px]
+                          relative px-5 py-3 rounded-xl font-black uppercase tracking-tight text-sm
                           transition-all duration-300 overflow-hidden
                           transform-gpu perspective-1000
                           ${
                             active
-                              ? "text-white bg-gradient-to-br from-neon-cyan/30 via-neon-magenta/20 to-neon-cyan/30 border-2 border-neon-cyan shadow-[0_0_25px_rgba(70,214,255,0.6),inset_0_0_15px_rgba(70,214,255,0.2)]"
-                              : "text-gray-300 bg-white/5 border-2 border-transparent hover:border-neon-cyan/60 hover:text-white hover:shadow-[0_0_20px_rgba(70,214,255,0.4)]"
+                              ? "text-white bg-gradient-to-br from-neon-cyan/40 via-neon-magenta/30 to-neon-cyan/40 border-2 border-neon-cyan shadow-[0_0_30px_rgba(70,214,255,0.8),inset_0_0_20px_rgba(70,214,255,0.3)]"
+                              : "text-gray-300 bg-white/5 border-2 border-transparent hover:border-neon-cyan/70 hover:text-white hover:bg-white/10 hover:shadow-[0_0_25px_rgba(70,214,255,0.6)]"
                           }
                         `}
                         style={{
@@ -111,10 +111,10 @@ export function Navbar() {
                         }}
                       >
                         {/* Animated gradient background on hover */}
-                        <span className="absolute inset-0 bg-gradient-to-r from-neon-cyan/0 via-neon-cyan/40 to-neon-magenta/0 opacity-0 group-hover/link:opacity-100 transition-opacity duration-500 animate-gradient-flow" />
+                        <span className="absolute inset-0 bg-gradient-to-r from-neon-cyan/0 via-neon-cyan/50 to-neon-magenta/20 opacity-0 group-hover/link:opacity-100 transition-opacity duration-500 animate-gradient-flow" />
                         
                         {/* Shimmer effect */}
-                        <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover/link:translate-x-[200%] transition-transform duration-1000 skew-x-12" />
+                        <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent translate-x-[-200%] group-hover/link:translate-x-[200%] transition-transform duration-1000 skew-x-12" />
                         
                         {/* Text with 3D effect */}
                         <span className="relative z-10 block" style={{ transform: "translateZ(20px)" }}>
@@ -164,12 +164,12 @@ export function Navbar() {
                       <Link
                         href={link.href}
                         className={`
-                          block px-4 py-3 rounded-lg font-bold uppercase tracking-wide text-xs
+                          block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm
                           transition-all duration-300
                           ${
                             active
-                              ? "text-white bg-gradient-to-r from-neon-cyan/20 via-neon-cyan/30 to-neon-magenta/20 border-2 border-neon-cyan shadow-[0_0_15px_rgba(70,214,255,0.5)]"
-                              : "text-gray-300 bg-white/5 border-2 border-transparent hover:border-neon-cyan/50 hover:bg-white/10 hover:text-white"
+                              ? "text-white bg-gradient-to-r from-neon-cyan/30 via-neon-cyan/40 to-neon-magenta/30 border-2 border-neon-cyan shadow-[0_0_20px_rgba(70,214,255,0.6)]"
+                              : "text-gray-300 bg-white/5 border-2 border-transparent hover:border-neon-cyan/60 hover:bg-white/10 hover:text-white"
                           }
                         `}
                         onClick={() => setIsOpen(false)}
