@@ -109,15 +109,15 @@ export function Navbar() {
               })}
             </div>
 
-            {/* MOBILE MENU TOGGLE */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              className="lg:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
-              onClick={() => setIsOpen(!isOpen)}
-              aria-label={isOpen ? "Zavřít menu" : "Otevřít menu"}
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </motion.button>
+             {/* MOBILE MENU TOGGLE */}
+             <motion.button
+               whileTap={{ scale: 0.9 }}
+               className="lg:hidden text-gray-900 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+               onClick={() => setIsOpen(!isOpen)}
+               aria-label={isOpen ? "Zavřít menu" : "Otevřít menu"}
+             >
+               {isOpen ? <X size={24} /> : <Menu size={24} />}
+             </motion.button>
           </div>
         </div>
 
