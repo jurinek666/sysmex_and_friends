@@ -1,0 +1,75 @@
+{
+    "name": "Vrácení zboží do SEU",
+    "description": "Agent pomáhá s komunikací ohledně vratek zboží do SEU, vyžádá potřebné informace a generuje e-mail.",
+    "topics": [
+        {
+            "topicName": "Shromáždění informací",
+            "triggerPhrases": [
+                "Chci vrátit zboží do SEU",
+                "Start vratky",
+                "Return PO"
+            ],
+            "questions": [
+                {
+                    "text": "Jaké je číslo původní objednávky (PO)?",
+                    "variable": "PO_NUMBER"
+                },
+                {
+                    "text": "Jaké položky vracíte? Uveďte SN, pokud existují.",
+                    "variable": "ITEM_LIST"
+                },
+                {
+                    "text": "Jaký je důvod vratky? Byla domluvena sleva?",
+                    "variable": "REASON"
+                },
+                {
+                    "text": "Jaké jsou rozměry a váha palety?",
+                    "variable": "DIMENSIONS"
+                },
+                {
+                    "text": "Máte fotografie palety?",
+                    "variable": "PHOTO_INFO"
+                },
+                {
+                    "text": "Je k dispozici číslo Minerva Claim?",
+                    "variable": "CLAIM_NUMBER"
+                }
+            ]
+        },
+        {
+            "topicName": "Kontrola úplnosti",
+            "conditions": [
+                {
+                    "ifMissing": "PO_NUMBER",
+                    "prompt": "Chybí číslo PO, prosím doplňte."
+                },
+                {
+                    "ifMissing": "ITEM_LIST",
+                    "prompt": "Chybí seznam položek, prosím doplňte."
+                },
+                {
+                    "ifMissing": "DIMENSIONS",
+                    "prompt": "Chybí rozměry palety, prosím doplňte."
+                }
+            ]
+        },
+        {
+            "topicName": "Generování e-mailu",
+            "actions": [
+                {
+                    "type": "generateEmail",
+                    "prompt": "Vytvoř profesionální e-mail pro SEU ohledně vratky zboží. Použij následující údaje:\n- Číslo PO: {PO_NUMBER}\n- Položky: {ITEM_LIST}\n- Důvod vratky: {REASON}\n- Rozměry palety: {DIMENSIONS}\n- Váha palety: {WEIGHT}\n- Fotografie: {PHOTO_INFO}\n- Minerva Claim: {CLAIM_NUMBER}\n- Sleva: {DISCOUNT_INFO}\n\nE-mail musí obsahovat:\n- Požadavek na objednání přepravy SEU.\n- Požadavek na zaslání sledovacího čísla.\n- Požadavek na potvrzení doručení emailem.\nFormát:\nPředmět: Return PO {PO_NUMBER}\nText:\nDobrý den,\nzasíláme informace k vratce:\n- PO: {PO_NUMBER}\n- Položky: {ITEM_LIST}\n- Rozměry palety: {DIMENSIONS}, váha: {WEIGHT}\nFotografie palety přiloženy.\nProsíme o objednání přepravy a zaslání sledovacího čísla. Po doručení potvrďte prosím e-mailem.\nDěkujeme."
+                }
+            ]
+        },
+        {
+            "topicName": "Pokyny pro další kroky",
+            "instructions": [
+                "Přidejte SEU dodací list na paletu.",
+                "Vyfoťte paletu a vložte fotky do úkolu.",
+                "SEU objedná přepravu, po doručení vystaví dobropis.",
+                "Zkontrolujte dobropis a schvalte FIN úkol s komentářem."
+            ]
+        }
+    ]
+}
