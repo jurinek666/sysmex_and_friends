@@ -28,50 +28,32 @@ export function Navbar() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="max-w-7xl w-full relative"
+        className="w-[60%] relative"
       >
-        {/* Animated morphing blob background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-neon-cyan/10 via-neon-magenta/10 to-neon-cyan/10 rounded-3xl blur-2xl animate-blob-morph" />
+        {/* Logo positioned absolutely on the left, centered vertically */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
+          <Link href="/" className="flex items-center group" onClick={() => setIsOpen(false)}>
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="relative w-20 h-20 md:w-24 md:h-24 overflow-hidden rounded-full bg-white border-4 border-white/90 group-hover:border-neon-cyan transition-all shadow-[0_0_30px_rgba(70,214,255,0.4)] group-hover:shadow-[0_0_50px_rgba(70,214,255,0.8)]"
+            >
+              <Image
+                src="https://res.cloudinary.com/gear-gaming/image/upload/v1767027578/SYS_and_friends_logo_r6esig.png"
+                alt="SYSMEX & Friends Logo"
+                fill
+                className="object-cover"
+                priority
+              />
+            </motion.div>
+          </Link>
+        </div>
         
-        <div className="relative bg-gradient-to-b from-sysmex-700/80 via-sysmex-900/90 to-sysmex-700/80 backdrop-blur-xl border border-white/10 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          <div className="flex items-center justify-between h-28 md:h-32 px-6 md:px-10">
+        {/* White rectangle starting from center of logo, extending right */}
+        <div className="relative bg-white/90 backdrop-blur-xl border border-gray-200/50 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] ml-[50%]">
+          <div className="flex items-center justify-end h-14 md:h-16 px-6 md:px-10">
             
-            {/* LOGO with Team Name */}
-            <Link href="/" className="flex items-center gap-4 group" onClick={() => setIsOpen(false)}>
-              <motion.div
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="relative w-20 h-20 md:w-24 md:h-24 overflow-hidden rounded-full bg-white border-4 border-white/90 group-hover:border-neon-cyan transition-all shadow-[0_0_30px_rgba(70,214,255,0.4)] group-hover:shadow-[0_0_50px_rgba(70,214,255,0.8)]"
-              >
-                <Image
-                  src="https://res.cloudinary.com/gear-gaming/image/upload/v1767027578/SYS_and_friends_logo_r6esig.png"
-                  alt="SYSMEX & Friends Logo"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </motion.div>
-              
-              <div className="hidden lg:block">
-                <motion.h1
-                  className="text-xl font-black bg-gradient-to-r from-neon-cyan via-white to-neon-magenta bg-clip-text text-transparent"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3, duration: 0.6 }}
-                >
-                  SYSMEX & Friends
-                </motion.h1>
-                <motion.p
-                  className="text-xs text-gray-400 uppercase tracking-widest"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4, duration: 0.6 }}
-                >
-                  Quiz Team
-                </motion.p>
-              </div>
-            </Link>
 
             {/* DESKTOP NAV with 3D hover effects */}
             <div className="hidden lg:flex items-center gap-3">
@@ -139,17 +121,17 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* MOBILE NAV with slide animation */}
-        <motion.div
-          initial={false}
-          animate={{
-            height: isOpen ? "auto" : 0,
-            opacity: isOpen ? 1 : 0,
-          }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="lg:hidden overflow-hidden"
-        >
-          <div className="mt-2 bg-gradient-to-b from-sysmex-700/90 via-sysmex-900/95 to-sysmex-700/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl">
+         {/* MOBILE NAV with slide animation */}
+         <motion.div
+           initial={false}
+           animate={{
+             height: isOpen ? "auto" : 0,
+             opacity: isOpen ? 1 : 0,
+           }}
+           transition={{ duration: 0.3, ease: "easeInOut" }}
+           className="lg:hidden overflow-hidden"
+         >
+           <div className="mt-2 ml-[50%] bg-white/90 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-2xl">
             <div className="px-6 py-4">
               <div className="flex flex-col space-y-2">
                 {navLinks.map((link, index) => {
