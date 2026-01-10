@@ -15,7 +15,7 @@ export function AdminLayout({ title, children }: AdminLayoutProps) {
           className="inline-flex items-center text-gray-500 hover:text-blue-600 font-medium transition-colors bg-white px-4 py-2 rounded-full shadow-sm border"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          ZPĚT
+          Zpět na nástěnku
         </Link>
       </div>
 

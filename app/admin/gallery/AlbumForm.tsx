@@ -21,7 +21,8 @@ interface AlbumFormProps {
 
 export function AlbumForm({ album, onCancel }: AlbumFormProps) {
   const isEdit = !!album;
-  const dateValue = album?.dateTaken ? new Date(album.dateTaken).toISOString().split('T')[0] : '';
+  // Extract date part only, avoiding timezone offset issues
+  const dateValue = album?.dateTaken ? album.dateTaken.split('T')[0] : '';
 
   return (
     <ActionForm

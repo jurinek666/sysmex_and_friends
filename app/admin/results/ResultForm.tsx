@@ -29,7 +29,8 @@ interface ResultFormProps {
 
 export function ResultForm({ seasons, result, onCancel }: ResultFormProps) {
   const isEdit = !!result;
-  const dateValue = result?.date ? new Date(result.date).toISOString().split('T')[0] : '';
+  // Extract date part only, avoiding timezone offset issues
+  const dateValue = result?.date ? result.date.split('T')[0] : '';
 
   return (
     <ActionForm

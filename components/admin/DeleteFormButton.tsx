@@ -22,10 +22,10 @@ export function DeleteFormButton({
     const formData = new FormData();
     formData.append("id", itemId);
     const result = await action(formData);
-    if (result.success) {
-      router.refresh();
-    } else {
+    if (!result.success) {
       alert(result.error || "Chyba při mazání");
+    } else {
+      router.refresh();
     }
   };
 

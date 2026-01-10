@@ -31,7 +31,7 @@ export default async function AdminDashboard() {
           <form action={signOut} className="mt-4 md:mt-0">
             <button className="flex items-center gap-2 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 px-5 py-2.5 rounded-xl font-medium transition-colors border border-red-100">
               <LogOut className="w-4 h-4" />
-              LOGOUT
+              Odhlásit se
             </button>
           </form>
         </header>
