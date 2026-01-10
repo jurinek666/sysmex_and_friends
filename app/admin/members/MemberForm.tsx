@@ -44,21 +44,21 @@ export function MemberForm({ member, onCancel }: MemberFormProps) {
         )}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Jméno (Display Name)</label>
-          <input name="displayName" placeholder="Jan Novák" required defaultValue={member?.displayName} className="w-full p-2 border rounded-xl" />
+          <input name="displayName" placeholder="Jan Novák" required defaultValue={member?.displayName} className="w-full p-2 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Přezdívka (Nickname)</label>
-          <input name="nickname" placeholder="Honza" defaultValue={member?.nickname || undefined} className="w-full p-2 border rounded-xl" />
+          <input name="nickname" placeholder="Honza" defaultValue={member?.nickname || undefined} className="w-full p-2 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" />
         </div>
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-          <input name="role" placeholder="Kapitán / Hudební expert" defaultValue={member?.role || undefined} className="w-full p-2 border rounded-xl" />
+          <input name="role" placeholder="Kapitán / Hudební expert" defaultValue={member?.role || undefined} className="w-full p-2 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Pohlaví</label>
-          <select name="gender" className="w-full p-2 border rounded-xl bg-white" defaultValue={member?.gender || "MALE"}>
+          <select name="gender" className="w-full p-2 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" defaultValue={member?.gender || "MALE"}>
             <option value="MALE">Muž</option>
             <option value="FEMALE">Žena</option>
           </select>
@@ -66,7 +66,7 @@ export function MemberForm({ member, onCancel }: MemberFormProps) {
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">O členovi (Bio)</label>
-          <textarea name="bio" rows={3} defaultValue={member?.bio || undefined} className="w-full p-2 border rounded-xl" />
+          <textarea name="bio" rows={3} defaultValue={member?.bio || undefined} className="w-full p-2 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" />
         </div>
 
         {onCancel && (

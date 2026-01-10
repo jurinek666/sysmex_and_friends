@@ -47,14 +47,14 @@ export function PostForm({ post, onCancel }: PostFormProps) {
           placeholder="Nadpis" 
           required 
           defaultValue={post?.title}
-          className="w-full p-3 border rounded-xl" 
+          className="w-full p-3 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
         />
         <input 
           name="slug" 
           placeholder="slug-url-adresy" 
           required 
           defaultValue={post?.slug}
-          className="w-full p-3 border rounded-xl font-mono text-sm bg-gray-50" 
+          className="w-full p-3 border rounded-xl font-mono text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
         />
         <textarea 
           name="excerpt" 
@@ -62,7 +62,7 @@ export function PostForm({ post, onCancel }: PostFormProps) {
           required 
           rows={3} 
           defaultValue={post?.excerpt}
-          className="w-full p-3 border rounded-xl" 
+          className="w-full p-3 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
         />
         
         <div className="bg-blue-50 p-4 rounded-xl text-sm text-blue-800 space-y-1">
@@ -83,13 +83,13 @@ export function PostForm({ post, onCancel }: PostFormProps) {
           required 
           rows={10} 
           defaultValue={post?.content}
-          className="w-full p-3 border rounded-xl font-mono text-sm" 
+          className="w-full p-3 border rounded-xl font-mono text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
         />
         <input 
           name="coverImageUrl" 
           placeholder="URL úvodního obrázku (volitelné)" 
           defaultValue={post?.coverImageUrl || undefined}
-          className="w-full p-3 border rounded-xl" 
+          className="w-full p-3 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
         />
         
         <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50">

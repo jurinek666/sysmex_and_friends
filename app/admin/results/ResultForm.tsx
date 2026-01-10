@@ -54,7 +54,7 @@ export function ResultForm({ seasons, result, onCancel }: ResultFormProps) {
         )}
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">Sezóna</label>
-          <select name="seasonCode" className="w-full p-2 border rounded-xl bg-white" required defaultValue={result?.season?.code}>
+          <select name="seasonCode" className="w-full p-2 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500" required defaultValue={result?.season?.code}>
             {seasons.map(s => (
               <option key={s.id} value={s.code}>{s.name}</option>
             ))}
@@ -63,32 +63,32 @@ export function ResultForm({ seasons, result, onCancel }: ResultFormProps) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Datum</label>
-          <input name="date" type="date" required defaultValue={dateValue} className="w-full p-2 border rounded-xl" />
+          <input name="date" type="date" required defaultValue={dateValue} className="w-full p-2 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Místo (Venue)</label>
-          <input name="venue" placeholder="U Lípy" required defaultValue={result?.venue} className="w-full p-2 border rounded-xl" />
+          <input name="venue" placeholder="U Lípy" required defaultValue={result?.venue} className="w-full p-2 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Název týmu</label>
-          <input name="teamName" defaultValue={result?.teamName || "Sysmex"} required className="w-full p-2 border rounded-xl" />
+          <input name="teamName" defaultValue={result?.teamName || "Sysmex"} required className="w-full p-2 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Umístění</label>
-            <input name="placement" type="number" min="1" required defaultValue={result?.placement} className="w-full p-2 border rounded-xl" />
+            <input name="placement" type="number" min="1" required defaultValue={result?.placement} className="w-full p-2 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Body</label>
-            <input name="score" type="number" min="0" required defaultValue={result?.score} className="w-full p-2 border rounded-xl" />
+            <input name="score" type="number" min="0" required defaultValue={result?.score} className="w-full p-2 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
           </div>
         </div>
 
         <div className="md:col-span-2">
-          <input name="note" placeholder="Poznámka (volitelné)" defaultValue={result?.note || undefined} className="w-full p-2 border rounded-xl" />
+          <input name="note" placeholder="Poznámka (volitelné)" defaultValue={result?.note || undefined} className="w-full p-2 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
         </div>
 
         {onCancel && (

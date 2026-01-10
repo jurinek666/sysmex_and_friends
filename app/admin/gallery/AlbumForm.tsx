@@ -52,7 +52,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
               placeholder="Např. Vánoční večírek" 
               required 
               defaultValue={album?.title}
-              className="w-full p-3 border rounded-xl" 
+              className="w-full p-3 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
             />
           </div>
           <div>
@@ -62,7 +62,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
               name="dateTaken" 
               required 
               defaultValue={dateValue}
-              className="w-full p-3 border rounded-xl" 
+              className="w-full p-3 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
             />
           </div>
         </div>
@@ -78,7 +78,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
               placeholder="např. 2024-vanocni-vecirek" 
               required 
               defaultValue={album?.cloudinaryFolder}
-              className="w-full p-3 pl-10 border rounded-xl font-mono text-sm" 
+              className="w-full p-3 pl-10 border rounded-xl font-mono text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
             />
           </div>
         </div>
@@ -89,7 +89,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
             name="description" 
             rows={2} 
             defaultValue={album?.description || undefined}
-            className="w-full p-3 border rounded-xl" 
+            className="w-full p-3 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
           />
         </div>
 
@@ -99,7 +99,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
             name="coverPublicId" 
             placeholder="cloudinary public id" 
             defaultValue={album?.coverPublicId || undefined}
-            className="w-full p-3 border rounded-xl font-mono text-sm" 
+            className="w-full p-3 border rounded-xl font-mono text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
           />
         </div>
 

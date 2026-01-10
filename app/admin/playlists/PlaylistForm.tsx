@@ -45,7 +45,7 @@ export function PlaylistForm({ playlist, onCancel }: PlaylistFormProps) {
           placeholder="Název (např. Jaro 2024)" 
           required 
           defaultValue={playlist?.title}
-          className="w-full p-3 border rounded-xl" 
+          className="w-full p-3 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-green-500 focus:border-green-500" 
         />
         
         <div>
@@ -55,7 +55,7 @@ export function PlaylistForm({ playlist, onCancel }: PlaylistFormProps) {
             placeholder='<iframe ... src="..." ...' 
             required 
             defaultValue={playlist?.spotifyUrl}
-            className="w-full p-3 border rounded-xl font-mono text-sm bg-gray-50" 
+            className="w-full p-3 border rounded-xl font-mono text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-green-500 focus:border-green-500" 
           />
           <p className="text-xs text-gray-500 mt-2 bg-gray-100 p-2 rounded-lg">
             ℹ️ Na Spotify klikni na <strong>Tři tečky → Sdílet → Vložit playlist (Embed)</strong>. Zkopíruj celý kód a vlož ho sem.
@@ -67,7 +67,7 @@ export function PlaylistForm({ playlist, onCancel }: PlaylistFormProps) {
           placeholder="Popisek (max 200 znaků)" 
           maxLength={200} 
           defaultValue={playlist?.description || undefined}
-          className="w-full p-3 border rounded-xl" 
+          className="w-full p-3 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-green-500 focus:border-green-500" 
         />
 
         <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
