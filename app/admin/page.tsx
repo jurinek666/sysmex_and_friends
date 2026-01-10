@@ -16,7 +16,7 @@ export default async function AdminDashboard() {
   const { user } = await requireAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32 px-6 pb-12">
+    <div className="min-h-screen bg-gray-50 px-6 py-12">
       <div className="max-w-4xl mx-auto">
         
         {/* Hlavička Dashboardu */}
@@ -31,7 +31,7 @@ export default async function AdminDashboard() {
           <form action={signOut} className="mt-4 md:mt-0">
             <button className="flex items-center gap-2 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 px-5 py-2.5 rounded-xl font-medium transition-colors border border-red-100">
               <LogOut className="w-4 h-4" />
-              Odhlásit se
+              LOGOUT
             </button>
           </form>
         </header>
