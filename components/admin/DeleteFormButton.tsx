@@ -1,6 +1,7 @@
 "use client";
 
 import { DeleteButton } from "./DeleteButton";
+import { useRouter } from "next/navigation";
 
 interface DeleteFormButtonProps {
   action: (formData: FormData) => Promise<{ success: boolean; error?: string }>;
@@ -15,11 +16,15 @@ export function DeleteFormButton({
   itemName,
   className,
 }: DeleteFormButtonProps) {
+  const router = useRouter();
+
   const handleDelete = async () => {
     const formData = new FormData();
     formData.append("id", itemId);
     const result = await action(formData);
-    if (!result.success) {
+    if (result.success) {
+      router.refresh();
+    } else {
       alert(result.error || "Chyba při mazání");
     }
   };
