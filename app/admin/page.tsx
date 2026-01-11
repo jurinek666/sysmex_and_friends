@@ -16,7 +16,7 @@ export default async function AdminDashboard() {
   const { user } = await requireAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32 px-6 pb-12">
+    <div className="min-h-screen bg-gray-50 px-6 py-12">
       <div className="max-w-4xl mx-auto">
         
         {/* Hlavička Dashboardu */}
@@ -67,6 +67,12 @@ export default async function AdminDashboard() {
             title="👥 Tým" 
             desc="Správa členů týmu." 
             color="hover:border-cyan-400 group-hover:text-cyan-600"
+          />
+          <AdminCard 
+            href="/admin/calendar" 
+            title="📅 Kalendář" 
+            desc="Správa termínů kvízů a akcí." 
+            color="hover:border-yellow-400 group-hover:text-yellow-600"
           />
         </div>
       </div>

@@ -97,12 +97,40 @@
   --foreground: #ffffff;
 }
 
+/* Dark theme styles for main site */
 body {
   background-color: var(--background);
   color: var(--foreground);
   /* Optional texture */
   background-image: radial-gradient(circle at 50% 0%, #12306A 0%, transparent 40%);
   background-attachment: fixed;
+}
+
+/* Override dark theme for admin and login pages */
+[data-admin-page],
+[data-login-page] {
+  background-color: #f9fafb !important;
+  background-image: none !important;
+  color: #111827 !important;
+}
+
+/* Ensure body has light background when admin/login pages are present */
+body:has([data-admin-page]),
+body:has([data-login-page]) {
+  background-color: #f9fafb !important;
+  background-image: none !important;
+  color: #111827 !important;
+}
+
+/* Hide Navbar and Footer on admin/login pages to prevent hydration mismatch */
+body:has([data-admin-page]) nav,
+body:has([data-login-page]) nav {
+  display: none !important;
+}
+
+body:has([data-admin-page]) footer,
+body:has([data-login-page]) footer {
+  display: none !important;
 }
 
 /* Scrollbar */

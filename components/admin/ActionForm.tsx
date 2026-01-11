@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { ErrorMessage } from "./ErrorMessage";
 import { SuccessMessage } from "./SuccessMessage";
 import { PendingButton } from "@/components/ui/PendingButton";
@@ -25,15 +26,28 @@ export function ActionForm({
   submitButtonClassName,
 }: ActionFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const previousSuccessRef = useRef(false);
 
   useEffect(() => {
-    if (state?.success && onSuccess) {
-      onSuccess();
+    if (state?.success && !previousSuccessRef.current) {
+      previousSuccessRef.current = true;
+      // Always refresh the page data after successful submission
+      router.refresh();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        // Reset formuláře pouze pokud není onSuccess callback
+        formRef.current?.reset();
+      }
+    } else if (!state?.success) {
+      previousSuccessRef.current = false;
     }
-  }, [state?.success, onSuccess]);
+  }, [state?.success, onSuccess, router]);
 
   return (
-    <form action={formAction} className={className}>
+    <form ref={formRef} action={formAction} className={className}>
       {state?.success === false && state.error && (
         <ErrorMessage message={state.error} />
       )}

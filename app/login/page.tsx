@@ -3,7 +3,7 @@ import { PendingButton } from "@/components/ui/PendingButton";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div data-login-page className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-900 px-4">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900">Admin Přihlášení</h1>
@@ -19,7 +19,7 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 required
-                className="w-full px-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-3 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
                 placeholder="Emailová adresa"
                 suppressHydrationWarning
               />
@@ -31,7 +31,7 @@ export default function LoginPage() {
                 name="password"
                 type="password"
                 required
-                className="w-full px-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-3 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
                 placeholder="Heslo"
                 suppressHydrationWarning
               />
