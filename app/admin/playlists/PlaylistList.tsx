@@ -47,6 +47,20 @@ export function PlaylistList({ playlists }: PlaylistListProps) {
             itemId={p.id}
             itemName={p.title}
           />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setEditingId(p.id)}
+              className="text-green-600 hover:bg-green-50 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1"
+            >
+              <Edit2 className="w-4 h-4" />
+              Upravit
+            </button>
+            <DeleteFormButton
+              action={async (formData) => await adminDeletePlaylist(formData)}
+              itemId={p.id}
+              itemName={p.title}
+            />
+          </div>
         </div>
       ))}
       {playlists.length === 0 && <div className="text-center text-gray-400 py-12">Zatím žádné playlisty.</div>}
