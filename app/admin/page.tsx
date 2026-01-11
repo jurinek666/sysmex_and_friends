@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/admin/auth";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 
@@ -12,8 +13,7 @@ async function signOut() {
 }
 
 export default async function AdminDashboard() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user } = await requireAuth();
 
   return (
     <div className="min-h-screen bg-gray-50 pt-32 px-6 pb-12">

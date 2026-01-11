@@ -3,13 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useMousePosition } from "@/lib/hooks/useMousePosition";
+import { useScrollPosition } from "@/lib/hooks/useScrollPosition";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const mousePosition = useMousePosition();
+  const scrollPosition = useScrollPosition();
+  const navRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
     { name: "Aktuality", href: "/clanky" },
@@ -22,22 +27,41 @@ export function Navbar() {
 
   const isActive = (path: string) => pathname.startsWith(path);
 
+  // Scroll-based opacity and blur
+  const scrollOpacity = Math.min(scrollPosition / 100, 1);
+  const scrollBlur = Math.min(scrollPosition / 50, 1);
+  const isScrolled = scrollPosition > 50;
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 md:px-8 pt-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 flex flex-col items-center px-4 md:px-8 pt-4 md:pt-6">
       <motion.div
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-[60%] relative"
+        className="w-full max-w-6xl flex flex-col items-center gap-4 md:gap-6"
       >
-        {/* Logo positioned absolutely on the left, centered vertically */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
+        {/* LOGO - Above Navigation */}
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 200, 
+            damping: 15,
+            delay: 0.2 
+          }}
+          className="relative"
+        >
           <Link href="/" className="flex items-center group" onClick={() => setIsOpen(false)}>
             <motion.div
-              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileHover={{ 
+                scale: 1.15, 
+                rotate: [0, -5, 5, -5, 0],
+                boxShadow: "0 0 60px rgba(70,214,255,0.8), 0 0 100px rgba(70,214,255,0.4)"
+              }}
               whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              className="relative w-20 h-20 md:w-24 md:h-24 overflow-hidden rounded-full bg-white border-4 border-white/90 group-hover:border-neon-cyan transition-all shadow-[0_0_30px_rgba(70,214,255,0.4)] group-hover:shadow-[0_0_50px_rgba(70,214,255,0.8)]"
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              className="relative w-20 h-20 md:w-28 md:h-28 overflow-hidden rounded-full bg-white border-4 border-white/90 group-hover:border-neon-cyan transition-all shadow-[0_0_40px_rgba(70,214,255,0.5)] group-hover:shadow-[0_0_80px_rgba(70,214,255,0.9)] animate-glass-glow"
             >
               <Image
                 src="https://res.cloudinary.com/gear-gaming/image/upload/v1767027578/SYS_and_friends_logo_r6esig.png"
@@ -46,60 +70,264 @@ export function Navbar() {
                 className="object-cover"
                 priority
               />
+              {/* Holographic ring effect */}
+              <motion.div
+                className="absolute inset-0 rounded-full border-2 border-transparent"
+                animate={{
+                  borderColor: [
+                    "rgba(70,214,255,0.8)",
+                    "rgba(255,79,216,0.8)",
+                    "rgba(251,217,134,0.8)",
+                    "rgba(70,214,255,0.8)",
+                  ],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              />
             </motion.div>
           </Link>
-        </div>
-        
-        {/* White rectangle starting from center of logo, extending right */}
-        <div className="relative bg-white/90 backdrop-blur-xl border border-gray-200/50 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] ml-[50%]">
-          <div className="flex items-center justify-end h-14 md:h-16 px-6 md:px-10">
-            
+        </motion.div>
 
-            {/* DESKTOP NAV with 3D hover effects */}
-            <div className="hidden lg:flex items-center gap-3">
+        {/* FLOATING NAVBAR with Glassmorphism */}
+        <motion.div
+          ref={navRef}
+          animate={{
+            opacity: 1 - scrollOpacity * 0.2,
+            backdropFilter: isScrolled ? "blur(30px) saturate(200%)" : "blur(20px) saturate(180%)",
+            scale: isScrolled ? 0.98 : 1,
+          }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="relative w-full glass-nav rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/20 overflow-hidden"
+          style={{
+            background: isScrolled 
+              ? "rgba(255, 255, 255, 0.08)" 
+              : "rgba(255, 255, 255, 0.05)",
+          }}
+        >
+          {/* Particle Effects Background */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 rounded-full bg-neon-cyan/30 blur-sm"
+                initial={{
+                  x: `${20 + i * 15}%`,
+                  y: `${30 + i * 10}%`,
+                  scale: 0,
+                }}
+                animate={{
+                  x: [`${20 + i * 15}%`, `${25 + i * 15}%`, `${20 + i * 15}%`],
+                  y: [`${30 + i * 10}%`, `${25 + i * 10}%`, `${30 + i * 10}%`],
+                  scale: [0, 1, 0],
+                  opacity: [0, 0.5, 0],
+                }}
+                transition={{
+                  duration: 4 + i * 0.5,
+                  repeat: Infinity,
+                  delay: i * 0.3,
+                  ease: "easeInOut",
+                }}
+              />
+            ))}
+            {/* Gradient orbs */}
+            <motion.div
+              className="absolute top-0 left-1/4 w-32 h-32 bg-neon-cyan/10 rounded-full blur-3xl"
+              animate={{
+                x: [0, 30, 0],
+                y: [0, -20, 0],
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <motion.div
+              className="absolute bottom-0 right-1/4 w-40 h-40 bg-neon-magenta/10 rounded-full blur-3xl"
+              animate={{
+                x: [0, -20, 0],
+                y: [0, 15, 0],
+                scale: [1, 1.3, 1],
+              }}
+              transition={{
+                duration: 10,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          </div>
+
+          {/* Animated Gradient Border */}
+          <motion.div
+            className="absolute inset-0 rounded-3xl"
+            style={{
+              background: `linear-gradient(90deg, 
+                rgba(70,214,255,0.3) 0%, 
+                rgba(255,79,216,0.3) 25%, 
+                rgba(251,217,134,0.3) 50%, 
+                rgba(255,79,216,0.3) 75%, 
+                rgba(70,214,255,0.3) 100%)`,
+              backgroundSize: "200% 100%",
+              padding: "1px",
+              WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+              WebkitMaskComposite: "xor",
+              maskComposite: "exclude",
+            }}
+            animate={{
+              backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+            }}
+            transition={{
+              duration: 5,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+
+          <div className="relative flex items-center justify-center h-16 md:h-20 px-6 md:px-10">
+            {/* DESKTOP NAV with Magnetic Hover Effects */}
+            <div className="hidden lg:flex items-center gap-2 md:gap-4">
               {navLinks.map((link, index) => {
                 const active = isActive(link.href);
+                const linkRef = useRef<HTMLDivElement>(null);
+                const x = useMotionValue(0);
+                const y = useMotionValue(0);
+                const springX = useSpring(x, { stiffness: 300, damping: 30 });
+                const springY = useSpring(y, { stiffness: 300, damping: 30 });
+                const rotateX = useTransform(springY, [-50, 50], [5, -5]);
+                const rotateY = useTransform(springX, [-50, 50], [-5, 5]);
+
+                useEffect(() => {
+                  const handleMouseMove = (e: MouseEvent) => {
+                    if (!linkRef.current) return;
+                    const rect = linkRef.current.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    const distanceX = e.clientX - centerX;
+                    const distanceY = e.clientY - centerY;
+                    const distance = Math.sqrt(distanceX ** 2 + distanceY ** 2);
+                    const maxDistance = 100;
+
+                    if (distance < maxDistance) {
+                      const strength = (maxDistance - distance) / maxDistance;
+                      x.set(distanceX * strength * 0.3);
+                      y.set(distanceY * strength * 0.3);
+                    } else {
+                      x.set(0);
+                      y.set(0);
+                    }
+                  };
+
+                  window.addEventListener("mousemove", handleMouseMove);
+                  return () => window.removeEventListener("mousemove", handleMouseMove);
+                }, [x, y]);
+
                 return (
                   <motion.div
                     key={link.href}
+                    ref={linkRef}
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * index, duration: 0.5 }}
+                    style={{
+                      x: springX,
+                      y: springY,
+                      rotateX,
+                      rotateY,
+                      transformStyle: "preserve-3d",
+                    }}
                   >
                     <Link
                       href={link.href}
                       className="group/link relative block"
                     >
                       <motion.div
-                        whileHover={{ 
-                          scale: 1.05,
-                          rotateX: 5,
-                          rotateY: -5,
-                        }}
+                        whileHover={{ scale: 1.08 }}
                         whileTap={{ scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 400, damping: 15 }}
                         className={`
-                          relative px-5 py-3 rounded-xl font-black uppercase tracking-tight text-sm
+                          relative px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-black uppercase tracking-tight text-xs md:text-sm
                           transition-all duration-300 overflow-hidden
                           transform-gpu perspective-1000
-                          ${
-                            active
-                              ? "text-white bg-gradient-to-br from-neon-cyan/40 via-neon-magenta/30 to-neon-cyan/40 border-2 border-neon-cyan shadow-[0_0_30px_rgba(70,214,255,0.8),inset_0_0_20px_rgba(70,214,255,0.3)]"
-                              : "text-gray-300 bg-white/5 border-2 border-transparent hover:border-neon-cyan/70 hover:text-white hover:bg-white/10 hover:shadow-[0_0_25px_rgba(70,214,255,0.6)]"
+                          ${active
+                            ? "text-white"
+                            : "text-gray-300 hover:text-white"
                           }
                         `}
-                        style={{
-                          transformStyle: "preserve-3d",
-                        }}
                       >
-                        {/* Animated gradient background on hover */}
-                        <span className="absolute inset-0 bg-gradient-to-r from-neon-cyan/0 via-neon-cyan/50 to-neon-magenta/20 opacity-0 group-hover/link:opacity-100 transition-opacity duration-500 animate-gradient-flow" />
-                        
-                        {/* Shimmer effect */}
-                        <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent translate-x-[-200%] group-hover/link:translate-x-[200%] transition-transform duration-1000 skew-x-12" />
-                        
-                        {/* Text with 3D effect */}
-                        <span className="relative z-10 block" style={{ transform: "translateZ(20px)" }}>
+                        {/* Holographic background for active */}
+                        {active && (
+                          <motion.div
+                            className="absolute inset-0 rounded-xl"
+                            animate={{
+                              background: [
+                                "linear-gradient(135deg, rgba(70,214,255,0.4), rgba(255,79,216,0.3))",
+                                "linear-gradient(135deg, rgba(255,79,216,0.4), rgba(251,217,134,0.3))",
+                                "linear-gradient(135deg, rgba(251,217,134,0.4), rgba(70,214,255,0.3))",
+                                "linear-gradient(135deg, rgba(70,214,255,0.4), rgba(255,79,216,0.3))",
+                              ],
+                            }}
+                            transition={{
+                              duration: 4,
+                              repeat: Infinity,
+                              ease: "linear",
+                            }}
+                          />
+                        )}
+
+                        {/* Holographic border for active */}
+                        {active && (
+                          <motion.div
+                            className="absolute inset-0 rounded-xl border-2"
+                            animate={{
+                              borderColor: [
+                                "rgba(70,214,255,0.8)",
+                                "rgba(255,79,216,0.8)",
+                                "rgba(251,217,134,0.8)",
+                                "rgba(70,214,255,0.8)",
+                              ],
+                              boxShadow: [
+                                "0 0 20px rgba(70,214,255,0.6), inset 0 0 20px rgba(70,214,255,0.2)",
+                                "0 0 20px rgba(255,79,216,0.6), inset 0 0 20px rgba(255,79,216,0.2)",
+                                "0 0 20px rgba(251,217,134,0.6), inset 0 0 20px rgba(251,217,134,0.2)",
+                                "0 0 20px rgba(70,214,255,0.6), inset 0 0 20px rgba(70,214,255,0.2)",
+                              ],
+                            }}
+                            transition={{
+                              duration: 3,
+                              repeat: Infinity,
+                              ease: "linear",
+                            }}
+                          />
+                        )}
+
+                        {/* Hover gradient background */}
+                        <motion.span
+                          className="absolute inset-0 bg-gradient-to-r from-neon-cyan/0 via-neon-cyan/30 to-neon-magenta/20 opacity-0 group-hover/link:opacity-100 rounded-xl"
+                          animate={{
+                            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
+                        />
+
+                        {/* Shimmer effect on hover */}
+                        <motion.span
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/link:translate-x-full rounded-xl"
+                          transition={{
+                            duration: 0.8,
+                            ease: "easeInOut",
+                          }}
+                        />
+
+                        {/* Text with holographic effect for active */}
+                        <span className={`relative z-10 block ${active ? "animate-holographic" : ""}`}>
                           {link.name}
                         </span>
                       </motion.div>
@@ -109,29 +337,34 @@ export function Navbar() {
               })}
             </div>
 
-             {/* MOBILE MENU TOGGLE */}
-             <motion.button
-               whileTap={{ scale: 0.9 }}
-               className="lg:hidden text-gray-900 p-2 hover:bg-gray-100 rounded-lg transition-colors"
-               onClick={() => setIsOpen(!isOpen)}
-               aria-label={isOpen ? "Zavřít menu" : "Otevřít menu"}
-             >
-               {isOpen ? <X size={24} /> : <Menu size={24} />}
-             </motion.button>
+            {/* MOBILE MENU TOGGLE */}
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              className="lg:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors backdrop-blur-sm"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label={isOpen ? "Zavřít menu" : "Otevřít menu"}
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
-         {/* MOBILE NAV with slide animation */}
-         <motion.div
-           initial={false}
-           animate={{
-             height: isOpen ? "auto" : 0,
-             opacity: isOpen ? 1 : 0,
-           }}
-           transition={{ duration: 0.3, ease: "easeInOut" }}
-           className="lg:hidden overflow-hidden"
-         >
-           <div className="mt-2 ml-[50%] bg-white/90 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-2xl">
+        {/* MOBILE NAV with Glassmorphism */}
+        <motion.div
+          initial={false}
+          animate={{
+            height: isOpen ? "auto" : 0,
+            opacity: isOpen ? 1 : 0,
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="lg:hidden overflow-hidden w-full"
+        >
+          <motion.div
+            className="mt-2 glass-nav rounded-2xl shadow-2xl border border-white/20 overflow-hidden"
+            initial={{ y: -20 }}
+            animate={{ y: isOpen ? 0 : -20 }}
+            transition={{ duration: 0.3 }}
+          >
             <div className="px-6 py-4">
               <div className="flex flex-col space-y-2">
                 {navLinks.map((link, index) => {
@@ -140,30 +373,67 @@ export function Navbar() {
                     <motion.div
                       key={link.href}
                       initial={{ x: -50, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: isOpen ? 0.05 * index : 0, duration: 0.3 }}
+                      animate={{ 
+                        x: isOpen ? 0 : -50, 
+                        opacity: isOpen ? 1 : 0 
+                      }}
+                      transition={{ 
+                        delay: isOpen ? 0.05 * index : 0, 
+                        duration: 0.3 
+                      }}
                     >
                       <Link
                         href={link.href}
                         className={`
                           block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm
                           transition-all duration-300
-                          ${
-                            active
-                              ? "text-white bg-gradient-to-r from-neon-cyan/30 via-neon-cyan/40 to-neon-magenta/30 border-2 border-neon-cyan shadow-[0_0_20px_rgba(70,214,255,0.6)]"
-                              : "text-gray-300 bg-white/5 border-2 border-transparent hover:border-neon-cyan/60 hover:bg-white/10 hover:text-white"
+                          ${active
+                            ? "text-white"
+                            : "text-gray-300 hover:text-white"
                           }
                         `}
                         onClick={() => setIsOpen(false)}
                       >
-                        {link.name}
+                        <motion.div
+                          whileHover={{ scale: 1.02, x: 5 }}
+                          whileTap={{ scale: 0.98 }}
+                          className={`
+                            relative overflow-hidden rounded-lg
+                            ${active
+                              ? "bg-gradient-to-r from-neon-cyan/30 via-neon-cyan/40 to-neon-magenta/30 border-2 border-neon-cyan shadow-[0_0_20px_rgba(70,214,255,0.6)]"
+                              : "bg-white/5 border-2 border-transparent hover:border-neon-cyan/60 hover:bg-white/10"
+                            }
+                          `}
+                        >
+                          {active && (
+                            <motion.div
+                              className="absolute inset-0"
+                              animate={{
+                                background: [
+                                  "linear-gradient(90deg, rgba(70,214,255,0.3), rgba(255,79,216,0.3))",
+                                  "linear-gradient(90deg, rgba(255,79,216,0.3), rgba(251,217,134,0.3))",
+                                  "linear-gradient(90deg, rgba(251,217,134,0.3), rgba(70,214,255,0.3))",
+                                  "linear-gradient(90deg, rgba(70,214,255,0.3), rgba(255,79,216,0.3))",
+                                ],
+                              }}
+                              transition={{
+                                duration: 4,
+                                repeat: Infinity,
+                                ease: "linear",
+                              }}
+                            />
+                          )}
+                          <span className="relative z-10 block px-5 py-3.5">
+                            {link.name}
+                          </span>
+                        </motion.div>
                       </Link>
                     </motion.div>
                   );
                 })}
               </div>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
       </motion.div>
     </nav>
