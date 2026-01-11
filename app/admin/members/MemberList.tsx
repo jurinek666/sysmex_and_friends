@@ -39,7 +39,7 @@ export function MemberList({ members }: MemberListProps) {
         <div key={m.id} className="border p-4 rounded-xl bg-white flex justify-between items-start shadow-sm">
           <div>
             <div className="font-bold text-lg">{m.displayName}</div>
-            {m.nickname && <div className="text-sm text-gray-500">"{m.nickname}"</div>}
+            {m.nickname && <div className="text-sm text-gray-500">&quot;{m.nickname}&quot;</div>}
             <div className="text-xs mt-2 bg-gray-100 inline-block px-2 py-1 rounded">{m.role || "Člen"}</div>
           </div>
           <div className="flex items-center gap-2">
