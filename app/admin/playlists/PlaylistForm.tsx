@@ -22,15 +22,9 @@ export function PlaylistForm({ playlist, onCancel }: PlaylistFormProps) {
 
   return (
     <ActionForm
-      action={async (prevState, formData) => {
-        if (isEdit) {
-          formData.append("id", playlist.id);
-          return await adminUpdatePlaylist(formData);
-        }
-        return await adminCreatePlaylist(formData);
-      }}
-      successMessage={isEdit ? "Playlist byl úspěšně upraven" : "Playlist byl úspěšně vytvořen"}
-      submitButtonText={isEdit ? "Uložit změny" : "Uložit playlist"}
+      action={adminCreatePlaylist}
+      successMessage="Playlist byl úspěšně vytvořen"
+      submitButtonText="Uložit playlist"
       submitButtonClassName="w-full bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 font-medium transition-colors disabled:opacity-50"
       onSuccess={onCancel}
     >
