@@ -6,7 +6,7 @@ import { adminCreatePlaylist } from "../_actions";
 export function PlaylistForm() {
   return (
     <ActionForm
-      action={async (prevState, formData) => await adminCreatePlaylist(formData)}
+      action={adminCreatePlaylist}
       successMessage="Playlist byl úspěšně vytvořen"
       submitButtonText="Uložit playlist"
       submitButtonClassName="w-full bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 font-medium transition-colors disabled:opacity-50"
