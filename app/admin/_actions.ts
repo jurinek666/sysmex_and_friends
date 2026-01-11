@@ -1,20 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-
-// Helper funkce pro kontrolu autorizace
-async function requireAuth() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  if (!user) {
-    redirect("/login");
-  }
-  
-  return { supabase, user };
-}
+import { requireAuth } from "@/lib/admin/auth";
 
 // Helper pro error handling
 type ActionResult = { success: true } | { success: false; error: string };
@@ -23,7 +10,8 @@ type ActionResult = { success: true } | { success: false; error: string };
 function isRedirectError(error: unknown): boolean {
   if (typeof error !== 'object' || error === null) return false;
   // Next.js redirect errors have a digest property with "NEXT_REDIRECT"
-  return 'digest' in error && typeof (error as any).digest === 'string' && (error as any).digest.includes('NEXT_REDIRECT');
+  const digest = (error as { digest?: string }).digest;
+  return typeof digest === 'string' && digest.includes('NEXT_REDIRECT');
 }
 
 async function handleAction<T>(
@@ -37,7 +25,36 @@ async function handleAction<T>(
     if (isRedirectError(error)) {
       throw error;
     }
-    const errorMessage = error instanceof Error ? error.message : "Nastala neznámá chyba";
+    // Handle Supabase errors (they have a 'message' property but aren't Error instances)
+    let errorMessage = "Nastala neznámá chyba";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      // Include code if available
+      if ((error as any).code) {
+        errorMessage += ` (kód: ${(error as any).code})`;
+      }
+      // Include hint if available
+      if ((error as any).hint) {
+        errorMessage += ` - ${(error as any).hint}`;
+      }
+    } else if (error && typeof error === 'object') {
+      // Try to extract message from Supabase error object
+      if ('message' in error && typeof (error as any).message === 'string') {
+        errorMessage = (error as any).message;
+        if ((error as any).code) {
+          errorMessage += ` (kód: ${(error as any).code})`;
+        }
+        if ((error as any).hint) {
+          errorMessage += ` - ${(error as any).hint}`;
+        }
+        if ((error as any).details) {
+          errorMessage += ` - ${(error as any).details}`;
+        }
+      } else {
+        // Fallback: stringify the error
+        errorMessage = JSON.stringify(error);
+      }
+    }
     console.error("Admin action error:", error);
     return { success: false, error: errorMessage };
   }
@@ -58,16 +75,29 @@ export async function adminCreatePost(formData: FormData): Promise<ActionResult>
     const coverImageUrl = formData.get("coverImageUrl")?.toString() || null;
     const isFeatured = formData.get("isFeatured") === "on";
 
+    const id = randomUUID();
+    const now = new Date().toISOString();
     const { error } = await supabase.from("Post").insert({
+      id,
       title,
       slug,
       excerpt,
       content,
       coverImageUrl,
       isFeatured,
+      publishedAt: now,
+      createdAt: now,
+      updatedAt: now,
     });
 
-    if (error) throw error;
+    if (error) {
+      // Convert Supabase error to Error instance for proper handling
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/posts");
     revalidatePath("/clanky");
@@ -96,10 +126,17 @@ export async function adminUpdatePost(formData: FormData): Promise<ActionResult>
         content,
         coverImageUrl,
         isFeatured,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/posts");
     revalidatePath("/clanky");
@@ -114,7 +151,13 @@ export async function adminDeletePost(formData: FormData): Promise<ActionResult>
 
     const { error } = await supabase.from("Post").delete().eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/posts");
     revalidatePath("/clanky");
@@ -148,7 +191,10 @@ export async function adminCreateResult(formData: FormData): Promise<ActionResul
       throw new Error(`Sezóna s kódem ${seasonCode} nebyla nalezena.`);
     }
 
+    const id = randomUUID();
+    const now = new Date().toISOString();
     const { error } = await supabase.from("Result").insert({
+      id,
       date: new Date(dateStr).toISOString(),
       venue,
       teamName,
@@ -156,9 +202,17 @@ export async function adminCreateResult(formData: FormData): Promise<ActionResul
       score,
       note,
       seasonId: season.id,
+      createdAt: now,
+      updatedAt: now,
     });
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/results");
     revalidatePath("/vysledky");
@@ -199,10 +253,17 @@ export async function adminUpdateResult(formData: FormData): Promise<ActionResul
         score,
         note,
         seasonId: season.id,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/results");
     revalidatePath("/vysledky");
@@ -217,7 +278,13 @@ export async function adminDeleteResult(formData: FormData): Promise<ActionResul
 
     const { error } = await supabase.from("Result").delete().eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/results");
     revalidatePath("/vysledky");
@@ -239,15 +306,26 @@ export async function adminCreateMember(formData: FormData): Promise<ActionResul
     const gender = String(formData.get("gender"));
     const bio = formData.get("bio")?.toString() || null;
 
+    const id = randomUUID();
+    const now = new Date().toISOString();
     const { error } = await supabase.from("Member").insert({
+      id,
       displayName,
       nickname,
       role,
       gender,
       bio,
+      createdAt: now,
+      updatedAt: now,
     });
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/members");
     revalidatePath("/tym");
@@ -274,10 +352,17 @@ export async function adminUpdateMember(formData: FormData): Promise<ActionResul
         role,
         gender,
         bio,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/members");
     revalidatePath("/tym");
@@ -292,7 +377,13 @@ export async function adminDeleteMember(formData: FormData): Promise<ActionResul
 
     const { error } = await supabase.from("Member").delete().eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/members");
     revalidatePath("/tym");
@@ -304,7 +395,7 @@ export async function adminDeleteMember(formData: FormData): Promise<ActionResul
 // 4. PLAYLISTY (PLAYLISTS)
 // ==========================================
 
-export async function adminCreatePlaylist(formData: FormData): Promise<ActionResult> {
+export async function adminCreatePlaylist(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -313,21 +404,33 @@ export async function adminCreatePlaylist(formData: FormData): Promise<ActionRes
     const description = formData.get("description")?.toString() || null;
     const isActive = formData.get("isActive") === "on";
 
+    const id = randomUUID();
+    const now = new Date().toISOString();
     const { error } = await supabase.from("Playlist").insert({
+      id,
       title,
       spotifyUrl,
       description,
       isActive,
+      createdAt: now,
+      updatedAt: now,
     });
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/playlists");
     revalidatePath("/");
   });
 }
 
-export async function adminUpdatePlaylist(formData: FormData): Promise<ActionResult> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function adminUpdatePlaylist(_prevState: any, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -344,10 +447,17 @@ export async function adminUpdatePlaylist(formData: FormData): Promise<ActionRes
         spotifyUrl,
         description,
         isActive,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/playlists");
     revalidatePath("/");
@@ -361,7 +471,13 @@ export async function adminDeletePlaylist(formData: FormData): Promise<ActionRes
 
     const { error } = await supabase.from("Playlist").delete().eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/playlists");
     revalidatePath("/");
@@ -382,15 +498,26 @@ export async function adminCreateAlbum(formData: FormData): Promise<ActionResult
     const description = formData.get("description")?.toString() || null;
     const coverPublicId = formData.get("coverPublicId")?.toString() || null;
 
+    const id = randomUUID();
+    const now = new Date().toISOString();
     const { error } = await supabase.from("Album").insert({
+      id,
       title,
       dateTaken: new Date(dateStr).toISOString(),
       cloudinaryFolder,
       description,
       coverPublicId,
+      createdAt: now,
+      updatedAt: now,
     });
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/gallery");
     revalidatePath("/galerie");
@@ -417,10 +544,17 @@ export async function adminUpdateAlbum(formData: FormData): Promise<ActionResult
         cloudinaryFolder,
         description,
         coverPublicId,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/gallery");
     revalidatePath("/galerie");
@@ -435,10 +569,122 @@ export async function adminDeleteAlbum(formData: FormData): Promise<ActionResult
 
     const { error } = await supabase.from("Album").delete().eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/gallery");
     revalidatePath("/galerie");
+    revalidatePath("/");
+  });
+}
+
+// ==========================================
+// 6. KALENDÁŘ (EVENTS)
+// ==========================================
+
+export async function adminCreateEvent(formData: FormData): Promise<ActionResult> {
+  return handleAction(async () => {
+    const { supabase } = await requireAuth();
+
+    const title = String(formData.get("title"));
+    const dateStr = String(formData.get("date"));
+    const venue = String(formData.get("venue"));
+    const description = formData.get("description")?.toString() || null;
+    const isUpcoming = formData.get("isUpcoming") === "on";
+
+    const id = randomUUID();
+    const now = new Date().toISOString();
+    
+    // Convert datetime-local to ISO string
+    const eventDate = new Date(dateStr).toISOString();
+    
+    const { error } = await supabase.from("Event").insert({
+      id,
+      title,
+      date: eventDate,
+      venue,
+      description,
+      isUpcoming,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
+
+    revalidatePath("/admin/calendar");
+    revalidatePath("/kalendar");
+    revalidatePath("/");
+  });
+}
+
+export async function adminUpdateEvent(formData: FormData): Promise<ActionResult> {
+  return handleAction(async () => {
+    const { supabase } = await requireAuth();
+
+    const id = String(formData.get("id"));
+    const title = String(formData.get("title"));
+    const dateStr = String(formData.get("date"));
+    const venue = String(formData.get("venue"));
+    const description = formData.get("description")?.toString() || null;
+    const isUpcoming = formData.get("isUpcoming") === "on";
+
+    // Convert datetime-local to ISO string
+    const eventDate = new Date(dateStr).toISOString();
+
+    const { error } = await supabase
+      .from("Event")
+      .update({
+        title,
+        date: eventDate,
+        venue,
+        description,
+        isUpcoming,
+        updatedAt: new Date().toISOString(),
+      })
+      .eq("id", id);
+
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
+
+    revalidatePath("/admin/calendar");
+    revalidatePath("/kalendar");
+    revalidatePath("/");
+  });
+}
+
+export async function adminDeleteEvent(formData: FormData): Promise<ActionResult> {
+  return handleAction(async () => {
+    const { supabase } = await requireAuth();
+    const id = String(formData.get("id"));
+
+    const { error } = await supabase.from("Event").delete().eq("id", id);
+
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
+
+    revalidatePath("/admin/calendar");
+    revalidatePath("/kalendar");
     revalidatePath("/");
   });
 }

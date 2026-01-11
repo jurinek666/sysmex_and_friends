@@ -17,6 +17,7 @@ export async function getAlbums() {
 
   // Transformujeme data do formátu, který očekává komponenta (styl Prisma)
   // Prisma vrací: _count: { photos: number }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return data.map((album: any) => ({
     ...album,
     _count: {
@@ -40,6 +41,7 @@ export async function getAlbum(id: string) {
 
   // Seřadíme fotky v JS, protože řazení vnořených relací v jednoduchém selectu je složitější
   if (data.photos && Array.isArray(data.photos)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data.photos.sort((a: any, b: any) => a.sortOrder - b.sortOrder);
   }
 

@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-// ✅ Navbar i Footer musí být v kadeřavých závorkách
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { ConditionalNavAndFooter } from "@/components/ConditionalNavAndFooter";
 import { ScrollToTop } from "@/components/ScrollToTop";
 
 const geistSans = Geist({
@@ -32,11 +30,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900 flex flex-col min-h-full`}
       >
-        <Navbar />
-        <div className="flex-grow">
+        <ConditionalNavAndFooter>
           {children}
-        </div>
-        <Footer />
+        </ConditionalNavAndFooter>
         <ScrollToTop />
       </body>
     </html>

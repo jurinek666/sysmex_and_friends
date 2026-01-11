@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
@@ -30,6 +31,24 @@ export default async function PostDetailPage({
             ← Zpět do archivu
           </Link>
         </div>
+
+        {/* OBRÁZEK */}
+        {post.coverImageUrl ? (
+          <div className="relative w-full h-64 md:h-96 mb-8 rounded-2xl overflow-hidden bg-gray-800">
+            <Image
+              src={post.coverImageUrl}
+              alt={post.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="(max-width: 768px) 100vw, 896px"
+            />
+          </div>
+        ) : (
+          <div className="relative w-full h-64 md:h-96 mb-8 rounded-2xl overflow-hidden bg-gray-800 flex items-center justify-center text-gray-500">
+            Žádný obrázek
+          </div>
+        )}
 
         {/* HLAVIČKA ČLÁNKU */}
         <header className="mb-12 text-center md:text-left border-b border-white/10 pb-10">
