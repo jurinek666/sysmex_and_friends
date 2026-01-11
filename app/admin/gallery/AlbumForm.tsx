@@ -69,7 +69,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Cloudinary složka <span className="text-gray-400 font-normal">(přesný název složky v cloudu)</span>
+            Přesný název složky v Cloudinary
           </label>
           <div className="relative">
             <Folder className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
@@ -81,6 +81,9 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
               className="w-full p-3 pl-10 border rounded-xl font-mono text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
             />
           </div>
+          <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded-lg border border-gray-100">
+            ℹ️ Zadejte přesný název složky v Cloudinary, kde jsou nahrané fotky pro toto album. Název musí přesně odpovídat názvu složky v Cloudinary.
+          </p>
         </div>
 
         <div>

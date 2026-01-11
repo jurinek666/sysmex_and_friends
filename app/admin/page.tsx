@@ -68,6 +68,12 @@ export default async function AdminDashboard() {
             desc="Správa členů týmu." 
             color="hover:border-cyan-400 group-hover:text-cyan-600"
           />
+          <AdminCard 
+            href="/admin/calendar" 
+            title="📅 Kalendář" 
+            desc="Správa termínů kvízů a akcí." 
+            color="hover:border-yellow-400 group-hover:text-yellow-600"
+          />
         </div>
       </div>
     </div>

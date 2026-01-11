@@ -558,3 +558,109 @@ export async function adminDeleteAlbum(formData: FormData): Promise<ActionResult
     revalidatePath("/");
   });
 }
+
+// ==========================================
+// 6. KALENDÁŘ (EVENTS)
+// ==========================================
+
+export async function adminCreateEvent(formData: FormData): Promise<ActionResult> {
+  return handleAction(async () => {
+    const { supabase } = await requireAuth();
+
+    const title = String(formData.get("title"));
+    const dateStr = String(formData.get("date"));
+    const venue = String(formData.get("venue"));
+    const description = formData.get("description")?.toString() || null;
+    const isUpcoming = formData.get("isUpcoming") === "on";
+
+    const id = randomUUID();
+    const now = new Date().toISOString();
+    
+    // Convert datetime-local to ISO string
+    const eventDate = new Date(dateStr).toISOString();
+    
+    const { error } = await supabase.from("Event").insert({
+      id,
+      title,
+      date: eventDate,
+      venue,
+      description,
+      isUpcoming,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
+
+    revalidatePath("/admin/calendar");
+    revalidatePath("/kalendar");
+    revalidatePath("/");
+  });
+}
+
+export async function adminUpdateEvent(formData: FormData): Promise<ActionResult> {
+  return handleAction(async () => {
+    const { supabase } = await requireAuth();
+
+    const id = String(formData.get("id"));
+    const title = String(formData.get("title"));
+    const dateStr = String(formData.get("date"));
+    const venue = String(formData.get("venue"));
+    const description = formData.get("description")?.toString() || null;
+    const isUpcoming = formData.get("isUpcoming") === "on";
+
+    // Convert datetime-local to ISO string
+    const eventDate = new Date(dateStr).toISOString();
+
+    const { error } = await supabase
+      .from("Event")
+      .update({
+        title,
+        date: eventDate,
+        venue,
+        description,
+        isUpcoming,
+        updatedAt: new Date().toISOString(),
+      })
+      .eq("id", id);
+
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
+
+    revalidatePath("/admin/calendar");
+    revalidatePath("/kalendar");
+    revalidatePath("/");
+  });
+}
+
+export async function adminDeleteEvent(formData: FormData): Promise<ActionResult> {
+  return handleAction(async () => {
+    const { supabase } = await requireAuth();
+    const id = String(formData.get("id"));
+
+    const { error } = await supabase.from("Event").delete().eq("id", id);
+
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
+
+    revalidatePath("/admin/calendar");
+    revalidatePath("/kalendar");
+    revalidatePath("/");
+  });
+}

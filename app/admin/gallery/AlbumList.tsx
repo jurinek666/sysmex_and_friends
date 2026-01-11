@@ -45,9 +45,9 @@ export function AlbumList({ albums }: AlbumListProps) {
                 <Calendar className="w-3 h-3" />
                 {new Date(album.dateTaken).toLocaleDateString("cs-CZ")}
               </span>
-              <span className="flex items-center gap-1 bg-gray-100 px-2 py-0.5 rounded-md">
+              <span className="flex items-center gap-1 bg-purple-50 text-purple-700 px-2 py-0.5 rounded-md border border-purple-200" title={`Cloudinary složka: ${album.cloudinaryFolder}`}>
                 <Folder className="w-3 h-3" />
-                {album.cloudinaryFolder}
+                <span className="font-mono text-xs">{album.cloudinaryFolder}</span>
               </span>
               <span>
                 {album.photos?.[0]?.count ?? 0} fotek
