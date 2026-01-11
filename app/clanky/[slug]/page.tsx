@@ -7,8 +7,6 @@ import ReactMarkdown from "react-markdown";
 // @ts-expect-error - rehype-raw doesn't have types
 import rehypeRaw from "rehype-raw";
 import { getPostBySlug } from "@/lib/queries/posts";
-import { appendFile } from "fs/promises";
-import { join } from "path";
 
 export const revalidate = 60;
 
@@ -48,25 +46,6 @@ export default async function ClanekDetailPage({
 
   // Check for image-related keywords in content
   const hasImageKeywords = /image|img|photo|obrázek|foto/i.test(post.content);
-
-  // #region agent log
-  try {
-    const logPath = join(process.cwd(), '.cursor', 'debug.log');
-    // Log content in chunks to avoid JSON stringify issues
-    const contentParts = {
-      first500: post.content.substring(0, 500),
-      middle500: post.content.length > 1000 ? post.content.substring(500, 1000) : '',
-      last500: post.content.length > 1000 ? post.content.substring(post.content.length - 500) : post.content.substring(500)
-    };
-    await appendFile(logPath, JSON.stringify({location:'app/clanky/[slug]/page.tsx:53',message:'Post loaded',data:{slug,hasContent:!!post.content,contentLength:post.content?.length,imageCount:imageUrls.length,imageUrls:imageUrls.slice(0,5),hasImageKeywords,contentParts},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'}) + '\n');
-  } catch (e: unknown) {
-    try {
-      const logPath = join(process.cwd(), '.cursor', 'debug.log');
-      const errorMessage = e instanceof Error ? e.message : String(e);
-      await appendFile(logPath, JSON.stringify({location:'app/clanky/[slug]/page.tsx:53',message:'Log error',data:{error:errorMessage,contentLength:post.content?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'}) + '\n');
-    } catch {}
-  }
-  // #endregion
 
   return (
     <main className="min-h-screen pt-32 pb-20 px-4 md:px-8">
@@ -114,36 +93,10 @@ export default async function ClanekDetailPage({
             prose-blockquote:border-l-neon-magenta prose-blockquote:bg-white/5 prose-blockquote:py-2 prose-blockquote:pr-4
             prose-code:text-neon-cyan prose-code:bg-black/30 prose-code:rounded prose-code:px-1
           ">
-            {/* #region agent log */}
-            {(() => {
-              appendFile(join(process.cwd(), '.cursor', 'debug.log'), JSON.stringify({location:'app/clanky/[slug]/page.tsx:117',message:'Before ReactMarkdown render',data:{contentLength:post.content?.length,contentHasImgTag:post.content?.includes('<img'),contentHasMarkdownImg:post.content?.includes('![')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'}) + '\n').catch(()=>{});
-              return null;
-            })()}
-            {/* #endregion */}
             <ReactMarkdown
               rehypePlugins={[rehypeRaw]}
               components={{
                 img: ({ src, alt }) => {
-                  // #region agent log
-                  let hostname = null;
-                  let isCloudinary = false;
-                  let isRelative = false;
-                  let isAbsolute = false;
-                  let isValidUrl = false;
-                  try {
-                    if (src) {
-                      isCloudinary = src.includes('cloudinary');
-                      isAbsolute = src.startsWith('http');
-                      isRelative = !isAbsolute && !src.startsWith('/');
-                      isValidUrl = true;
-                      try {
-                        hostname = new URL(src, 'https://example.com').hostname;
-                      } catch {}
-                    }
-                  } catch {}
-                  fetch('http://127.0.0.1:7242/ingest/3a03f1e8-5044-4fd7-a566-9802511bf37d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/clanky/[slug]/page.tsx:130',message:'Image component rendered',data:{src,alt,isCloudinary,isValidUrl,hostname,isAbsolute,isRelative,srcLength:src?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A'})}).catch(()=>{});
-                  fetch('http://127.0.0.1:7242/ingest/3a03f1e8-5044-4fd7-a566-9802511bf37d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/clanky/[slug]/page.tsx:130',message:'Using Next.js Image component',data:{isCloudinary,isRelative,isAbsolute},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'C'})}).catch(()=>{});
-                  // #endregion
                   if (!src) return null;
                   return (
                     <div className="relative w-full my-4 rounded-lg overflow-hidden" style={{ minHeight: '200px' }}>
