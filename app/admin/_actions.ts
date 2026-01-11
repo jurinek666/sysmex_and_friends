@@ -243,10 +243,17 @@ export async function adminUpdateResult(formData: FormData): Promise<ActionResul
         score,
         note,
         seasonId: season.id,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/results");
     revalidatePath("/vysledky");
@@ -318,10 +325,17 @@ export async function adminUpdateMember(formData: FormData): Promise<ActionResul
         role,
         gender,
         bio,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/members");
     revalidatePath("/tym");
@@ -479,10 +493,17 @@ export async function adminUpdateAlbum(formData: FormData): Promise<ActionResult
         cloudinaryFolder,
         description,
         coverPublicId,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/gallery");
     revalidatePath("/galerie");

@@ -33,12 +33,13 @@ export function ActionForm({
   useEffect(() => {
     if (state?.success && !previousSuccessRef.current) {
       previousSuccessRef.current = true;
+      // Always refresh the page data after successful submission
+      router.refresh();
       if (onSuccess) {
         onSuccess();
       } else {
-        // Reset formuláře a obnovení stránky
+        // Reset formuláře pouze pokud není onSuccess callback
         formRef.current?.reset();
-        router.refresh();
       }
     } else if (!state?.success) {
       previousSuccessRef.current = false;
