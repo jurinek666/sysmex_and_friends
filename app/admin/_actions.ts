@@ -24,6 +24,7 @@ type ActionResult = { success: true } | { success: false; error: string };
 function isRedirectError(error: unknown): boolean {
   if (typeof error !== 'object' || error === null) return false;
   // Next.js redirect errors have a digest property with "NEXT_REDIRECT"
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return 'digest' in error && typeof (error as any).digest === 'string' && (error as any).digest.includes('NEXT_REDIRECT');
 }
 
@@ -408,6 +409,7 @@ export async function adminDeleteMember(formData: FormData): Promise<ActionResul
 // 4. PLAYLISTY (PLAYLISTS)
 // ==========================================
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function adminCreatePlaylist(_prevState: any, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
@@ -442,7 +444,8 @@ export async function adminCreatePlaylist(_prevState: any, formData: FormData): 
   });
 }
 
-export async function adminUpdatePlaylist(formData: FormData): Promise<ActionResult> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function adminUpdatePlaylist(_prevState: any, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
