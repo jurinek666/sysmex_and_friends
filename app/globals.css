@@ -316,3 +316,103 @@ body:has([data-login-page]) footer {
   backdrop-filter: blur(30px) saturate(200%);
   -webkit-backdrop-filter: blur(30px) saturate(200%);
 }
+
+/* Enhanced Typography for Article Content */
+/* Vylepšené formátování pro markdown obsah v článcích */
+.prose p {
+  margin-bottom: 1.75rem; /* Větší mezery mezi odstavci (28px) */
+  line-height: 1.75; /* Lepší čitelnost */
+  font-size: 1.125rem; /* 18px základní velikost */
+}
+
+.prose p:last-child {
+  margin-bottom: 0; /* Odstranit mezeru po posledním odstavci */
+}
+
+/* Mezery kolem nadpisů */
+.prose h1 {
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose h2 {
+  margin-top: 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose h3 {
+  margin-top: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.prose h1:first-child,
+.prose h2:first-child,
+.prose h3:first-child {
+  margin-top: 0; /* Odstranit horní mezeru u prvního nadpisu */
+}
+
+/* Mezery v seznamech */
+.prose ul,
+.prose ol {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose li {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Mezery kolem citací */
+.prose blockquote {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Mezery kolem obrázků */
+.prose img {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Mezery kolem kódu */
+.prose pre {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose code {
+  font-size: 0.9em;
+}
+
+/* Lepší vertikální rytmus pro všechny elementy */
+.prose > * + * {
+  margin-top: 1.5rem;
+}
+
+.prose > *:first-child {
+  margin-top: 0;
+}
+
+/* Responsivní velikosti písma */
+@media (max-width: 768px) {
+  .prose p {
+    font-size: 1rem; /* 16px na mobilu */
+    margin-bottom: 1.5rem; /* Menší mezery na mobilu */
+  }
+  
+  .prose h1 {
+    margin-top: 2rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .prose h2 {
+    margin-top: 1.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .prose h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.875rem;
+  }
+}

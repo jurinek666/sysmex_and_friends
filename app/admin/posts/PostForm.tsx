@@ -65,16 +65,57 @@ export function PostForm({ post, onCancel }: PostFormProps) {
           className="w-full p-3 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
         />
         
-        <div className="bg-blue-50 p-4 rounded-xl text-sm text-blue-800 space-y-1">
-          <p className="font-bold mb-2">💡 Formátování textu (Markdown):</p>
-          <ul className="grid grid-cols-2 gap-2">
-            <li><code># Nadpis 1</code></li>
-            <li><code>## Nadpis 2</code></li>
-            <li><code>**Tučný text**</code></li>
-            <li><code>*Kurzíva*</code></li>
-            <li><code>- Odrážka</code></li>
-            <li><code>[Text](https://...)</code></li>
-          </ul>
+        <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl text-sm text-blue-800 space-y-3">
+          <p className="font-bold text-base mb-3">💡 Formátování textu (Markdown):</p>
+          
+          <div>
+            <p className="font-semibold mb-2 text-blue-900">Základní formátování:</p>
+            <ul className="space-y-1.5 ml-2">
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">**tučný text**</code> → <strong>tučný text</strong></li>
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">*kurzíva*</code> → <em>kurzíva</em></li>
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">***tučné a kurzíva***</code> → <strong><em>tučné a kurzíva</em></strong></li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold mb-2 text-blue-900">Nadpisy:</p>
+            <ul className="space-y-1.5 ml-2">
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded"># Nadpis 1</code> (největší)</li>
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">## Nadpis 2</code></li>
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">### Nadpis 3</code></li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold mb-2 text-blue-900">Odkazy a obrázky:</p>
+            <ul className="space-y-1.5 ml-2">
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">[Text odkazu](https://url.cz)</code></li>
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">![Popis obrázku](https://url.cz/obrazek.jpg)</code></li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold mb-2 text-blue-900">Seznamy:</p>
+            <ul className="space-y-1.5 ml-2">
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">- Odrážkový seznam</code></li>
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">1. Číslovaný seznam</code></li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-semibold mb-2 text-blue-900">Ostatní:</p>
+            <ul className="space-y-1.5 ml-2">
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">{"> "}Citace</code> (začít řádkem s &gt;)</li>
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">`kód`</code> (inline kód)</li>
+              <li><code className="bg-blue-100 px-2 py-0.5 rounded">---</code> (vodorovná čára)</li>
+            </ul>
+          </div>
+
+          <div className="pt-2 border-t border-blue-200">
+            <p className="text-xs text-blue-700 italic">
+              💡 Tip: Pro lepší čitelnost nechte prázdný řádek mezi odstavci. Mezery a velikost písma se automaticky upraví při zobrazení.
+            </p>
+          </div>
         </div>
         
         <textarea 

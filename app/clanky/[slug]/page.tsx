@@ -86,12 +86,19 @@ export default async function ClanekDetailPage({
         {/* OBSAH (MARKDOWN) */}
         {/* Používáme prose-invert pro dark mode a vlastní styly pro barvy */}
         <article className="bento-card p-8 md:p-12 bg-sysmex-900/20">
-          <div className="prose prose-lg prose-invert max-w-none 
+          <div className="prose prose-xl prose-invert max-w-none 
             prose-headings:text-white prose-headings:font-bold 
+            prose-p:text-gray-200 prose-p:leading-relaxed
+            prose-h1:text-white prose-h1:mt-10 prose-h1:mb-6
+            prose-h2:text-white prose-h2:mt-8 prose-h2:mb-5
+            prose-h3:text-white prose-h3:mt-7 prose-h3:mb-4
             prose-a:text-neon-cyan prose-a:no-underline hover:prose-a:underline
             prose-strong:text-neon-gold
-            prose-blockquote:border-l-neon-magenta prose-blockquote:bg-white/5 prose-blockquote:py-2 prose-blockquote:pr-4
+            prose-blockquote:border-l-neon-magenta prose-blockquote:bg-white/5 prose-blockquote:py-2 prose-blockquote:pr-4 prose-blockquote:my-6
             prose-code:text-neon-cyan prose-code:bg-black/30 prose-code:rounded prose-code:px-1
+            prose-ul:my-6 prose-ol:my-6
+            prose-li:my-3
+            prose-img:my-8
           ">
             <ReactMarkdown
               rehypePlugins={[rehypeRaw]}
