@@ -234,7 +234,7 @@ export default async function Home() {
           
           {albums && albums.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {albums.slice(0, 4).map((album: any) => (
+              {albums.slice(0, 4).map((album) => (
                 <Link
                   key={album.id}
                   href={`/galerie/${album.id}`}

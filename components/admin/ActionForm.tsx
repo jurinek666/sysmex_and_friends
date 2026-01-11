@@ -6,6 +6,7 @@ import { SuccessMessage } from "./SuccessMessage";
 import { PendingButton } from "@/components/ui/PendingButton";
 
 interface ActionFormProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   action: (prevState: any, formData: FormData) => Promise<{ success: boolean; error?: string }>;
   successMessage?: string;
   children: React.ReactNode;

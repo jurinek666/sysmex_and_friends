@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { ArrowUp } from "lucide-react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { motion, useSpring } from "framer-motion";
 
 export function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
@@ -10,7 +10,7 @@ export function ScrollToTop() {
   const lastScrollY = useRef(0);
   const scrollThreshold = useRef(0);
 
-  const { scrollY } = useScroll();
+  // Removed unused scrollY
   
   // Create spring animation for smooth jiggle effect
   const springConfig = { stiffness: 400, damping: 10 };
