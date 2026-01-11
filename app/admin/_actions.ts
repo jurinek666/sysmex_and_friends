@@ -192,7 +192,10 @@ export async function adminCreateResult(formData: FormData): Promise<ActionResul
       throw new Error(`Sezóna s kódem ${seasonCode} nebyla nalezena.`);
     }
 
+    const id = randomUUID();
+    const now = new Date().toISOString();
     const { error } = await supabase.from("Result").insert({
+      id,
       date: new Date(dateStr).toISOString(),
       venue,
       teamName,
@@ -200,9 +203,17 @@ export async function adminCreateResult(formData: FormData): Promise<ActionResul
       score,
       note,
       seasonId: season.id,
+      createdAt: now,
+      updatedAt: now,
     });
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/results");
     revalidatePath("/vysledky");
@@ -290,15 +301,26 @@ export async function adminCreateMember(formData: FormData): Promise<ActionResul
     const gender = String(formData.get("gender"));
     const bio = formData.get("bio")?.toString() || null;
 
+    const id = randomUUID();
+    const now = new Date().toISOString();
     const { error } = await supabase.from("Member").insert({
+      id,
       displayName,
       nickname,
       role,
       gender,
       bio,
+      createdAt: now,
+      updatedAt: now,
     });
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/members");
     revalidatePath("/tym");
@@ -458,15 +480,26 @@ export async function adminCreateAlbum(formData: FormData): Promise<ActionResult
     const description = formData.get("description")?.toString() || null;
     const coverPublicId = formData.get("coverPublicId")?.toString() || null;
 
+    const id = randomUUID();
+    const now = new Date().toISOString();
     const { error } = await supabase.from("Album").insert({
+      id,
       title,
       dateTaken: new Date(dateStr).toISOString(),
       cloudinaryFolder,
       description,
       coverPublicId,
+      createdAt: now,
+      updatedAt: now,
     });
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/gallery");
     revalidatePath("/galerie");
