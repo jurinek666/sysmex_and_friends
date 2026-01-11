@@ -1,16 +1,19 @@
 import { createClient } from "@/lib/supabase/server";
+import { withRetry, logSupabaseError } from "./utils";
 
 export async function getActiveMembers() {
   const supabase = await createClient();
   
-  const { data, error } = await supabase
-    .from("Member")
-    .select("*")
-    .eq("isActive", true)
-    .order("displayName", { ascending: true });
+  const { data, error } = await withRetry(async () => {
+    return await supabase
+      .from("Member")
+      .select("*")
+      .eq("isActive", true)
+      .order("displayName", { ascending: true });
+  });
 
   if (error) {
-    console.error("Error fetching members:", error);
+    logSupabaseError("getActiveMembers", error);
     return [];
   }
   

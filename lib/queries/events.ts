@@ -1,20 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
+import { withRetry, logSupabaseError } from "./utils";
 
 export async function getUpcomingEvents(limit = 5) {
   const supabase = await createClient();
   
   const now = new Date().toISOString();
   
-  const { data, error } = await supabase
-    .from("Event")
-    .select("*")
-    .eq("isUpcoming", true)
-    .gte("date", now)
-    .order("date", { ascending: true })
-    .limit(limit);
+  const { data, error } = await withRetry(async () => {
+    return await supabase
+      .from("Event")
+      .select("*")
+      .eq("isUpcoming", true)
+      .gte("date", now)
+      .order("date", { ascending: true })
+      .limit(limit);
+  });
 
   if (error) {
-    console.error("Error fetching upcoming events:", error);
+    logSupabaseError("getUpcomingEvents", error);
     return [];
   }
   
