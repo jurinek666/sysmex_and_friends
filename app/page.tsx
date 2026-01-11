@@ -157,9 +157,21 @@ export default async function Home() {
                     Číst dál <span>→</span>
                  </Link>
               </div>
-              <div className="w-full md:w-48 h-32 rounded-2xl bg-gradient-to-br from-sysmex-800 to-sysmex-900 flex items-center justify-center border border-white/5">
-                 <span className="text-4xl">📝</span>
-              </div>
+              {featuredPost.coverImageUrl ? (
+                <div className="relative w-full md:w-48 h-32 rounded-2xl overflow-hidden border border-white/5">
+                  <Image
+                    src={featuredPost.coverImageUrl}
+                    alt={featuredPost.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, 192px"
+                  />
+                </div>
+              ) : (
+                <div className="w-full md:w-48 h-32 rounded-2xl bg-gradient-to-br from-sysmex-800 to-sysmex-900 flex items-center justify-center border border-white/5">
+                  <span className="text-4xl">📝</span>
+                </div>
+              )}
             </>
           ) : (
              <div className="text-gray-500">Zatím žádný zvýrazněný článek.</div>

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { randomUUID } from "crypto";
 
 // Helper funkce pro kontrolu autorizace
 async function requireAuth() {
@@ -37,7 +38,36 @@ async function handleAction<T>(
     if (isRedirectError(error)) {
       throw error;
     }
-    const errorMessage = error instanceof Error ? error.message : "Nastala neznámá chyba";
+    // Handle Supabase errors (they have a 'message' property but aren't Error instances)
+    let errorMessage = "Nastala neznámá chyba";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      // Include code if available
+      if ((error as any).code) {
+        errorMessage += ` (kód: ${(error as any).code})`;
+      }
+      // Include hint if available
+      if ((error as any).hint) {
+        errorMessage += ` - ${(error as any).hint}`;
+      }
+    } else if (error && typeof error === 'object') {
+      // Try to extract message from Supabase error object
+      if ('message' in error && typeof (error as any).message === 'string') {
+        errorMessage = (error as any).message;
+        if ((error as any).code) {
+          errorMessage += ` (kód: ${(error as any).code})`;
+        }
+        if ((error as any).hint) {
+          errorMessage += ` - ${(error as any).hint}`;
+        }
+        if ((error as any).details) {
+          errorMessage += ` - ${(error as any).details}`;
+        }
+      } else {
+        // Fallback: stringify the error
+        errorMessage = JSON.stringify(error);
+      }
+    }
     console.error("Admin action error:", error);
     return { success: false, error: errorMessage };
   }
@@ -58,16 +88,29 @@ export async function adminCreatePost(formData: FormData): Promise<ActionResult>
     const coverImageUrl = formData.get("coverImageUrl")?.toString() || null;
     const isFeatured = formData.get("isFeatured") === "on";
 
+    const id = randomUUID();
+    const now = new Date().toISOString();
     const { error } = await supabase.from("Post").insert({
+      id,
       title,
       slug,
       excerpt,
       content,
       coverImageUrl,
       isFeatured,
+      publishedAt: now,
+      createdAt: now,
+      updatedAt: now,
     });
 
-    if (error) throw error;
+    if (error) {
+      // Convert Supabase error to Error instance for proper handling
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/posts");
     revalidatePath("/clanky");
@@ -96,6 +139,7 @@ export async function adminUpdatePost(formData: FormData): Promise<ActionResult>
         content,
         coverImageUrl,
         isFeatured,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -313,14 +357,25 @@ export async function adminCreatePlaylist(formData: FormData): Promise<ActionRes
     const description = formData.get("description")?.toString() || null;
     const isActive = formData.get("isActive") === "on";
 
+    const id = randomUUID();
+    const now = new Date().toISOString();
     const { error } = await supabase.from("Playlist").insert({
+      id,
       title,
       spotifyUrl,
       description,
       isActive,
+      createdAt: now,
+      updatedAt: now,
     });
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/playlists");
     revalidatePath("/");
@@ -344,10 +399,17 @@ export async function adminUpdatePlaylist(formData: FormData): Promise<ActionRes
         spotifyUrl,
         description,
         isActive,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/playlists");
     revalidatePath("/");
