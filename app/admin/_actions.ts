@@ -304,7 +304,7 @@ export async function adminDeleteMember(formData: FormData): Promise<ActionResul
 // 4. PLAYLISTY (PLAYLISTS)
 // ==========================================
 
-export async function adminCreatePlaylist(formData: FormData): Promise<ActionResult> {
+export async function adminCreatePlaylist(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
