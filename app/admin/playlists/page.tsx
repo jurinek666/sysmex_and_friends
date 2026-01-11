@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { requireAuth } from "@/lib/admin/auth";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { PlaylistForm } from "./PlaylistForm";
 import { PlaylistList } from "./PlaylistList";
@@ -7,7 +6,6 @@ import { PlaylistList } from "./PlaylistList";
 export const dynamic = "force-dynamic";
 
 export default async function AdminPlaylistsPage() {
-  await requireAuth();
   const supabase = await createClient();
   
   // Nahrazeno prisma.playlist.findMany(...)

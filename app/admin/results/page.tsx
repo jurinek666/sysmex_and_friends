@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { requireAuth } from "@/lib/admin/auth";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ResultForm } from "./ResultForm";
 import { ResultList } from "./ResultList";
@@ -25,7 +24,6 @@ interface Result {
 }
 
 export default async function AdminResultsPage() {
-  await requireAuth();
   const supabase = await createClient();
 
   // 1. Načteme výsledky včetně propojené sezóny

@@ -143,7 +143,13 @@ export async function adminUpdatePost(formData: FormData): Promise<ActionResult>
       })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/posts");
     revalidatePath("/clanky");
@@ -158,7 +164,13 @@ export async function adminDeletePost(formData: FormData): Promise<ActionResult>
 
     const { error } = await supabase.from("Post").delete().eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/posts");
     revalidatePath("/clanky");
@@ -279,7 +291,13 @@ export async function adminDeleteResult(formData: FormData): Promise<ActionResul
 
     const { error } = await supabase.from("Result").delete().eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/results");
     revalidatePath("/vysledky");
@@ -372,7 +390,13 @@ export async function adminDeleteMember(formData: FormData): Promise<ActionResul
 
     const { error } = await supabase.from("Member").delete().eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/members");
     revalidatePath("/tym");
@@ -459,7 +483,13 @@ export async function adminDeletePlaylist(formData: FormData): Promise<ActionRes
 
     const { error } = await supabase.from("Playlist").delete().eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/playlists");
     revalidatePath("/");
@@ -551,7 +581,13 @@ export async function adminDeleteAlbum(formData: FormData): Promise<ActionResult
 
     const { error } = await supabase.from("Album").delete().eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      const dbError = new Error(error.message || 'Database error');
+      (dbError as any).code = error.code;
+      (dbError as any).details = error.details;
+      (dbError as any).hint = error.hint;
+      throw dbError;
+    }
 
     revalidatePath("/admin/gallery");
     revalidatePath("/galerie");

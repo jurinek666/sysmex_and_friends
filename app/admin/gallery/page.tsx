@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { requireAuth } from "@/lib/admin/auth";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AlbumForm } from "./AlbumForm";
 import { AlbumList } from "./AlbumList";
@@ -7,7 +6,6 @@ import { AlbumList } from "./AlbumList";
 export const dynamic = "force-dynamic";
 
 export default async function AdminGalleryPage() {
-  await requireAuth();
   const supabase = await createClient();
 
   // Nahrazeno prisma.album.findMany(...)

@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { requireAuth } from "@/lib/admin/auth";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { EventForm } from "./EventForm";
 import { EventList } from "./EventList";
@@ -18,7 +17,6 @@ interface Event {
 }
 
 export default async function AdminCalendarPage() {
-  await requireAuth();
   const supabase = await createClient();
   
   const { data: events } = await supabase

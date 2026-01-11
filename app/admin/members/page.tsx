@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { requireAuth } from "@/lib/admin/auth";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { MemberForm } from "./MemberForm";
 import { MemberList } from "./MemberList";
@@ -18,7 +17,6 @@ interface Member {
 }
 
 export default async function AdminMembersPage() {
-  await requireAuth();
   const supabase = await createClient();
 
   // Nahrazeno prisma.member.findMany(...)
