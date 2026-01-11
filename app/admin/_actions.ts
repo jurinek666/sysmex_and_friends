@@ -1,21 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { randomUUID } from "crypto";
-
-// Helper funkce pro kontrolu autorizace
-async function requireAuth() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  if (!user) {
-    redirect("/login");
-  }
-  
-  return { supabase, user };
-}
+import { requireAuth } from "@/lib/admin/auth";
 
 // Helper pro error handling
 type ActionResult = { success: true } | { success: false; error: string };
@@ -24,7 +10,8 @@ type ActionResult = { success: true } | { success: false; error: string };
 function isRedirectError(error: unknown): boolean {
   if (typeof error !== 'object' || error === null) return false;
   // Next.js redirect errors have a digest property with "NEXT_REDIRECT"
-  return 'digest' in error && typeof (error as { digest: unknown }).digest === 'string' && ((error as { digest: string }).digest).includes('NEXT_REDIRECT');
+  const digest = (error as { digest?: string }).digest;
+  return typeof digest === 'string' && digest.includes('NEXT_REDIRECT');
 }
 
 async function handleAction<T>(
@@ -442,7 +429,8 @@ export async function adminCreatePlaylist(_prevState: unknown, formData: FormDat
   });
 }
 
-export async function adminUpdatePlaylist(_prevState: unknown, formData: FormData): Promise<ActionResult> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function adminUpdatePlaylist(_prevState: any, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 

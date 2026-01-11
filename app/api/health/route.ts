@@ -11,7 +11,7 @@ export async function GET() {
     if (error) throw error;
 
     return NextResponse.json({ ok: true, db: "up (supabase)" }, { status: 200 });
-  } catch (e) {
+  } catch {
     return NextResponse.json(
       { ok: false, db: "down", error: "DB unreachable" },
       { status: 503 }

@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 export const maxDuration = 300; // Allow 5 minutes for many links
 
-export async function GET(_request: Request) {
+export async function GET() {
   // Optional: Check for authorization (e.g., CRON_SECRET)
-  // const authHeader = _request.headers.get('authorization');
+  // const authHeader = request.headers.get('authorization');
   // if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
   //   return new Response('Unauthorized', { status: 401 });
   // }
