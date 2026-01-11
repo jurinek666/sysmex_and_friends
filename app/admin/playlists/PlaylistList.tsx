@@ -2,6 +2,9 @@
 
 import { DeleteFormButton } from "@/components/admin/DeleteFormButton";
 import { adminDeletePlaylist } from "../_actions";
+import { PlaylistForm } from "./PlaylistForm";
+import { useState } from "react";
+import { Edit2 } from "lucide-react";
 
 interface Playlist {
   id: string;
@@ -16,6 +19,18 @@ interface PlaylistListProps {
 }
 
 export function PlaylistList({ playlists }: PlaylistListProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const editingPlaylist = editingId ? playlists.find(p => p.id === editingId) : null;
+
+  if (editingPlaylist) {
+    return (
+      <div className="bg-white p-6 rounded-2xl border shadow-sm mb-12">
+        <h2 className="text-xl font-bold mb-4">Upravit playlist</h2>
+        <PlaylistForm playlist={editingPlaylist} onCancel={() => setEditingId(null)} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {playlists.map((p) => (
@@ -28,10 +43,24 @@ export function PlaylistList({ playlists }: PlaylistListProps) {
             <div className="text-xs text-gray-500 truncate max-w-md mt-1">{p.spotifyUrl}</div>
           </div>
           <DeleteFormButton
-            action={async (formData) => await adminDeletePlaylist(formData)}
+            action={adminDeletePlaylist}
             itemId={p.id}
             itemName={p.title}
           />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setEditingId(p.id)}
+              className="text-green-600 hover:bg-green-50 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1"
+            >
+              <Edit2 className="w-4 h-4" />
+              Upravit
+            </button>
+            <DeleteFormButton
+              action={async (formData) => await adminDeletePlaylist(formData)}
+              itemId={p.id}
+              itemName={p.title}
+            />
+          </div>
         </div>
       ))}
       {playlists.length === 0 && <div className="text-center text-gray-400 py-12">Zatím žádné playlisty.</div>}

@@ -1,22 +1,25 @@
 import Link from "next/link";
 import Image from "next/image";
-import { format } from "date-fns";
+import { format, isToday, isTomorrow, differenceInDays } from "date-fns";
 import { cs } from "date-fns/locale";
+import { Calendar } from "lucide-react";
 import { getFeaturedPost } from "@/lib/queries/posts";
 import { getLatestResults } from "@/lib/queries/results";
 import { getActivePlaylist } from "@/lib/queries/playlists";
 import { getActiveMembers } from "@/lib/queries/members";
 import { getAlbums } from "@/lib/queries/albums";
+import { getUpcomingEvents } from "@/lib/queries/events";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  const [featuredPost, latestResults, activePlaylist, members, albums] = await Promise.all([
+  const [featuredPost, latestResults, activePlaylist, members, albums, upcomingEvents] = await Promise.all([
     getFeaturedPost(),
     getLatestResults(3),
     getActivePlaylist(),
     getActiveMembers(),
     getAlbums(),
+    getUpcomingEvents(5),
   ]);
 
   const latestResult = latestResults[0]; 
@@ -157,9 +160,21 @@ export default async function Home() {
                     Číst dál <span>→</span>
                  </Link>
               </div>
-              <div className="w-full md:w-48 h-32 rounded-2xl bg-gradient-to-br from-sysmex-800 to-sysmex-900 flex items-center justify-center border border-white/5">
-                 <span className="text-4xl">📝</span>
-              </div>
+              {featuredPost.coverImageUrl ? (
+                <div className="relative w-full md:w-48 h-32 rounded-2xl overflow-hidden border border-white/5">
+                  <Image
+                    src={featuredPost.coverImageUrl}
+                    alt={featuredPost.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, 192px"
+                  />
+                </div>
+              ) : (
+                <div className="w-full md:w-48 h-32 rounded-2xl bg-gradient-to-br from-sysmex-800 to-sysmex-900 flex items-center justify-center border border-white/5">
+                  <span className="text-4xl">📝</span>
+                </div>
+              )}
             </>
           ) : (
              <div className="text-gray-500">Zatím žádný zvýrazněný článek.</div>
@@ -255,6 +270,93 @@ export default async function Home() {
             </div>
           ) : (
             <div className="text-center text-gray-500 py-8">Zatím nejsou žádná alba.</div>
+          )}
+        </div>
+
+        {/* 7. CALENDAR CARD */}
+        <div className="col-span-3 bento-card p-8 group hover:border-neon-gold/50">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-3">
+                <Calendar className="w-8 h-8 text-neon-gold" strokeWidth={2} />
+                Kalendář
+              </h2>
+              <p className="text-gray-400 text-sm">Nadcházející termíny kvízů a akcí.</p>
+            </div>
+            <Link 
+              href="/kalendar" 
+              className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/5 font-semibold text-sm transition-colors"
+            >
+              Zobrazit všechny →
+            </Link>
+          </div>
+          
+          {upcomingEvents && upcomingEvents.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {upcomingEvents.map((event: any, index: number) => {
+                const eventDate = new Date(event.date);
+                const isEventToday = isToday(eventDate);
+                const isEventTomorrow = isTomorrow(eventDate);
+                const daysUntil = differenceInDays(eventDate, new Date());
+                
+                return (
+                  <div
+                    key={event.id}
+                    className={`rounded-lg p-4 transition-all border ${
+                      index === 0 
+                        ? "bg-neon-gold/10 border-neon-gold/50 hover:border-neon-gold/80" 
+                        : "bg-white/5 border-white/5 hover:border-neon-gold/30"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className={`text-xs font-mono ${
+                            index === 0 ? "text-neon-gold" : "text-gray-400"
+                          }`}>
+                            {format(eventDate, "d. M. yyyy", { locale: cs })}
+                          </span>
+                          <span className={`text-xs font-mono ${
+                            index === 0 ? "text-neon-gold" : "text-gray-500"
+                          }`}>
+                            {format(eventDate, "HH:mm", { locale: cs })}
+                          </span>
+                        </div>
+                        <h3 className={`text-lg font-bold mb-1 ${
+                          index === 0 ? "text-white" : "text-white"
+                        }`}>
+                          {event.title}
+                        </h3>
+                        {event.venue && (
+                          <p className="text-sm text-gray-400">{event.venue}</p>
+                        )}
+                      </div>
+                      {(isEventToday || isEventTomorrow || daysUntil <= 7) && (
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                          isEventToday 
+                            ? "bg-neon-gold text-black" 
+                            : isEventTomorrow
+                            ? "bg-neon-cyan/20 text-neon-cyan"
+                            : "bg-white/10 text-white"
+                        }`}>
+                          {isEventToday ? "Dnes" : isEventTomorrow ? "Zítra" : `Za ${daysUntil} dní`}
+                        </span>
+                      )}
+                    </div>
+                    {event.description && (
+                      <p className="text-xs text-gray-500 line-clamp-2 mt-2">
+                        {event.description}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 py-8">
+              <Calendar className="w-16 h-16 text-neon-gold/50 mx-auto mb-4" strokeWidth={1.5} />
+              <p>Zatím nejsou naplánované žádné termíny.</p>
+            </div>
           )}
         </div>
 
