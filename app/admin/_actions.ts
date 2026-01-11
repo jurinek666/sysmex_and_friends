@@ -23,7 +23,7 @@ type ActionResult = { success: true } | { success: false; error: string };
 function isRedirectError(error: unknown): boolean {
   if (typeof error !== 'object' || error === null) return false;
   // Next.js redirect errors have a digest property with "NEXT_REDIRECT"
-  return 'digest' in error && typeof (error as any).digest === 'string' && (error as any).digest.includes('NEXT_REDIRECT');
+  return 'digest' in error && typeof (error as { digest: unknown }).digest === 'string' && ((error as { digest: string }).digest).includes('NEXT_REDIRECT');
 }
 
 async function handleAction<T>(
@@ -304,7 +304,7 @@ export async function adminDeleteMember(formData: FormData): Promise<ActionResul
 // 4. PLAYLISTY (PLAYLISTS)
 // ==========================================
 
-export async function adminCreatePlaylist(formData: FormData): Promise<ActionResult> {
+export async function adminCreatePlaylist(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -327,7 +327,7 @@ export async function adminCreatePlaylist(formData: FormData): Promise<ActionRes
   });
 }
 
-export async function adminUpdatePlaylist(formData: FormData): Promise<ActionResult> {
+export async function adminUpdatePlaylist(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
