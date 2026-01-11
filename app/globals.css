@@ -122,6 +122,17 @@ body:has([data-login-page]) {
   color: #111827 !important;
 }
 
+/* Hide Navbar and Footer on admin/login pages to prevent hydration mismatch */
+body:has([data-admin-page]) nav,
+body:has([data-login-page]) nav {
+  display: none !important;
+}
+
+body:has([data-admin-page]) footer,
+body:has([data-login-page]) footer {
+  display: none !important;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

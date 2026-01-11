@@ -1,7 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
@@ -10,27 +8,15 @@ export function ConditionalNavAndFooter({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-
-  // Prevent hydration mismatch by only using pathname after mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // During SSR, show Navbar/Footer (default behavior)
-  // After mount, use actual pathname
-  const isAdminPage = mounted && pathname?.startsWith("/admin");
-  const isLoginPage = mounted && pathname === "/login";
-  const shouldHideNavAndFooter = isAdminPage || isLoginPage;
-
+  // Always render Navbar/Footer to prevent hydration mismatch
+  // CSS will hide them on admin/login pages using data-admin-page and data-login-page attributes
   return (
     <>
-      {!shouldHideNavAndFooter && <Navbar />}
+      <Navbar />
       <div className="flex-grow">
         {children}
       </div>
-      {!shouldHideNavAndFooter && <Footer />}
+      <Footer />
     </>
   );
 }
