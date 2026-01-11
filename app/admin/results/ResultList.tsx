@@ -2,6 +2,9 @@
 
 import { DeleteFormButton } from "@/components/admin/DeleteFormButton";
 import { adminDeleteResult } from "../_actions";
+import { ResultForm } from "./ResultForm";
+import { useState } from "react";
+import { Edit2 } from "lucide-react";
 
 interface Season {
   id: string;
@@ -22,9 +25,22 @@ interface Result {
 
 interface ResultListProps {
   results: Result[];
+  seasons: Season[];
 }
 
-export function ResultList({ results }: ResultListProps) {
+export function ResultList({ results, seasons }: ResultListProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const editingResult = editingId ? results.find(r => r.id === editingId) : null;
+
+  if (editingResult) {
+    return (
+      <div className="bg-white p-6 rounded-2xl border shadow-sm mb-12">
+        <h2 className="text-xl font-bold mb-4">Upravit výsledek</h2>
+        <ResultForm seasons={seasons} result={editingResult} onCancel={() => setEditingId(null)} />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
       <table className="w-full text-sm text-left">
@@ -48,13 +64,22 @@ export function ResultList({ results }: ResultListProps) {
                 {r.placement}. místo
               </td>
               <td className="px-6 py-4">{r.score} b.</td>
-              <td className="px-6 py-4 text-right">
-                <DeleteFormButton
-                  action={async (formData) => await adminDeleteResult(formData)}
-                  itemId={r.id}
-                  itemName={`${r.placement}. místo v ${r.venue}`}
-                  className="text-red-600 hover:underline"
-                />
+              <td className="px-6 py-4">
+                <div className="flex items-center gap-2 justify-end">
+                  <button
+                    onClick={() => setEditingId(r.id)}
+                    className="text-orange-600 hover:bg-orange-50 px-2 py-1 rounded text-sm font-medium transition-colors flex items-center gap-1"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                    Upravit
+                  </button>
+                  <DeleteFormButton
+                    action={async (formData) => await adminDeleteResult(formData)}
+                    itemId={r.id}
+                    itemName={`${r.placement}. místo v ${r.venue}`}
+                    className="text-red-600 hover:underline"
+                  />
+                </div>
               </td>
             </tr>
           ))}
