@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAuth } from "@/lib/admin/auth";
+import { randomUUID } from "crypto";
 
 // Helper pro error handling
 type ActionResult = { success: true } | { success: false; error: string };
