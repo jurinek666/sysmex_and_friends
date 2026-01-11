@@ -8,5 +8,5 @@ export default async function AdminLayout({
   // Zajistí autentizaci pro všechny admin stránky
   await requireAuth();
 
-  return <>{children}</>;
+  return <div data-admin-page>{children}</div>;
 }

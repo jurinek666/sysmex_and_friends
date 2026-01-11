@@ -11,14 +11,16 @@ export function ConditionalNavAndFooter({
 }) {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith("/admin");
+  const isLoginPage = pathname === "/login";
+  const shouldHideNavAndFooter = isAdminPage || isLoginPage;
 
   return (
     <>
-      {!isAdminPage && <Navbar />}
+      {!shouldHideNavAndFooter && <Navbar />}
       <div className="flex-grow">
         {children}
       </div>
-      {!isAdminPage && <Footer />}
+      {!shouldHideNavAndFooter && <Footer />}
     </>
   );
 }
