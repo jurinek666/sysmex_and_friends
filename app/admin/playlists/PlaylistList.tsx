@@ -2,6 +2,9 @@
 
 import { DeleteFormButton } from "@/components/admin/DeleteFormButton";
 import { adminDeletePlaylist } from "../_actions";
+import { PlaylistForm } from "./PlaylistForm";
+import { useState } from "react";
+import { Edit2 } from "lucide-react";
 
 interface Playlist {
   id: string;
@@ -16,6 +19,18 @@ interface PlaylistListProps {
 }
 
 export function PlaylistList({ playlists }: PlaylistListProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const editingPlaylist = editingId ? playlists.find(p => p.id === editingId) : null;
+
+  if (editingPlaylist) {
+    return (
+      <div className="bg-white p-6 rounded-2xl border shadow-sm mb-12">
+        <h2 className="text-xl font-bold mb-4">Upravit playlist</h2>
+        <PlaylistForm playlist={editingPlaylist} onCancel={() => setEditingId(null)} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {playlists.map((p) => (

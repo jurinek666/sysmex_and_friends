@@ -55,7 +55,7 @@ export default async function GaleriePage() {
                 </div>
                 {a.cloudinaryFolder ? (
                   <div className="mt-3 text-xs text-gray-500">
-                    Cloudinary složka: <span className="font-mono">{a.cloudinaryFolder}</span>
+                    Složka: <span className="font-mono text-gray-700">{a.cloudinaryFolder}</span>
                   </div>
                 ) : null}
               </div>
