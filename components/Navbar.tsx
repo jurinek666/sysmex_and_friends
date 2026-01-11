@@ -33,64 +33,13 @@ export function Navbar() {
   const isScrolled = scrollPosition > 50;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex flex-col items-center px-4 md:px-8 pt-4 md:pt-6">
+    <nav className="fixed top-0 left-0 right-0 z-50 flex flex-col items-center px-4 md:px-8 pt-6 md:pt-8">
       <motion.div
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full max-w-6xl flex flex-col items-center gap-4 md:gap-6"
+        className="w-full max-w-6xl"
       >
-        {/* LOGO - Above Navigation */}
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 200, 
-            damping: 15,
-            delay: 0.2 
-          }}
-          className="relative"
-        >
-          <Link href="/" className="flex items-center group" onClick={() => setIsOpen(false)}>
-            <motion.div
-              whileHover={{ 
-                scale: 1.15, 
-                rotate: [0, -5, 5, -5, 0],
-                boxShadow: "0 0 60px rgba(70,214,255,0.8), 0 0 100px rgba(70,214,255,0.4)"
-              }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 15 }}
-              className="relative w-20 h-20 md:w-28 md:h-28 overflow-hidden rounded-full bg-white border-4 border-white/90 group-hover:border-neon-cyan transition-all shadow-[0_0_40px_rgba(70,214,255,0.5)] group-hover:shadow-[0_0_80px_rgba(70,214,255,0.9)] animate-glass-glow"
-            >
-              <Image
-                src="https://res.cloudinary.com/gear-gaming/image/upload/v1767027578/SYS_and_friends_logo_r6esig.png"
-                alt="SYSMEX & Friends Logo"
-                fill
-                className="object-cover"
-                priority
-              />
-              {/* Holographic ring effect */}
-              <motion.div
-                className="absolute inset-0 rounded-full border-2 border-transparent"
-                animate={{
-                  borderColor: [
-                    "rgba(70,214,255,0.8)",
-                    "rgba(255,79,216,0.8)",
-                    "rgba(251,217,134,0.8)",
-                    "rgba(70,214,255,0.8)",
-                  ],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-              />
-            </motion.div>
-          </Link>
-        </motion.div>
-
         {/* FLOATING NAVBAR with Glassmorphism */}
         <motion.div
           ref={navRef}
@@ -100,7 +49,7 @@ export function Navbar() {
             scale: isScrolled ? 0.98 : 1,
           }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="relative w-full glass-nav rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/20 overflow-hidden"
+          className="relative w-full glass-nav rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/20 overflow-visible"
           style={{
             background: isScrolled 
               ? "rgba(255, 255, 255, 0.08)" 
@@ -187,11 +136,69 @@ export function Navbar() {
             }}
           />
 
-          <div className="relative flex items-center justify-center h-16 md:h-20 px-6 md:px-10">
-            {/* DESKTOP NAV with Magnetic Hover Effects */}
-            <div className="hidden lg:flex items-center gap-2 md:gap-4">
-              {navLinks.map((link, index) => (
+          {/* LOGO - Centered overlapping navbar */}
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 200, 
+              damping: 15,
+              delay: 0.2 
+            }}
+            className="absolute left-1/2 -translate-x-1/2 -mt-6 md:-mt-8 z-20"
+          >
+            <Link href="/" className="flex items-center group" onClick={() => setIsOpen(false)}>
+              <motion.div
+                whileHover={{ 
+                  scale: 1.15, 
+                  rotate: [0, -5, 5, -5, 0],
+                  boxShadow: "0 0 60px rgba(70,214,255,0.8), 0 0 100px rgba(70,214,255,0.4)"
+                }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className="relative w-24 h-24 md:w-32 md:h-32 overflow-hidden rounded-full bg-white border-4 border-white/90 group-hover:border-neon-cyan transition-all shadow-[0_0_40px_rgba(70,214,255,0.5)] group-hover:shadow-[0_0_80px_rgba(70,214,255,0.9)] animate-glass-glow"
+              >
+                <Image
+                  src="https://res.cloudinary.com/gear-gaming/image/upload/v1767027578/SYS_and_friends_logo_r6esig.png"
+                  alt="SYSMEX & Friends Logo"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                {/* Holographic ring effect */}
+                <motion.div
+                  className="absolute inset-0 rounded-full border-2 border-transparent"
+                  animate={{
+                    borderColor: [
+                      "rgba(70,214,255,0.8)",
+                      "rgba(255,79,216,0.8)",
+                      "rgba(251,217,134,0.8)",
+                      "rgba(70,214,255,0.8)",
+                    ],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                />
+              </motion.div>
+            </Link>
+          </motion.div>
+
+          <div className="relative flex items-center justify-between h-16 md:h-20 px-6 md:px-10">
+            {/* DESKTOP NAV - Left side */}
+            <div className="hidden lg:flex items-center gap-2 md:gap-4 flex-1 justify-start">
+              {navLinks.slice(0, Math.ceil(navLinks.length / 2)).map((link, index) => (
                  <DesktopNavLink key={link.href} link={link} index={index} active={isActive(link.href)} />
+              ))}
+            </div>
+
+            {/* DESKTOP NAV - Right side */}
+            <div className="hidden lg:flex items-center gap-2 md:gap-4 flex-1 justify-end">
+              {navLinks.slice(Math.ceil(navLinks.length / 2)).map((link, index) => (
+                 <DesktopNavLink key={link.href} link={link} index={index + Math.ceil(navLinks.length / 2)} active={isActive(link.href)} />
               ))}
             </div>
 
