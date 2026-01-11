@@ -409,8 +409,7 @@ export async function adminDeleteMember(formData: FormData): Promise<ActionResul
 // 4. PLAYLISTY (PLAYLISTS)
 // ==========================================
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function adminCreatePlaylist(_prevState: any, formData: FormData): Promise<ActionResult> {
+export async function adminCreatePlaylist(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
