@@ -13,6 +13,17 @@ import { PlaylistCarousel } from "@/components/PlaylistCarousel";
 
 export const revalidate = 60;
 
+interface Event {
+  id: string;
+  title: string;
+  date: string;
+  venue: string;
+  description: string | null;
+  isUpcoming: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default async function Home() {
   const [featuredPost, latestResults, allPlaylists, members, albums, upcomingEvents] = await Promise.all([
     getFeaturedPost(),
@@ -252,7 +263,7 @@ export default async function Home() {
           
           {upcomingEvents && upcomingEvents.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {upcomingEvents.map((event: any, index: number) => {
+              {upcomingEvents.map((event: Event, index: number) => {
                 const eventDate = new Date(event.date);
                 const isEventToday = isToday(eventDate);
                 const isEventTomorrow = isTomorrow(eventDate);

@@ -6,6 +6,14 @@
 const DEFAULT_RETRY_ATTEMPTS = 2;
 const DEFAULT_RETRY_DELAY = 1000; // 1 sekunda
 
+// Supabase error type
+type SupabaseError = {
+  message?: string;
+  code?: string;
+  details?: string;
+  hint?: string;
+} | null;
+
 /**
  * Wrapper funkce pro Supabase dotazy s retry logikou
  * @param queryFn Funkce, která provede Supabase dotaz
@@ -14,11 +22,11 @@ const DEFAULT_RETRY_DELAY = 1000; // 1 sekunda
  * @returns Výsledek dotazu nebo null při selhání
  */
 export async function withRetry<T>(
-  queryFn: () => Promise<{ data: T | null; error: any }>,
+  queryFn: () => Promise<{ data: T | null; error: SupabaseError }>,
   retryAttempts: number = DEFAULT_RETRY_ATTEMPTS,
   retryDelay: number = DEFAULT_RETRY_DELAY
-): Promise<{ data: T | null; error: any }> {
-  let lastError: any = null;
+): Promise<{ data: T | null; error: SupabaseError }> {
+  let lastError: SupabaseError = null;
   
   for (let attempt = 0; attempt <= retryAttempts; attempt++) {
     try {
@@ -46,23 +54,24 @@ export async function withRetry<T>(
       
       // Pokud není retryable nebo jsme vyčerpali pokusy, vrátíme chybu
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Pokud je to timeout nebo síťová chyba, zkusíme znovu
+      const errorObj = error as { message?: string; code?: string };
       const isRetryableError = 
-        error?.message?.includes('timeout') ||
-        error?.message?.includes('fetch failed') ||
-        error?.message?.includes('ECONNRESET') ||
-        error?.message?.includes('ETIMEDOUT') ||
-        error?.code === 'UND_ERR_CONNECT_TIMEOUT';
+        errorObj?.message?.includes('timeout') ||
+        errorObj?.message?.includes('fetch failed') ||
+        errorObj?.message?.includes('ECONNRESET') ||
+        errorObj?.message?.includes('ETIMEDOUT') ||
+        errorObj?.code === 'UND_ERR_CONNECT_TIMEOUT';
       
       if (isRetryableError && attempt < retryAttempts) {
-        lastError = error;
+        lastError = errorObj as SupabaseError;
         await new Promise(resolve => setTimeout(resolve, retryDelay * (attempt + 1)));
         continue;
       }
       
       // Pokud není retryable nebo jsme vyčerpali pokusy, vrátíme chybu
-      return { data: null, error };
+      return { data: null, error: errorObj as SupabaseError };
     }
   }
   
@@ -72,7 +81,7 @@ export async function withRetry<T>(
 /**
  * Zlepšené logování chyb s více informacemi
  */
-export function logSupabaseError(context: string, error: any) {
+export function logSupabaseError(context: string, error: SupabaseError) {
   const errorInfo = {
     context,
     message: error?.message || 'Unknown error',
