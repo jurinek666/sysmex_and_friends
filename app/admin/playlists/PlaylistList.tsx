@@ -28,7 +28,7 @@ export function PlaylistList({ playlists }: PlaylistListProps) {
             <div className="text-xs text-gray-500 truncate max-w-md mt-1">{p.spotifyUrl}</div>
           </div>
           <DeleteFormButton
-            action={async (formData) => await adminDeletePlaylist(formData)}
+            action={adminDeletePlaylist}
             itemId={p.id}
             itemName={p.title}
           />
