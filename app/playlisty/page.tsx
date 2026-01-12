@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import { Music2, ExternalLink } from "lucide-react";
-import Link from "next/link";
+import { Music2 } from "lucide-react";
+import { getAllPlaylists } from "@/lib/queries/playlists";
 
 export const metadata: Metadata = {
   title: "Playlisty | SYSMEX & Friends Quiz Team",
@@ -9,26 +9,17 @@ export const metadata: Metadata = {
 
 export const revalidate = 60;
 
-export default function PlaylistyPage() {
-  // Sample playlists - will be replaced with real data from database
-  const playlists = [
-    {
-      id: "1",
-      title: "Tréninkový Playlist",
-      description: "Skladby pro přípravu na kvízy",
-      platform: "Spotify",
-      url: "#",
-      trackCount: 50,
-    },
-    {
-      id: "2",
-      title: "After Party Mix",
-      description: "Oslavy po úspěšných turnajích",
-      platform: "Spotify",
-      url: "#",
-      trackCount: 35,
-    },
-  ];
+interface Playlist {
+  id: string;
+  title: string;
+  spotifyUrl: string;
+  description: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export default async function PlaylistyPage() {
+  const playlists = await getAllPlaylists();
 
   return (
     <main className="min-h-screen pt-36 md:pt-44 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
@@ -47,52 +38,79 @@ export default function PlaylistyPage() {
         </div>
 
         {/* Playlists Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {playlists.map((playlist) => (
-            <Link
-              key={playlist.id}
-              href={playlist.url}
-              className="bento-card p-6 group hover:border-neon-magenta/50 transition-all"
-            >
-              <div className="space-y-4">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2 flex-1">
+        {playlists && playlists.length > 0 ? (
+          <div className="grid md:grid-cols-2 gap-6">
+            {playlists.map((playlist: Playlist) => (
+              <div
+                key={playlist.id}
+                className="bento-card p-6 group hover:border-neon-magenta/50 transition-all"
+              >
+                <div className="space-y-4">
+                  {/* Header */}
+                  <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Music2 className="w-5 h-5 text-neon-magenta" />
                       <span className="text-xs font-bold text-neon-magenta uppercase tracking-wider">
-                        {playlist.platform}
+                        Spotify
                       </span>
+                      {playlist.isActive && (
+                        <span className="px-2 py-0.5 bg-neon-magenta/20 text-neon-magenta text-[10px] font-bold uppercase rounded-full">
+                          Aktivní
+                        </span>
+                      )}
                     </div>
                     <h2 className="text-2xl font-bold text-white group-hover:text-neon-magenta transition-colors">
                       {playlist.title}
                     </h2>
-                    <p className="text-gray-400 text-sm">
-                      {playlist.description}
-                    </p>
+                    {playlist.description && (
+                      <p className="text-gray-400 text-sm">
+                        {playlist.description}
+                      </p>
+                    )}
                   </div>
-                  <ExternalLink className="w-5 h-5 text-gray-500 group-hover:text-neon-magenta transition-colors" />
-                </div>
-                
-                <div className="pt-4 border-t border-white/5">
-                  <p className="text-sm text-gray-500">
-                    <span className="font-bold text-white">{playlist.trackCount}</span> skladeb
-                  </p>
+
+                  {/* Spotify Embed */}
+                  <div className="mt-4 w-full overflow-hidden rounded-lg">
+                    {playlist.spotifyUrl ? (
+                      <div className="w-full">
+                        {playlist.spotifyUrl.includes('<iframe') ? (
+                          <div
+                            dangerouslySetInnerHTML={{ __html: playlist.spotifyUrl }}
+                            className="w-full [&>iframe]:w-full [&>iframe]:h-[352px] [&>iframe]:rounded-lg [&>iframe]:border-0 [&>iframe]:min-h-[352px]"
+                          />
+                        ) : (
+                          <iframe
+                            src={playlist.spotifyUrl}
+                            width="100%"
+                            height="352"
+                            frameBorder="0"
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy"
+                            className="w-full h-[352px] rounded-lg border-0"
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-gray-500 text-sm italic p-4 text-center bg-white/5 rounded-lg">
+                        Playlist není k dispozici
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </Link>
-          ))}
-
-          {/* Placeholder for more playlists */}
-          <div className="bento-card p-8 text-center border-dashed">
+            ))}
+          </div>
+        ) : (
+          <div className="bento-card p-12 text-center">
             <div className="space-y-4">
-              <Music2 className="w-12 h-12 text-neon-magenta/50 mx-auto" strokeWidth={1.5} />
-              <h2 className="text-lg font-bold text-gray-400">Další playlisty brzy</h2>
-              <p className="text-gray-500 text-sm">
-                Připravujeme další hudební kolekce
+              <Music2 className="w-16 h-16 text-neon-magenta/50 mx-auto" strokeWidth={1.5} />
+              <h2 className="text-2xl font-bold text-white">Zatím nejsou žádné playlisty</h2>
+              <p className="text-gray-400">
+                Připravujeme hudební kolekce pro náš tým
               </p>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </main>
   );
