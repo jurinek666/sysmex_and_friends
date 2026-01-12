@@ -19,7 +19,7 @@ export async function createClient() {
             )
           } catch {
             // Metoda `setAll` byla zavolána ze Server Componenty.
-            // Toto můžeme ignorovat, pokud máme middleware, 
+            // Toto můžeme ignorovat, pokud máme proxy, 
             // který se stará o obnovu session.
           }
         },

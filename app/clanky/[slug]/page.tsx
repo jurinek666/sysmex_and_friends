@@ -105,6 +105,7 @@ export default async function ClanekDetailPage({
               components={{
                 img: ({ src, alt }) => {
                   if (!src) return null;
+                  
                   return (
                     <div className="relative w-full my-4 rounded-lg overflow-hidden" style={{ minHeight: '200px' }}>
                       <Image

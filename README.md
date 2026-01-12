@@ -65,7 +65,7 @@ npm run dev
 
 ### Admin (interní)
 
-Admin je na `/admin` a je chráněný HTTP Basic Auth přes `middleware.ts`.
+Admin je na `/admin` a je chráněný HTTP Basic Auth přes `proxy.ts`.
 
 V `.env` / Render nastav:
 
