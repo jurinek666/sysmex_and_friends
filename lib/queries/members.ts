@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { withRetry, logSupabaseError } from "./utils";
 
-interface Member {
+export interface Member {
   id: string;
   displayName: string;
   nickname: string | null;

@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { getActiveMembers } from "@/lib/queries/members"; 
+import { Metadata } from "next";
+import { getActiveMembers, type Member } from "@/lib/queries/members";
+
+export const metadata: Metadata = {
+  title: "Tým | SYSMEX & Friends Quiz Team",
+  description: "Seznam členů kvízového týmu SYSMEX & Friends",
+};
 
 export const revalidate = 60;
 

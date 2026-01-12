@@ -339,7 +339,7 @@ export async function adminCreateMember(formData: FormData): Promise<ActionResul
     }
 
     revalidatePath("/admin/members");
-    revalidatePath("/tym");
+    revalidatePath("/team");
     revalidatePath("/");
   });
 }
@@ -376,7 +376,7 @@ export async function adminUpdateMember(formData: FormData): Promise<ActionResul
     }
 
     revalidatePath("/admin/members");
-    revalidatePath("/tym");
+    revalidatePath("/team");
     revalidatePath("/");
   });
 }
@@ -397,7 +397,7 @@ export async function adminDeleteMember(formData: FormData): Promise<ActionResul
     }
 
     revalidatePath("/admin/members");
-    revalidatePath("/tym");
+    revalidatePath("/team");
     revalidatePath("/");
   });
 }

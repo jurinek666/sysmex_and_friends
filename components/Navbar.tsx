@@ -19,7 +19,7 @@ export function Navbar() {
   const navLinks = [
     { name: "Aktuality", href: "/posts" },
     { name: "Výsledky", href: "/vysledky" },
-    { name: "Týmová soupiska", href: "/tym" },
+    { name: "Týmová soupiska", href: "/team" },
     { name: "Galerie", href: "/galerie" },
     { name: "Kalendář", href: "/kalendar" },
     { name: "Playlisty", href: "/playlisty" },
