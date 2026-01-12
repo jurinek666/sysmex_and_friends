@@ -4,10 +4,11 @@ on:
   schedule:
     - cron: '0 8 * * 1'
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  audit:
+  security-audit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -24,12 +25,10 @@ jobs:
       - name: Notify Discord on Failure
         if: failure()
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          if [ -n "$DISCORD_WEBHOOK" ]; then
+          if [ -n "$DISCORD_WEBHOOK_URL" ]; then
             curl -H "Content-Type: application/json" \
-                 -d '{"content": "🚨 **Security Audit Failed**\nRepository: ${{ github.repository }}\nBranch: ${{ github.ref_name }}\nCheck the logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' \
-                 "$DISCORD_WEBHOOK"
-          else
-            echo "DISCORD_WEBHOOK_URL secret is not set. Skipping Discord notification."
+                 -d '{"content": "🚨 **Security Audit Failed**\nHigh severity vulnerabilities detected in the repository.\nCheck the actions log for details: https://github.com/'"$GITHUB_REPOSITORY"'/actions/runs/'"$GITHUB_RUN_ID"'"}' \
+                 "$DISCORD_WEBHOOK_URL"
           fi
