@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import ReactMarkdown from "react-markdown";
-// @ts-expect-error - rehype-raw doesn't have types
 import rehypeRaw from "rehype-raw";
 import { getPostBySlug } from "@/lib/queries/posts";
 
