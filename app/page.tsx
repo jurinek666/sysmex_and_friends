@@ -171,7 +171,10 @@ export default async function Home() {
             </Link>
           </div>
           
-          {members.length > 0 ? (
+          {/* #region agent log */}
+          {(()=>{fetch('http://127.0.0.1:7242/ingest/3a03f1e8-5044-4fd7-a566-9802511bf37d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:173',message:'members value check',data:{membersIsNull:members===null,membersIsArray:Array.isArray(members),membersLength:members?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});return null;})()}
+          {/* #endregion */}
+          {members && members.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {members.slice(0, 10).map((member) => (
                 <div 
