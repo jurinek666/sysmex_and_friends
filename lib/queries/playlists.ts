@@ -23,3 +23,21 @@ export async function getActivePlaylist() {
   return data;
 }
 
+export async function getAllPlaylists() {
+  const supabase = await createClient();
+  
+  // Načteme všechny playlisty
+  const { data, error } = await withRetry(async () => {
+    return await supabase
+      .from("Playlist")
+      .select("*")
+      .order("createdAt", { ascending: false });
+  });
+
+  if (error) {
+    logSupabaseError("getAllPlaylists", error);
+    return [];
+  }
+  
+  return data || [];
+}

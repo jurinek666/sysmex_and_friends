@@ -5,18 +5,19 @@ import { cs } from "date-fns/locale";
 import { Calendar } from "lucide-react";
 import { getFeaturedPost } from "@/lib/queries/posts";
 import { getLatestResults } from "@/lib/queries/results";
-import { getActivePlaylist } from "@/lib/queries/playlists";
+import { getAllPlaylists } from "@/lib/queries/playlists";
 import { getActiveMembers } from "@/lib/queries/members";
 import { getAlbums } from "@/lib/queries/albums";
 import { getUpcomingEvents } from "@/lib/queries/events";
+import { PlaylistCarousel } from "@/components/PlaylistCarousel";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  const [featuredPost, latestResults, activePlaylist, members, albums, upcomingEvents] = await Promise.all([
+  const [featuredPost, latestResults, allPlaylists, members, albums, upcomingEvents] = await Promise.all([
     getFeaturedPost(),
     getLatestResults(3),
-    getActivePlaylist(),
+    getAllPlaylists(),
     getActiveMembers(),
     getAlbums(),
     getUpcomingEvents(5),
@@ -78,46 +79,9 @@ export default async function Home() {
            </div>
         </div>
 
-        {/* 2. PLAYLIST CARD */}
-        {activePlaylist && (
-          <div className="bento-card p-6 flex flex-col group hover:border-neon-cyan/50">
-            <div className="flex justify-between items-start mb-4">
-              <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">Playlist</div>
-              <div className="text-2xl">🎵</div>
-            </div>
-            
-            <div className="space-y-3 flex-1">
-              <h3 className="text-xl font-bold text-white">{activePlaylist.title}</h3>
-              {activePlaylist.description && (
-                <p className="text-sm text-gray-400 line-clamp-2">{activePlaylist.description}</p>
-              )}
-              
-              <div className="mt-4 w-full overflow-hidden rounded-lg">
-                {activePlaylist.spotifyUrl ? (
-                  <div className="w-full">
-                    {activePlaylist.spotifyUrl.includes('<iframe') ? (
-                      <div 
-                        dangerouslySetInnerHTML={{ __html: activePlaylist.spotifyUrl }}
-                        className="w-full [&>iframe]:w-full [&>iframe]:h-[352px] [&>iframe]:rounded-lg [&>iframe]:border-0 [&>iframe]:min-h-[352px]"
-                      />
-                    ) : (
-                      <iframe
-                        src={activePlaylist.spotifyUrl}
-                        width="100%"
-                        height="352"
-                        frameBorder="0"
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                        loading="lazy"
-                        className="w-full h-[352px] rounded-lg border-0"
-                      />
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-gray-500 text-sm italic p-4 text-center">Playlist není k dispozici</div>
-                )}
-              </div>
-            </div>
-          </div>
+        {/* 2. PLAYLIST CAROUSEL */}
+        {allPlaylists && allPlaylists.length > 0 && (
+          <PlaylistCarousel playlists={allPlaylists} />
         )}
 
         {/* 3. STAT CARD */}
