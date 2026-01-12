@@ -187,16 +187,19 @@ export function Navbar() {
             </Link>
           </motion.div>
 
-          <div className="relative flex items-center justify-between h-16 md:h-20 px-6 md:px-10">
+          <div className="relative flex items-center justify-center h-16 md:h-20 px-6 md:px-10">
             {/* DESKTOP NAV - Left side */}
-            <div className="hidden lg:flex items-center gap-2 md:gap-4 flex-1 justify-start">
+            <div className="hidden lg:flex items-center gap-3 flex-1 justify-end pr-8">
               {navLinks.slice(0, Math.ceil(navLinks.length / 2)).map((link, index) => (
                  <DesktopNavLink key={link.href} link={link} index={index} active={isActive(link.href)} />
               ))}
             </div>
 
+            {/* Spacer for logo */}
+            <div className="hidden lg:block w-32 md:w-40 flex-shrink-0"></div>
+
             {/* DESKTOP NAV - Right side */}
-            <div className="hidden lg:flex items-center gap-2 md:gap-4 flex-1 justify-end">
+            <div className="hidden lg:flex items-center gap-3 flex-1 justify-start pl-8">
               {navLinks.slice(Math.ceil(navLinks.length / 2)).map((link, index) => (
                  <DesktopNavLink key={link.href} link={link} index={index + Math.ceil(navLinks.length / 2)} active={isActive(link.href)} />
               ))}

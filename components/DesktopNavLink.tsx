@@ -67,9 +67,10 @@ export function DesktopNavLink({ link, index, active }: NavLinkProps) {
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 400, damping: 15 }}
           className={`
-            relative px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-black uppercase tracking-tight text-xs md:text-sm
+            relative px-4 md:px-5 py-2.5 rounded-xl font-black uppercase tracking-tight text-xs md:text-sm
             transition-all duration-300 overflow-hidden
             transform-gpu perspective-1000
+            h-10 md:h-11 flex items-center justify-center whitespace-nowrap
             ${active
               ? "text-white"
               : "text-gray-300 hover:text-white"
