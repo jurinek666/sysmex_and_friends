@@ -16,7 +16,7 @@ export default function NotFound() {
             Domů
           </Link>
           <Link
-            href="/clanky"
+            href="/posts"
             className="rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-gray-900 font-semibold hover:bg-gray-50 transition"
           >
             Články

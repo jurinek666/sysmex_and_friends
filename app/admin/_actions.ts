@@ -101,7 +101,7 @@ export async function adminCreatePost(formData: FormData): Promise<ActionResult>
     }
 
     revalidatePath("/admin/posts");
-    revalidatePath("/clanky");
+    revalidatePath("/posts");
     revalidatePath("/");
   });
 }
@@ -140,7 +140,7 @@ export async function adminUpdatePost(formData: FormData): Promise<ActionResult>
     }
 
     revalidatePath("/admin/posts");
-    revalidatePath("/clanky");
+    revalidatePath("/posts");
     revalidatePath("/");
   });
 }
@@ -161,7 +161,7 @@ export async function adminDeletePost(formData: FormData): Promise<ActionResult>
     }
 
     revalidatePath("/admin/posts");
-    revalidatePath("/clanky");
+    revalidatePath("/posts");
     revalidatePath("/");
   });
 }

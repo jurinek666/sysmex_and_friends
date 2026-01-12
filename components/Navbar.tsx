@@ -17,7 +17,7 @@ export function Navbar() {
   const navRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
-    { name: "Aktuality", href: "/clanky" },
+    { name: "Aktuality", href: "/posts" },
     { name: "Výsledky", href: "/vysledky" },
     { name: "Týmová soupiska", href: "/tym" },
     { name: "Galerie", href: "/galerie" },
@@ -156,7 +156,7 @@ export function Navbar() {
                   boxShadow: "0 0 60px rgba(70,214,255,0.8), 0 0 100px rgba(70,214,255,0.4)"
                 }}
                 whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                transition={{ type: "tween", duration: 0.4, ease: "easeInOut" }}
                 className="relative w-24 h-24 md:w-32 md:h-32 overflow-hidden rounded-full bg-white border-4 border-white/90 group-hover:border-neon-cyan transition-all shadow-[0_0_40px_rgba(70,214,255,0.5)] group-hover:shadow-[0_0_80px_rgba(70,214,255,0.9)] animate-glass-glow"
               >
                 <Image

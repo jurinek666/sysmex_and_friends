@@ -174,11 +174,6 @@ export default async function Home() {
                         {member.displayName.slice(0, 2).toUpperCase()}
                       </span>
                     </div>
-                    {member.role && (
-                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-sysmex-950 border border-neon-magenta/50 rounded-full text-[8px] font-bold uppercase text-neon-magenta">
-                        {member.role}
-                      </div>
-                    )}
                   </div>
                   <h3 className="text-sm font-bold text-white mb-1 line-clamp-1">
                     {member.displayName}
