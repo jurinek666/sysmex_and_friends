@@ -40,10 +40,10 @@ export default async function Home() {
     <main className="min-h-screen pt-36 md:pt-44 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
       
       {/* BENTO GRID LAYOUT */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(180px,auto)]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-[minmax(180px,auto)]">
 
         {/* 1. HERO BLOCK */}
-        <div className="col-span-1 md:col-span-2 row-span-2 bento-card p-8 md:p-12 flex flex-col justify-center relative group overflow-hidden">
+        <div className="col-span-1 bento-card p-8 md:p-12 flex flex-col justify-center relative group overflow-hidden">
            {/* Background Image */}
            <Image
              src="https://res.cloudinary.com/gear-gaming/image/upload/v1767024968/ChatGPT_Image_29._12._2025_17_15_51_xxs857.png"
@@ -95,29 +95,8 @@ export default async function Home() {
           <PlaylistCarousel playlists={allPlaylists} />
         )}
 
-        {/* 3. STAT CARD */}
-        <div className="bento-card p-6 flex flex-col justify-between group hover:border-neon-gold/50">
-           <div className="flex justify-between items-start">
-             <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">Poslední hra</div>
-             <div className="text-2xl">🏆</div>
-           </div>
-           
-           {latestResult ? (
-             <div className="mt-4">
-               <div className="text-3xl font-black text-white">{latestResult.placement}. místo</div>
-               <div className="text-sm text-gray-400 mt-1">{latestResult.venue}</div>
-               <div className="mt-4 flex items-center gap-3">
-                  <div className="px-2 py-1 rounded bg-white/10 text-xs font-mono">{latestResult.score} bodů</div>
-                  <div className="text-xs text-gray-500">{format(new Date(latestResult.date), "d. M.", { locale: cs })}</div>
-               </div>
-             </div>
-           ) : (
-             <div className="mt-auto text-gray-500 italic">Žádná data</div>
-           )}
-        </div>
-
-        {/* 4. FEATURED POST */}
-        <div className="col-span-3 bento-card p-8 flex flex-col md:flex-row gap-8 items-center group hover:border-neon-magenta/50">
+        {/* 3. FEATURED POST */}
+        <div className="col-span-1 bento-card p-8 flex flex-col md:flex-row gap-8 items-center group hover:border-neon-magenta/50">
           {featuredPost ? (
             <>
               <div className="flex-1 space-y-4">
@@ -156,8 +135,29 @@ export default async function Home() {
           )}
         </div>
 
+        {/* 4. STAT CARD */}
+        <div className="bento-card p-6 flex flex-col justify-between group hover:border-neon-gold/50">
+           <div className="flex justify-between items-start">
+             <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">Poslední hra</div>
+             <div className="text-2xl">🏆</div>
+           </div>
+           
+           {latestResult ? (
+             <div className="mt-4">
+               <div className="text-3xl font-black text-white">{latestResult.placement}. místo</div>
+               <div className="text-sm text-gray-400 mt-1">{latestResult.venue}</div>
+               <div className="mt-4 flex items-center gap-3">
+                  <div className="px-2 py-1 rounded bg-white/10 text-xs font-mono">{latestResult.score} bodů</div>
+                  <div className="text-xs text-gray-500">{format(new Date(latestResult.date), "d. M.", { locale: cs })}</div>
+               </div>
+             </div>
+           ) : (
+             <div className="mt-auto text-gray-500 italic">Žádná data</div>
+           )}
+        </div>
+
         {/* 5. TEAM LIST CARD */}
-        <div className="col-span-3 bento-card p-8 group hover:border-neon-magenta/50">
+        <div className="col-span-2 bento-card p-8 group hover:border-neon-magenta/50">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Náš Tým</h2>
@@ -203,7 +203,7 @@ export default async function Home() {
         </div>
 
         {/* 6. GALLERY CARD */}
-        <div className="col-span-3 bento-card p-8 group hover:border-neon-cyan/50">
+        <div className="col-span-2 bento-card p-8 group hover:border-neon-cyan/50">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Galerie</h2>
@@ -244,7 +244,7 @@ export default async function Home() {
         </div>
 
         {/* 7. CALENDAR CARD */}
-        <div className="col-span-3 bento-card p-8 group hover:border-neon-gold/50">
+        <div className="col-span-2 bento-card p-8 group hover:border-neon-gold/50">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-3">
