@@ -45,7 +45,9 @@ export default async function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-[minmax(180px,auto)]">
 
         {/* 0. AKTUALITY */}
-        <PostsCarousel posts={recentPosts} />
+        <div id="aktuality" className="col-span-1 md:col-span-2">
+          <PostsCarousel posts={recentPosts} />
+        </div>
 
         {/* 1. HERO BLOCK */}
         <div className="col-span-1 bento-card p-8 md:p-12 flex flex-col justify-center relative group overflow-hidden">
@@ -85,7 +87,7 @@ export default async function Home() {
              </p>
 
              <div className="flex flex-wrap gap-4 pt-4">
-               <Link href="/posts" className="px-6 py-3 rounded-xl bg-white text-black font-bold hover:scale-105 transition-transform">
+              <Link href="/#aktuality" className="px-6 py-3 rounded-xl bg-white text-black font-bold hover:scale-105 transition-transform">
                  Číst novinky
                </Link>
                <Link href="/team" className="px-6 py-3 rounded-xl bg-white/20 border-2 border-white/40 hover:bg-white/30 hover:border-white/60 font-bold text-white backdrop-blur-sm transition-all">
@@ -97,7 +99,9 @@ export default async function Home() {
 
         {/* 2. PLAYLIST CAROUSEL */}
         {allPlaylists && allPlaylists.length > 0 && (
-          <PlaylistCarousel playlists={allPlaylists} />
+          <div id="playlisty">
+            <PlaylistCarousel playlists={allPlaylists} />
+          </div>
         )}
 
         {/* 3. FEATURED POST */}
@@ -141,7 +145,7 @@ export default async function Home() {
         </div>
 
         {/* 4. STAT CARD */}
-        <div className="bento-card p-6 flex flex-col justify-between group hover:border-neon-gold/50">
+        <div id="vysledky" className="bento-card p-6 flex flex-col justify-between group hover:border-neon-gold/50">
            <div className="flex justify-between items-start">
              <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">Poslední hra</div>
              <div className="text-2xl">🏆</div>
@@ -162,7 +166,7 @@ export default async function Home() {
         </div>
 
         {/* 5. TEAM LIST CARD */}
-        <div className="col-span-2 bento-card p-8 group hover:border-neon-magenta/50">
+        <div id="tym" className="col-span-2 bento-card p-8 group hover:border-neon-magenta/50">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Náš Tým</h2>
@@ -208,7 +212,7 @@ export default async function Home() {
         </div>
 
         {/* 6. GALLERY CARD */}
-        <div className="col-span-2 bento-card p-8 group hover:border-neon-cyan/50">
+        <div id="galerie" className="col-span-2 bento-card p-8 group hover:border-neon-cyan/50">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Galerie</h2>
@@ -249,7 +253,7 @@ export default async function Home() {
         </div>
 
         {/* 7. CALENDAR CARD */}
-        <div className="col-span-2 bento-card p-8 group hover:border-neon-gold/50">
+        <div id="kalendar" className="col-span-2 bento-card p-8 group hover:border-neon-gold/50">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-3">

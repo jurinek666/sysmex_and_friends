@@ -39,7 +39,7 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
 
   if (!safePosts.length) {
     return (
-      <div className="bento-card p-8 flex flex-col gap-4 col-span-1 md:col-span-2">
+      <div className="bento-card p-8 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl md:text-3xl font-bold text-white">Aktuality</h2>
           <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">Novinky</span>
@@ -66,7 +66,7 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
   };
 
   return (
-    <div className="bento-card px-8 md:px-12 py-8 flex flex-col gap-6 col-span-1 md:col-span-2 relative overflow-hidden group hover:border-neon-cyan/50">
+    <div className="bento-card px-8 md:px-12 py-8 flex flex-col gap-6 relative overflow-hidden group hover:border-neon-cyan/50">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-2xl md:text-3xl font-bold text-white">Aktuality</h2>
         <div className="flex items-center gap-3">

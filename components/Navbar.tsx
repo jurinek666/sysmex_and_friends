@@ -17,12 +17,12 @@ export function Navbar() {
   const navRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
-    { name: "Aktuality", href: "/posts" },
-    { name: "Výsledky", href: "/vysledky" },
-    { name: "Týmová soupiska", href: "/team" },
-    { name: "Galerie", href: "/galerie" },
-    { name: "Kalendář", href: "/kalendar" },
-    { name: "Playlisty", href: "/playlisty" },
+    { name: "Aktuality", href: "/#aktuality" },
+    { name: "Výsledky", href: "/#vysledky" },
+    { name: "Týmová soupiska", href: "/#tym" },
+    { name: "Galerie", href: "/#galerie" },
+    { name: "Kalendář", href: "/#kalendar" },
+    { name: "Playlisty", href: "/#playlisty" },
   ];
 
   const isActive = (path: string) => pathname.startsWith(path);
