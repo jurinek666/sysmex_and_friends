@@ -3,13 +3,14 @@ import Image from "next/image";
 import { format, isToday, isTomorrow, differenceInDays } from "date-fns";
 import { cs } from "date-fns/locale";
 import { Calendar } from "lucide-react";
-import { getFeaturedPost } from "@/lib/queries/posts";
+import { getFeaturedPost, getRecentPosts } from "@/lib/queries/posts";
 import { getLatestResults } from "@/lib/queries/results";
 import { getAllPlaylists } from "@/lib/queries/playlists";
 import { getActiveMembers } from "@/lib/queries/members";
 import { getAlbums } from "@/lib/queries/albums";
 import { getUpcomingEvents } from "@/lib/queries/events";
 import { PlaylistCarousel } from "@/components/PlaylistCarousel";
+import { PostsCarousel } from "@/components/PostsCarousel";
 
 export const revalidate = 60;
 
@@ -25,7 +26,8 @@ interface Event {
 }
 
 export default async function Home() {
-  const [featuredPost, latestResults, allPlaylists, members, albums, upcomingEvents] = await Promise.all([
+  const [recentPosts, featuredPost, latestResults, allPlaylists, members, albums, upcomingEvents] = await Promise.all([
+    getRecentPosts(6),
     getFeaturedPost(),
     getLatestResults(3),
     getAllPlaylists(),
@@ -41,6 +43,9 @@ export default async function Home() {
       
       {/* BENTO GRID LAYOUT */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-[minmax(180px,auto)]">
+
+        {/* 0. AKTUALITY */}
+        <PostsCarousel posts={recentPosts} />
 
         {/* 1. HERO BLOCK */}
         <div className="col-span-1 bento-card p-8 md:p-12 flex flex-col justify-center relative group overflow-hidden">
