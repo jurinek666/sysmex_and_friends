@@ -2,11 +2,12 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export const maxDuration = 300; // Allow 5 minutes for many links
+export const dynamic = 'force-dynamic';
 
-export async function GET() {
-  // Optional: Check for authorization (e.g., CRON_SECRET)
+export async function GET(request: Request) {
+  // Optional: Verify CRON_SECRET if you want to secure this endpoint
   // const authHeader = request.headers.get('authorization');
-  // if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
   //   return new Response('Unauthorized', { status: 401 });
   // }
 
@@ -30,6 +31,7 @@ export async function GET() {
   // 2. Parse the 'content' field to extract all external hyperlinks.
   // Map unique URLs to the posts that contain them.
   const urlMap = new Map<string, { title: string; id: string }[]>();
+  // Regex to match [text](url) where url starts with http/https
   const regex = /\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
 
   for (const post of posts) {
@@ -61,25 +63,19 @@ export async function GET() {
     await Promise.all(
       batch.map(async (url) => {
         try {
-          // 3. Lightweight HTTP HEAD request
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
-
+          // 3. Lightweight HTTP HEAD request with 5s timeout
+          // using AbortSignal.timeout() (Node.js 18+ / Next.js 16)
           const response = await fetch(url, {
             method: "HEAD",
-            signal: controller.signal,
-            // Add a User-Agent to avoid being blocked by some servers
+            signal: AbortSignal.timeout(5000),
             headers: {
               "User-Agent": "LinkMedic/1.0",
             },
           });
 
-          clearTimeout(timeoutId);
-
           // 4. If 404 or 500 status code, add to broken links.
-          // Note: Some servers might return 405 Method Not Allowed for HEAD,
-          // in which case we might retry with GET, but for now we stick to requirements.
-          // Or we can be lenient and only flag 404/500 range explicitly.
+          // Note: Some servers might return 405 Method Not Allowed for HEAD.
+          // We flag 404 and 5xx.
           if (response.status === 404 || response.status >= 500) {
              brokenLinks.push({
                url,
@@ -91,7 +87,7 @@ export async function GET() {
           // Handle timeouts and network errors
           let errorMessage = 'Error';
           if (err instanceof Error) {
-            errorMessage = err.name === 'AbortError' ? 'Timeout' : err.message;
+            errorMessage = err.name === 'TimeoutError' || err.name === 'AbortError' ? 'Timeout' : err.message;
           }
 
           brokenLinks.push({
@@ -108,18 +104,13 @@ export async function GET() {
   if (brokenLinks.length > 0) {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     if (webhookUrl) {
-      // Group by Post for better readability in the message
-      // Or just list them as requested: "Post title and the broken URL"
-
       let messageContent = "**Link Medic Report: Broken Links Found**\n\n";
-
-      // We can iterate broken links and list them.
-      // To avoid hitting Discord message length limits (2000 chars), we might need to truncate.
 
       for (const link of brokenLinks) {
         const postTitles = link.posts.map(p => p.title).join(", ");
         const line = `- **${link.status}**: <${link.url}> in *${postTitles}*\n`;
 
+        // Discord message limit is 2000 characters
         if (messageContent.length + line.length > 1900) {
           messageContent += "\n...(truncated)...";
           break;
