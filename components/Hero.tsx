@@ -22,27 +22,15 @@ export function Hero() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="#aktuality"
-                className="px-5 py-3 rounded-xl bg-sysmex-900 text-white font-semibold hover:bg-sysmex-800 transition-colors"
-              >
-                Aktuální dění
-              </Link>
-              <Link
                 href="#kalendar"
-                className="px-5 py-3 rounded-xl border border-slate-300 text-slate-900 font-semibold hover:bg-slate-50 transition-colors"
+                className="px-5 py-3 rounded-xl bg-sysmex-900 text-white font-semibold hover:bg-sysmex-800 transition-colors"
               >
                 Nadcházející akce
               </Link>
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 uppercase tracking-wider">
-              <span className="px-3 py-1 rounded-full border border-slate-200 bg-slate-100">Novinky</span>
-              <span className="px-3 py-1 rounded-full border border-slate-200 bg-slate-100">Výsledky</span>
-              <span className="px-3 py-1 rounded-full border border-slate-200 bg-slate-100">Galerie</span>
-            </div>
           </div>
 
           <div className="relative">
-            <div className="absolute -top-6 -left-6 h-16 w-16 rounded-2xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur-sm" />
             <div className="absolute -bottom-8 right-6 h-20 w-20 rounded-full border border-neon-magenta/30 bg-neon-magenta/10 blur-[2px]" />
 
             <div className="relative aspect-[4/3] w-full rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-2xl">
@@ -57,12 +45,6 @@ export function Hero() {
               <div className="absolute inset-0 bg-gradient-to-t from-sysmex-950/80 via-transparent to-transparent" />
             </div>
 
-            <div className="absolute -left-4 bottom-6 md:-left-8 md:bottom-10 rounded-2xl border border-white/10 bg-sysmex-900/80 px-4 py-3 text-sm text-white shadow-xl backdrop-blur">
-              Dashboard plný výsledků a novinek
-            </div>
-            <div className="absolute -right-2 top-8 md:right-2 md:top-10 rounded-2xl border border-neon-cyan/30 bg-neon-cyan/10 px-4 py-3 text-sm text-neon-cyan shadow-xl backdrop-blur">
-              Tým, který drží pohromadě
-            </div>
           </div>
         </div>
       </div>

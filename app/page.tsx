@@ -59,48 +59,8 @@ export default async function Home() {
           </div>
         )}
 
-        {/* 3. FEATURED POST */}
-        <div className="col-span-1 bento-card p-8 flex flex-col md:flex-row gap-8 items-center group hover:border-neon-magenta/50">
-          {featuredPost ? (
-            <>
-              <div className="flex-1 space-y-4">
-                 <div className="flex items-center gap-2 text-neon-magenta text-sm font-bold uppercase">
-                    <span>🔥 Top Článek</span>
-                    <span className="w-12 h-px bg-neon-magenta/50"></span>
-                 </div>
-                 <h2 className="text-2xl md:text-3xl font-bold text-white group-hover:text-neon-magenta transition-colors">
-                    {featuredPost.title}
-                 </h2>
-                 <p className="text-gray-400 line-clamp-2">
-                    {featuredPost.excerpt}
-                 </p>
-                 <Link href={`/posts/${featuredPost.slug}`} className="inline-flex items-center gap-2 text-white font-semibold hover:gap-3 transition-all mt-2">
-                    Číst dál <span>→</span>
-                 </Link>
-              </div>
-              {featuredPost.coverImageUrl ? (
-                <div className="relative w-full md:w-48 h-32 rounded-2xl overflow-hidden border border-white/5">
-                  <Image
-                    src={featuredPost.coverImageUrl}
-                    alt={featuredPost.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    sizes="(max-width: 768px) 100vw, 192px"
-                  />
-                </div>
-              ) : (
-                <div className="w-full md:w-48 h-32 rounded-2xl bg-gradient-to-br from-sysmex-800 to-sysmex-900 flex items-center justify-center border border-white/5">
-                  <span className="text-4xl">📝</span>
-                </div>
-              )}
-            </>
-          ) : (
-             <div className="text-gray-500">Zatím žádný zvýrazněný článek.</div>
-          )}
-        </div>
-
-        {/* 4. STAT CARD */}
-        <div id="vysledky" className="bento-card p-6 flex flex-col justify-between group hover:border-neon-gold/50">
+        {/* 3. RESULTS CARD */}
+        <div id="vysledky" className="col-span-1 bento-card p-8 flex flex-col justify-between group hover:border-neon-gold/50">
            <div className="flex justify-between items-start">
              <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">Poslední hra</div>
              <div className="text-2xl">🏆</div>
@@ -119,6 +79,7 @@ export default async function Home() {
              <div className="mt-auto text-gray-500 italic">Žádná data</div>
            )}
         </div>
+
 
         {/* 5. TEAM LIST CARD */}
         <div id="tym" className="col-span-2 bento-card p-8 group hover:border-neon-magenta/50">

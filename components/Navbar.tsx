@@ -44,16 +44,13 @@ export function Navbar() {
         <motion.div
           ref={navRef}
           animate={{
-            opacity: 1 - scrollOpacity * 0.2,
-            backdropFilter: isScrolled ? "blur(30px) saturate(200%)" : "blur(20px) saturate(180%)",
+            opacity: 1,
             scale: isScrolled ? 0.98 : 1,
           }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="relative w-full glass-nav rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/20 overflow-visible"
+          className="relative w-full rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/20 overflow-visible"
           style={{
-            background: isScrolled 
-              ? "rgba(255, 255, 255, 0.08)" 
-              : "rgba(255, 255, 255, 0.05)",
+            background: "linear-gradient(90deg, #0B1E4B 0%, #1E4EA8 50%, #0B1E4B 100%)",
           }}
         >
           {/* Particle Effects Background */}
