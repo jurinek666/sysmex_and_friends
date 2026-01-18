@@ -11,6 +11,7 @@ import { getAlbums } from "@/lib/queries/albums";
 import { getUpcomingEvents } from "@/lib/queries/events";
 import { PlaylistCarousel } from "@/components/PlaylistCarousel";
 import { PostsCarousel } from "@/components/PostsCarousel";
+import { Hero } from "@/components/Hero";
 
 export const revalidate = 60;
 
@@ -39,62 +40,16 @@ export default async function Home() {
   const latestResult = latestResults[0]; 
 
   return (
-    <main className="min-h-screen pt-36 md:pt-44 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
-      
-      {/* BENTO GRID LAYOUT */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-[minmax(180px,auto)]">
+    <main className="min-h-screen pt-32 md:pt-40 pb-20">
+      <Hero />
+
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {/* BENTO GRID LAYOUT */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-[minmax(180px,auto)]">
 
         {/* 0. AKTUALITY */}
         <div id="aktuality" className="col-span-1 md:col-span-2">
           <PostsCarousel posts={recentPosts} />
-        </div>
-
-        {/* 1. HERO BLOCK */}
-        <div className="col-span-1 bento-card p-8 md:p-12 flex flex-col justify-center relative group overflow-hidden">
-           {/* Background Image */}
-           <Image
-             src="https://res.cloudinary.com/gear-gaming/image/upload/v1767024968/ChatGPT_Image_29._12._2025_17_15_51_xxs857.png"
-             alt="Tým Sysmex"
-             fill
-             className="object-cover opacity-50"
-             priority
-           />
-           
-           {/* Gradient blur overlay */}
-           <div className="absolute top-0 right-0 w-64 h-64 bg-neon-cyan/10 blur-[100px] rounded-full group-hover:bg-neon-cyan/20 transition-all duration-700 z-[5]"></div>
-           
-           {/* Overlay shape pod text */}
-           <div className="absolute inset-0 bg-sysmex-950 opacity-[0.55] z-10"></div>
-           
-           <div className="relative z-20 space-y-6">
-             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neon-cyan/30 bg-neon-cyan/10 text-neon-cyan text-xs font-bold uppercase tracking-wider w-fit">
-               <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-cyan opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-cyan"></span>
-                </span>
-               Online
-             </div>
-             
-             <h1 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tight text-white leading-[0.9]">
-               SYSMEX <br />
-               <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-white to-neon-magenta">
-                 & FRIENDS
-               </span>
-             </h1>
-             
-             <p className="text-lg text-white font-bold max-w-md">
-               Oficiální centrála našeho kvízového týmu. Statistiky, články a síně slávy na jednom místě.
-             </p>
-
-             <div className="flex flex-wrap gap-4 pt-4">
-              <Link href="/#aktuality" className="px-6 py-3 rounded-xl bg-white text-black font-bold hover:scale-105 transition-transform">
-                 Číst novinky
-               </Link>
-               <Link href="/team" className="px-6 py-3 rounded-xl bg-white/20 border-2 border-white/40 hover:bg-white/30 hover:border-white/60 font-bold text-white backdrop-blur-sm transition-all">
-                 Poznat tým
-               </Link>
-             </div>
-           </div>
         </div>
 
         {/* 2. PLAYLIST CAROUSEL */}
@@ -339,6 +294,7 @@ export default async function Home() {
           )}
         </div>
 
+        </div>
       </div>
     </main>
   );
