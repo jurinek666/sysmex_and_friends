@@ -1,9 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
 import { format, isToday, isTomorrow, differenceInDays } from "date-fns";
 import { cs } from "date-fns/locale";
 import { Calendar } from "lucide-react";
-import { getFeaturedPost, getRecentPosts } from "@/lib/queries/posts";
+import { getRecentPosts } from "@/lib/queries/posts";
 import { getLatestResults } from "@/lib/queries/results";
 import { getAllPlaylists } from "@/lib/queries/playlists";
 import { getActiveMembers } from "@/lib/queries/members";
@@ -27,9 +26,8 @@ interface Event {
 }
 
 export default async function Home() {
-  const [recentPosts, featuredPost, latestResults, allPlaylists, members, albums, upcomingEvents] = await Promise.all([
+  const [recentPosts, latestResults, allPlaylists, members, albums, upcomingEvents] = await Promise.all([
     getRecentPosts(6),
-    getFeaturedPost(),
     getLatestResults(3),
     getAllPlaylists(),
     getActiveMembers(),
@@ -48,7 +46,7 @@ export default async function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-[minmax(180px,auto)]">
 
         {/* 0. AKTUALITY */}
-        <div id="aktuality" className="col-span-1 md:col-span-2">
+        <div id="aktuality" className="col-span-1 md:col-span-2 mt-6 md:mt-8">
           <PostsCarousel posts={recentPosts} />
         </div>
 
@@ -60,37 +58,37 @@ export default async function Home() {
         )}
 
         {/* 3. RESULTS CARD */}
-        <div id="vysledky" className="col-span-1 bento-card p-8 flex flex-col justify-between group hover:border-neon-gold/50">
+        <div id="vysledky" className="col-span-1 bento-card p-8 flex flex-col justify-between group hover:border-neon-gold/50 bg-slate-100 border-slate-200">
            <div className="flex justify-between items-start">
-             <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">Poslední hra</div>
+             <div className="text-slate-500 text-sm font-medium uppercase tracking-wider">Poslední hra</div>
              <div className="text-2xl">🏆</div>
            </div>
            
            {latestResult ? (
              <div className="mt-4">
-               <div className="text-3xl font-black text-white">{latestResult.placement}. místo</div>
-               <div className="text-sm text-gray-400 mt-1">{latestResult.venue}</div>
+               <div className="text-3xl font-black text-slate-900">{latestResult.placement}. místo</div>
+               <div className="text-sm text-slate-500 mt-1">{latestResult.venue}</div>
                <div className="mt-4 flex items-center gap-3">
-                  <div className="px-2 py-1 rounded bg-white/10 text-xs font-mono">{latestResult.score} bodů</div>
-                  <div className="text-xs text-gray-500">{format(new Date(latestResult.date), "d. M.", { locale: cs })}</div>
+                  <div className="px-2 py-1 rounded bg-slate-100 text-xs font-mono text-slate-700">{latestResult.score} bodů</div>
+                  <div className="text-xs text-slate-500">{format(new Date(latestResult.date), "d. M.", { locale: cs })}</div>
                </div>
              </div>
            ) : (
-             <div className="mt-auto text-gray-500 italic">Žádná data</div>
+             <div className="mt-auto text-slate-400 italic">Žádná data</div>
            )}
         </div>
 
 
         {/* 5. TEAM LIST CARD */}
-        <div id="tym" className="col-span-2 bento-card p-8 group hover:border-neon-magenta/50">
+        <div id="tym" className="col-span-2 bento-card p-8 group hover:border-neon-magenta/50 bg-slate-100 border-slate-200">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Náš Tým</h2>
-              <p className="text-gray-400 text-sm">Mozky operace. Každý ví něco, nikdo neví všechno.</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Náš Tým</h2>
+              <p className="text-slate-600 text-sm">Mozky operace. Každý ví něco, nikdo neví všechno.</p>
             </div>
             <Link 
               href="/team" 
-              className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/5 font-semibold text-sm transition-colors"
+              className="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 font-semibold text-sm transition-colors text-slate-900"
             >
               Zobrazit všechny →
             </Link>
@@ -101,7 +99,7 @@ export default async function Home() {
               {members.slice(0, 10).map((member) => (
                 <div 
                   key={member.id} 
-                  className="flex flex-col items-center text-center p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group/item"
+                  className="flex flex-col items-center text-center p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors group/item"
                 >
                   <div className="relative w-16 h-16 mb-3">
                     <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan to-neon-magenta rounded-full blur opacity-20 group-hover/item:opacity-40 transition-opacity"></div>
@@ -111,7 +109,7 @@ export default async function Home() {
                       </span>
                     </div>
                   </div>
-                  <h3 className="text-sm font-bold text-white mb-1 line-clamp-1">
+                  <h3 className="text-sm font-bold text-slate-900 mb-1 line-clamp-1">
                     {member.displayName}
                   </h3>
                   {member.nickname && (
@@ -123,20 +121,20 @@ export default async function Home() {
               ))}
             </div>
           ) : (
-            <div className="text-center text-gray-500 py-8">Zatím tu nikdo není. Tým je asi na baru.</div>
+            <div className="text-center text-slate-400 py-8">Zatím tu nikdo není. Tým je asi na baru.</div>
           )}
         </div>
 
         {/* 6. GALLERY CARD */}
-        <div id="galerie" className="col-span-2 bento-card p-8 group hover:border-neon-cyan/50">
+        <div id="galerie" className="col-span-2 bento-card p-8 group hover:border-neon-cyan/50 bg-slate-100 border-slate-200">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Galerie</h2>
-              <p className="text-gray-400 text-sm">Alba a fotky z akcí.</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Galerie</h2>
+              <p className="text-slate-600 text-sm">Alba a fotky z akcí.</p>
             </div>
             <Link 
               href="/galerie" 
-              className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/5 font-semibold text-sm transition-colors"
+              className="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 font-semibold text-sm transition-colors text-slate-900"
             >
               Zobrazit všechny →
             </Link>
@@ -148,15 +146,15 @@ export default async function Home() {
                 <Link
                   key={album.id}
                   href={`/galerie/${album.id}`}
-                  className="group/item rounded-lg bg-white/5 hover:bg-white/10 p-4 transition-all border border-white/5 hover:border-neon-cyan/30"
+                  className="group/item rounded-lg bg-slate-50 hover:bg-slate-100 p-4 transition-all border border-slate-200 hover:border-neon-cyan/30"
                 >
                   <div className="aspect-square rounded-lg bg-gradient-to-br from-sysmex-800 to-sysmex-900 mb-3 flex items-center justify-center border border-white/5 group-hover/item:border-neon-cyan/30 transition-colors">
                     <span className="text-4xl">📷</span>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-1 line-clamp-1">
+                  <h3 className="text-lg font-bold text-slate-900 mb-1 line-clamp-1">
                     {album.title}
                   </h3>
-                  <div className="flex items-center justify-between text-xs text-gray-400">
+                  <div className="flex items-center justify-between text-xs text-slate-500">
                     <span>{format(new Date(album.dateTaken), "d. M. yyyy", { locale: cs })}</span>
                     <span className="font-semibold">{album._count?.photos || 0} fotek</span>
                   </div>
@@ -164,23 +162,23 @@ export default async function Home() {
               ))}
             </div>
           ) : (
-            <div className="text-center text-gray-500 py-8">Zatím nejsou žádná alba.</div>
+            <div className="text-center text-slate-400 py-8">Zatím nejsou žádná alba.</div>
           )}
         </div>
 
         {/* 7. CALENDAR CARD */}
-        <div id="kalendar" className="col-span-2 bento-card p-8 group hover:border-neon-gold/50">
+        <div id="kalendar" className="col-span-2 bento-card p-8 group hover:border-neon-gold/50 bg-slate-100 border-slate-200">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-3">
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2 flex items-center gap-3">
                 <Calendar className="w-8 h-8 text-neon-gold" strokeWidth={2} />
                 Kalendář
               </h2>
-              <p className="text-gray-400 text-sm">Nadcházející termíny kvízů a akcí.</p>
+              <p className="text-slate-600 text-sm">Nadcházející termíny kvízů a akcí.</p>
             </div>
             <Link 
               href="/kalendar" 
-              className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/5 font-semibold text-sm transition-colors"
+              className="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 font-semibold text-sm transition-colors text-slate-900"
             >
               Zobrazit všechny →
             </Link>
@@ -200,30 +198,30 @@ export default async function Home() {
                     className={`rounded-lg p-4 transition-all border ${
                       index === 0 
                         ? "bg-neon-gold/10 border-neon-gold/50 hover:border-neon-gold/80" 
-                        : "bg-white/5 border-white/5 hover:border-neon-gold/30"
+                        : "bg-slate-50 border-slate-200 hover:border-neon-gold/30"
                     }`}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <span className={`text-xs font-mono ${
-                            index === 0 ? "text-neon-gold" : "text-gray-400"
+                            index === 0 ? "text-neon-gold" : "text-slate-600"
                           }`}>
                             {format(eventDate, "d. M. yyyy", { locale: cs })}
                           </span>
                           <span className={`text-xs font-mono ${
-                            index === 0 ? "text-neon-gold" : "text-gray-500"
+                            index === 0 ? "text-neon-gold" : "text-slate-500"
                           }`}>
                             {format(eventDate, "HH:mm", { locale: cs })}
                           </span>
                         </div>
                         <h3 className={`text-lg font-bold mb-1 ${
-                          index === 0 ? "text-white" : "text-white"
+                          index === 0 ? "text-slate-900" : "text-slate-900"
                         }`}>
                           {event.title}
                         </h3>
                         {event.venue && (
-                          <p className="text-sm text-gray-400">{event.venue}</p>
+                          <p className="text-sm text-slate-600">{event.venue}</p>
                         )}
                       </div>
                       {(isEventToday || isEventTomorrow || daysUntil <= 7) && (
@@ -232,14 +230,14 @@ export default async function Home() {
                             ? "bg-neon-gold text-black" 
                             : isEventTomorrow
                             ? "bg-neon-cyan/20 text-neon-cyan"
-                            : "bg-white/10 text-white"
+                            : "bg-slate-200 text-slate-700"
                         }`}>
                           {isEventToday ? "Dnes" : isEventTomorrow ? "Zítra" : `Za ${daysUntil} dní`}
                         </span>
                       )}
                     </div>
                     {event.description && (
-                      <p className="text-xs text-gray-500 line-clamp-2 mt-2">
+                      <p className="text-xs text-slate-500 line-clamp-2 mt-2">
                         {event.description}
                       </p>
                     )}
@@ -248,7 +246,7 @@ export default async function Home() {
               })}
             </div>
           ) : (
-            <div className="text-center text-gray-500 py-8">
+            <div className="text-center text-slate-400 py-8">
               <Calendar className="w-16 h-16 text-neon-gold/50 mx-auto mb-4" strokeWidth={1.5} />
               <p>Zatím nejsou naplánované žádné termíny.</p>
             </div>
