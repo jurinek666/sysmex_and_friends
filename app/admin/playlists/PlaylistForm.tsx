@@ -1,7 +1,7 @@
 "use client";
 
 import { ActionForm } from "@/components/admin/ActionForm";
-import { adminCreatePlaylist, adminUpdatePlaylist } from "../_actions";
+import { adminCreatePlaylist } from "../_actions";
 import { X } from "lucide-react";
 
 interface Playlist {

@@ -80,10 +80,10 @@ export default async function Home() {
              </p>
 
              <div className="flex flex-wrap gap-4 pt-4">
-               <Link href="/posts" className="px-6 py-3 rounded-xl bg-white text-black font-bold hover:scale-105 transition-transform">
+               <Link href="/clanky" className="px-6 py-3 rounded-xl bg-white text-black font-bold hover:scale-105 transition-transform">
                  Číst novinky
                </Link>
-               <Link href="/team" className="px-6 py-3 rounded-xl bg-white/20 border-2 border-white/40 hover:bg-white/30 hover:border-white/60 font-bold text-white backdrop-blur-sm transition-all">
+               <Link href="/tym" className="px-6 py-3 rounded-xl bg-white/20 border-2 border-white/40 hover:bg-white/30 hover:border-white/60 font-bold text-white backdrop-blur-sm transition-all">
                  Poznat tým
                </Link>
              </div>
@@ -131,7 +131,7 @@ export default async function Home() {
                  <p className="text-gray-400 line-clamp-2">
                     {featuredPost.excerpt}
                  </p>
-                 <Link href={`/posts/${featuredPost.slug}`} className="inline-flex items-center gap-2 text-white font-semibold hover:gap-3 transition-all mt-2">
+                 <Link href={`/clanky/${featuredPost.slug}`} className="inline-flex items-center gap-2 text-white font-semibold hover:gap-3 transition-all mt-2">
                     Číst dál <span>→</span>
                  </Link>
               </div>
@@ -164,7 +164,7 @@ export default async function Home() {
               <p className="text-gray-400 text-sm">Mozky operace. Každý ví něco, nikdo neví všechno.</p>
             </div>
             <Link 
-              href="/team" 
+              href="/tym"
               className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/5 font-semibold text-sm transition-colors"
             >
               Zobrazit všechny →

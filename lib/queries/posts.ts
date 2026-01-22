@@ -4,9 +4,10 @@ export async function getFeaturedPost() {
   const supabase = await createClient();
   
   // Hledáme jeden zvýrazněný post
+  // Optimalizace: nevybíráme content, který může být velký
   const { data, error } = await supabase
     .from("Post")
-    .select("*")
+    .select("id, title, slug, publishedAt, excerpt, coverImageUrl, isFeatured")
     .eq("isFeatured", true)
     .order("publishedAt", { ascending: false })
     .limit(1)
@@ -23,9 +24,10 @@ export async function getFeaturedPost() {
 export async function getRecentPosts(limit = 20) {
   const supabase = await createClient();
   
+  // Optimalizace: nevybíráme content
   const { data, error } = await supabase
     .from("Post")
-    .select("*")
+    .select("id, title, slug, publishedAt, excerpt, coverImageUrl, isFeatured")
     .order("publishedAt", { ascending: false })
     .limit(limit);
 

@@ -43,9 +43,6 @@ export default async function ClanekDetailPage({
     imageUrls.push(match[2]);
   }
 
-  // Check for image-related keywords in content
-  const hasImageKeywords = /image|img|photo|obrázek|foto/i.test(post.content);
-
   return (
     <main className="min-h-screen pt-32 pb-20 px-4 md:px-8">
       <div className="max-w-4xl mx-auto">
@@ -53,7 +50,7 @@ export default async function ClanekDetailPage({
         {/* NAVIGACE ZPĚT */}
         <div className="mb-8">
           <Link 
-            href="/posts" 
+            href="/clanky"
             className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-neon-cyan transition-colors"
           >
             ← Zpět do archivu
@@ -125,7 +122,7 @@ export default async function ClanekDetailPage({
         {/* PATIČKA ČLÁNKU */}
         <div className="mt-12 pt-8 border-t border-white/5 flex justify-center">
             <Link 
-                href="/posts"
+                href="/clanky"
                 className="px-8 py-3 rounded-full bg-white/5 text-white font-bold hover:bg-white/10 border border-white/10 transition-all"
             >
                 Zpět na přehled

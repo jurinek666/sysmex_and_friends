@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { getRecentPosts } from "@/lib/queries/posts";
@@ -42,36 +43,55 @@ export default async function ClankyPage() {
             <Link
               key={p.id}
               href={`/clanky/${p.slug}`}
-              className="bento-card group flex flex-col h-full p-6 no-underline"
+              className="bento-card group flex flex-col h-full overflow-hidden no-underline"
             >
-              {/* Datum a Tag */}
-              <div className="flex justify-between items-start mb-4">
-                <span className="text-xs font-mono text-neon-cyan/80 uppercase tracking-wider bg-neon-cyan/10 px-2 py-1 rounded">
-                  {format(new Date(p.publishedAt), "d. MMM yyyy", { locale: cs })}
-                </span>
-                {p.isFeatured && (
-                  <span className="text-xs font-bold text-neon-magenta animate-pulse">
-                    ★ TOP
+              {/* Obrázek */}
+              {p.coverImageUrl ? (
+                <div className="relative w-full h-48 overflow-hidden bg-gray-800">
+                  <Image
+                    src={p.coverImageUrl}
+                    alt={p.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
+              ) : (
+                <div className="relative w-full h-48 overflow-hidden bg-gray-800 flex items-center justify-center text-gray-500 text-sm">
+                  Žádný obrázek
+                </div>
+              )}
+
+              <div className="p-6 flex flex-col flex-grow">
+                {/* Datum a Tag */}
+                <div className="flex justify-between items-start mb-4">
+                  <span className="text-xs font-mono text-neon-cyan/80 uppercase tracking-wider bg-neon-cyan/10 px-2 py-1 rounded">
+                    {format(new Date(p.publishedAt), "d. MMM yyyy", { locale: cs })}
                   </span>
-                )}
-              </div>
+                  {p.isFeatured && (
+                    <span className="text-xs font-bold text-neon-magenta animate-pulse">
+                      ★ TOP
+                    </span>
+                  )}
+                </div>
 
-              {/* Titulek */}
-              <h2 className="text-xl font-bold text-white mb-3 leading-snug group-hover:text-neon-cyan transition-colors">
-                {p.title}
-              </h2>
+                {/* Titulek */}
+                <h2 className="text-xl font-bold text-white mb-3 leading-snug group-hover:text-neon-cyan transition-colors">
+                  {p.title}
+                </h2>
 
-              {/* Perex */}
-              <p className="text-gray-400 text-sm line-clamp-3 mb-6 flex-grow">
-                {p.excerpt}
-              </p>
+                {/* Perex */}
+                <p className="text-gray-400 text-sm line-clamp-3 mb-6 flex-grow">
+                  {p.excerpt}
+                </p>
 
-              {/* Patička karty */}
-              <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between text-sm">
-                <span className="text-gray-500 font-medium">Číst záznam</span>
-                <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-neon-cyan group-hover:text-black transition-all">
-                  →
-                </span>
+                {/* Patička karty */}
+                <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between text-sm">
+                  <span className="text-gray-500 font-medium">Číst záznam</span>
+                  <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-neon-cyan group-hover:text-black transition-all">
+                    →
+                  </span>
+                </div>
               </div>
             </Link>
           ))

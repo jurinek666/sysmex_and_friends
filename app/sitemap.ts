@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${BASE_URL}/team`,
+      url: `${BASE_URL}/tym`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
@@ -31,12 +31,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
+    {
+      url: `${BASE_URL}/clanky`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
   ]
 
   // Define dynamic routes for posts
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const postRoutes: MetadataRoute.Sitemap = posts.map((post: any) => ({
-    url: `${BASE_URL}/posts/${post.slug}`,
+    url: `${BASE_URL}/clanky/${post.slug}`,
     lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(post.publishedAt),
     changeFrequency: 'weekly',
     priority: 0.7,
