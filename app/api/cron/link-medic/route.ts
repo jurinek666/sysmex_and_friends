@@ -1,22 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-export const maxDuration = 300; // Allow 5 minutes for many links
+export const maxDuration = 300; // 5 minutes
+export const dynamic = "force-dynamic";
 
 export async function GET() {
-  // Optional: Check for authorization (e.g., CRON_SECRET)
-  // const authHeader = request.headers.get('authorization');
-  // if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-  //   return new Response('Unauthorized', { status: 401 });
-  // }
-
   const supabase = await createClient();
 
-  // 1. Fetch all records from the 'Post' table where 'published' is true.
+  // 1. Fetch all records from the 'Post' table where 'publishedAt' is not null.
+  // We assume 'publishedAt' being set means the post is published.
   const { data: posts, error } = await supabase
     .from("Post")
     .select("id, title, content")
-    .eq("published", true);
+    .not("publishedAt", "is", null);
 
   if (error) {
     console.error("Error fetching posts:", error);
@@ -28,8 +24,8 @@ export async function GET() {
   }
 
   // 2. Parse the 'content' field to extract all external hyperlinks.
-  // Map unique URLs to the posts that contain them.
   const urlMap = new Map<string, { title: string; id: string }[]>();
+  // Match [text](url) where url starts with http/https
   const regex = /\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
 
   for (const post of posts) {
@@ -41,8 +37,8 @@ export async function GET() {
       if (!urlMap.has(url)) {
         urlMap.set(url, []);
       }
-      // Avoid duplicate post entries for the same URL
       const entries = urlMap.get(url)!;
+      // Avoid duplicate post entries for the same URL
       if (!entries.some((e) => e.id === post.id)) {
         entries.push({ title: post.title, id: post.id });
       }
@@ -52,8 +48,7 @@ export async function GET() {
   const uniqueUrls = Array.from(urlMap.keys());
   const brokenLinks: { url: string; posts: { title: string; id: string }[]; status: number | string }[] = [];
 
-  // 3. Check each unique URL.
-  // We process in batches to be polite and efficient.
+  // 3. Check each unique URL in batches.
   const BATCH_SIZE = 10;
   for (let i = 0; i < uniqueUrls.length; i += BATCH_SIZE) {
     const batch = uniqueUrls.slice(i, i + BATCH_SIZE);
@@ -61,39 +56,31 @@ export async function GET() {
     await Promise.all(
       batch.map(async (url) => {
         try {
-          // 3. Lightweight HTTP HEAD request
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
-
+          // Lightweight HTTP HEAD request with 5s timeout
           const response = await fetch(url, {
             method: "HEAD",
-            signal: controller.signal,
-            // Add a User-Agent to avoid being blocked by some servers
+            signal: AbortSignal.timeout(5000),
             headers: {
               "User-Agent": "LinkMedic/1.0",
             },
           });
 
-          clearTimeout(timeoutId);
-
           // 4. If 404 or 500 status code, add to broken links.
-          // Note: Some servers might return 405 Method Not Allowed for HEAD,
-          // in which case we might retry with GET, but for now we stick to requirements.
-          // Or we can be lenient and only flag 404/500 range explicitly.
+          // We ignore 405 Method Not Allowed as some servers block HEAD.
           if (response.status === 404 || response.status >= 500) {
-             brokenLinks.push({
-               url,
-               posts: urlMap.get(url)!,
-               status: response.status,
-             });
+            brokenLinks.push({
+              url,
+              posts: urlMap.get(url)!,
+              status: response.status,
+            });
           }
         } catch (err: unknown) {
-          // Handle timeouts and network errors
-          let errorMessage = 'Error';
+          let errorMessage = "Error";
           if (err instanceof Error) {
-            errorMessage = err.name === 'AbortError' ? 'Timeout' : err.message;
+            errorMessage = err.name === "TimeoutError" || err.name === "AbortError" ? "Timeout" : err.message;
           }
 
+          // We treat timeouts/network errors as potentially broken or slow links
           brokenLinks.push({
             url,
             posts: urlMap.get(url)!,
@@ -108,18 +95,13 @@ export async function GET() {
   if (brokenLinks.length > 0) {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     if (webhookUrl) {
-      // Group by Post for better readability in the message
-      // Or just list them as requested: "Post title and the broken URL"
-
-      let messageContent = "**Link Medic Report: Broken Links Found**\n\n";
-
-      // We can iterate broken links and list them.
-      // To avoid hitting Discord message length limits (2000 chars), we might need to truncate.
+      let messageContent = "**🚑 Link Medic Report: Broken Links Found**\n\n";
 
       for (const link of brokenLinks) {
-        const postTitles = link.posts.map(p => p.title).join(", ");
+        const postTitles = link.posts.map((p) => p.title).join(", ");
         const line = `- **${link.status}**: <${link.url}> in *${postTitles}*\n`;
 
+        // Discord limit check (approximate)
         if (messageContent.length + line.length > 1900) {
           messageContent += "\n...(truncated)...";
           break;
