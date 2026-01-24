@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useScrollPosition } from "@/lib/hooks/useScrollPosition";
@@ -11,24 +11,61 @@ import { DesktopNavLink } from "./DesktopNavLink";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [currentHash, setCurrentHash] = useState("");
   const pathname = usePathname();
   // Removed unused mousePosition
   const scrollPosition = useScrollPosition();
   const navRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
-    { name: "Aktuality", href: "/posts" },
-    { name: "Výsledky", href: "/vysledky" },
-    { name: "Týmová soupiska", href: "/team" },
-    { name: "Galerie", href: "/galerie" },
-    { name: "Kalendář", href: "/kalendar" },
-    { name: "Playlisty", href: "/playlisty" },
+    { name: "Aktuality", href: "/#aktuality" },
+    { name: "Výsledky", href: "/#vysledky" },
+    { name: "Týmová soupiska", href: "/#tym" },
+    { name: "Galerie", href: "/#galerie" },
+    { name: "Kalendář", href: "/#kalendar" },
+    { name: "Playlisty", href: "/#playlisty" },
   ];
 
-  const isActive = (path: string) => pathname.startsWith(path);
+  // Track hash changes for active link detection
+  useEffect(() => {
+    const updateHash = () => {
+      setCurrentHash(window.location.hash);
+    };
+
+    // Set initial hash
+    updateHash();
+
+    // Listen for hash changes
+    window.addEventListener("hashchange", updateHash);
+    
+    // Also check on scroll (in case of programmatic scrolling to hash)
+    const handleScroll = () => {
+      // Small delay to allow scroll to complete
+      setTimeout(updateHash, 100);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("hashchange", updateHash);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const isActive = (path: string) => {
+    // Extract hash from path (e.g., "#aktuality" from "/#aktuality")
+    const hashFromPath = path.includes("#") ? path.split("#")[1] : null;
+    
+    // For hash-based links, check if pathname matches and hash matches
+    if (hashFromPath) {
+      const pathWithoutHash = path.split("#")[0];
+      return pathname === pathWithoutHash && currentHash === `#${hashFromPath}`;
+    }
+    
+    // For regular paths, use the original logic
+    return pathname.startsWith(path);
+  };
 
   // Scroll-based opacity and blur
-  const scrollOpacity = Math.min(scrollPosition / 100, 1);
   // Removed unused scrollBlur
   const isScrolled = scrollPosition > 50;
 
@@ -44,16 +81,13 @@ export function Navbar() {
         <motion.div
           ref={navRef}
           animate={{
-            opacity: 1 - scrollOpacity * 0.2,
-            backdropFilter: isScrolled ? "blur(30px) saturate(200%)" : "blur(20px) saturate(180%)",
+            opacity: 1,
             scale: isScrolled ? 0.98 : 1,
           }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="relative w-full glass-nav rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/20 overflow-visible"
+          className="relative w-full rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/20 overflow-visible"
           style={{
-            background: isScrolled 
-              ? "rgba(255, 255, 255, 0.08)" 
-              : "rgba(255, 255, 255, 0.05)",
+            background: "linear-gradient(90deg, #0B1E4B 0%, #1E4EA8 50%, #0B1E4B 100%)",
           }}
         >
           {/* Particle Effects Background */}

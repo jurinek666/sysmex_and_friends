@@ -25,7 +25,7 @@ export default async function PostDetailPage({
         {/* NAVIGACE ZPĚT */}
         <div className="mb-8">
           <Link 
-            href="/posts" 
+            href="/#aktuality" 
             className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-neon-cyan transition-colors"
           >
             ← Zpět do archivu
@@ -88,7 +88,7 @@ export default async function PostDetailPage({
         {/* PATIČKA ČLÁNKU */}
         <div className="mt-12 pt-8 border-t border-white/5 flex justify-center">
             <Link 
-                href="/posts"
+                href="/#aktuality"
                 className="px-8 py-3 rounded-full bg-white/5 text-white font-bold hover:bg-white/10 border border-white/10 transition-all"
             >
                 Zpět na přehled

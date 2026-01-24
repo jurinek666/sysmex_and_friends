@@ -51,19 +51,7 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
   };
 
   return (
-    <div className="bento-card p-6 flex flex-col group hover:border-neon-cyan/50 relative overflow-hidden">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-4">
-        <div className="text-gray-400 text-sm font-medium uppercase tracking-wider">Playlist</div>
-        <div className="flex items-center gap-2">
-          {playlists.length > 1 && (
-            <span className="text-xs text-gray-500 font-mono">
-              {currentIndex + 1} / {playlists.length}
-            </span>
-          )}
-          <div className="text-2xl">🎵</div>
-        </div>
-      </div>
+    <div className="bento-card p-0 group hover:border-neon-cyan/50 relative overflow-hidden">
 
       {/* Navigation Arrows */}
       {playlists.length > 1 && (
@@ -97,7 +85,7 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
       )}
 
       {/* Playlist Content */}
-      <div className="space-y-3 flex-1 relative px-10 md:px-12">
+      <div className="flex-1 relative">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPlaylist.id}
@@ -105,60 +93,35 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="space-y-3"
+            className="w-full h-[360px] md:h-[420px]"
           >
-            <h3 className="text-xl font-bold text-white">{currentPlaylist.title}</h3>
-            {currentPlaylist.description && (
-              <p className="text-sm text-gray-400 line-clamp-2">{currentPlaylist.description}</p>
-            )}
-
-            <div className="mt-4 w-full overflow-hidden rounded-lg">
+            <div className="w-full h-full overflow-hidden">
               {currentPlaylist.spotifyUrl ? (
-                <div className="w-full">
+                <div className="w-full h-full">
                   {currentPlaylist.spotifyUrl.includes('<iframe') ? (
                     <div
                       dangerouslySetInnerHTML={{ __html: currentPlaylist.spotifyUrl }}
-                      className="w-full [&>iframe]:w-full [&>iframe]:h-[352px] [&>iframe]:rounded-lg [&>iframe]:border-0 [&>iframe]:min-h-[352px]"
+                      className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0"
                     />
                   ) : (
                     <iframe
                       src={currentPlaylist.spotifyUrl}
                       width="100%"
-                      height="352"
+                      height="100%"
                       frameBorder="0"
                       allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                       loading="lazy"
-                      className="w-full h-[352px] rounded-lg border-0"
+                      className="w-full h-full border-0"
                     />
                   )}
                 </div>
               ) : (
-                <div className="text-gray-500 text-sm italic p-4 text-center">
-                  Playlist není k dispozici
-                </div>
+                <div className="w-full h-full" />
               )}
             </div>
           </motion.div>
         </AnimatePresence>
       </div>
-
-      {/* Dots Indicator (optional) */}
-      {playlists.length > 1 && (
-        <div className="flex justify-center gap-2 mt-4">
-          {playlists.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`h-2 rounded-full transition-all ${
-                index === currentIndex
-                  ? "w-8 bg-neon-cyan"
-                  : "w-2 bg-white/20 hover:bg-white/40"
-              }`}
-              aria-label={`Přejít na playlist ${index + 1}`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
