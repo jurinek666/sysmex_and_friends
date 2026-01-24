@@ -35,7 +35,7 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
     }, AUTOPLAY_MS);
 
     return () => window.clearInterval(interval);
-  }, [safePosts.length, currentIndex]);
+  }, [safePosts.length]);
 
   if (!safePosts.length) {
     return (
@@ -54,15 +54,21 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
   const canGoRight = currentIndex < safePosts.length - 1;
 
   const goToPrevious = () => {
-    if (canGoLeft) {
-      setCurrentIndex(currentIndex - 1);
-    }
+    setCurrentIndex((prev) => {
+      if (prev > 0) {
+        return prev - 1;
+      }
+      return prev;
+    });
   };
 
   const goToNext = () => {
-    if (canGoRight) {
-      setCurrentIndex(currentIndex + 1);
-    }
+    setCurrentIndex((prev) => {
+      if (prev < safePosts.length - 1) {
+        return prev + 1;
+      }
+      return prev;
+    });
   };
 
   return (

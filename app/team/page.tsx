@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
-import { getActiveMembers, type Member } from "@/lib/queries/members";
+import { getActiveMembers } from "@/lib/queries/members";
 
 export const metadata: Metadata = {
   title: "Tým | SYSMEX & Friends Quiz Team",

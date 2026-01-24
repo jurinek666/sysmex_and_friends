@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useScrollPosition } from "@/lib/hooks/useScrollPosition";
@@ -11,6 +11,7 @@ import { DesktopNavLink } from "./DesktopNavLink";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [currentHash, setCurrentHash] = useState("");
   const pathname = usePathname();
   // Removed unused mousePosition
   const scrollPosition = useScrollPosition();
@@ -25,10 +26,46 @@ export function Navbar() {
     { name: "Playlisty", href: "/#playlisty" },
   ];
 
-  const isActive = (path: string) => pathname.startsWith(path);
+  // Track hash changes for active link detection
+  useEffect(() => {
+    const updateHash = () => {
+      setCurrentHash(window.location.hash);
+    };
+
+    // Set initial hash
+    updateHash();
+
+    // Listen for hash changes
+    window.addEventListener("hashchange", updateHash);
+    
+    // Also check on scroll (in case of programmatic scrolling to hash)
+    const handleScroll = () => {
+      // Small delay to allow scroll to complete
+      setTimeout(updateHash, 100);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("hashchange", updateHash);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const isActive = (path: string) => {
+    // Extract hash from path (e.g., "#aktuality" from "/#aktuality")
+    const hashFromPath = path.includes("#") ? path.split("#")[1] : null;
+    
+    // For hash-based links, check if pathname matches and hash matches
+    if (hashFromPath) {
+      const pathWithoutHash = path.split("#")[0];
+      return pathname === pathWithoutHash && currentHash === `#${hashFromPath}`;
+    }
+    
+    // For regular paths, use the original logic
+    return pathname.startsWith(path);
+  };
 
   // Scroll-based opacity and blur
-  const scrollOpacity = Math.min(scrollPosition / 100, 1);
   // Removed unused scrollBlur
   const isScrolled = scrollPosition > 50;
 
