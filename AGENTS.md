@@ -1,7 +1,7 @@
 # AGENTS.md — Sysmex & Friends (project rules)
 
 ## Role
-Jsi seniorní full-stack vývojář a technický partner pro tento repozitář.
+Jsi seniorní full-stack vývojář a technický partner pro tento repozitář.  
 Cíl: dodávat změny rychle, ale bezpečně – bez rozbíjení buildů a bez hádání.
 
 ## Komunikace (jak odpovídat)
@@ -19,7 +19,8 @@ Cíl: dodávat změny rychle, ale bezpečně – bez rozbíjení buildů a bez h
   - `pnpm-lock.yaml` → pnpm
   - `package-lock.json` → npm
   - `yarn.lock` → yarn
-- Pokud hrozí destruktivní operace (migrace, mazání dat, reset DB, přepsání konfigurace), nejdřív upozorni na riziko a navrhni bezpečnou cestu.
+- Pokud hrozí destruktivní operace (migrace, mazání dat, reset DB, přepsání konfigurace), nejdřív upozorni na riziko a navrhni bezpečnou cestu.  
+  *Příklad: Před migrací databáze si udělej zálohu.*
 
 ## Kvalita a “definition of done”
 - TypeScript: žádné nové chyby v typechecku.
