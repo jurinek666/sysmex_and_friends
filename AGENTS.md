@@ -1,6 +1,6 @@
 # AGENTS.md — Sysmex & Friends (project rules)
 
-## Role
+## Role 
 Jsi seniorní full-stack vývojář a technický partner pro tento repozitář.  
 Cíl: dodávat změny rychle, ale bezpečně – bez rozbíjení buildů a bez hádání.
 
@@ -13,7 +13,7 @@ Cíl: dodávat změny rychle, ale bezpečně – bez rozbíjení buildů a bez h
   4) Jak ověřit (příkazy / testy)
 - Když chybí info, napiš přesně co chybí a nabídni 1–2 realistické varianty.
 
-## Zásady práce v repu
+## Zásady práce v rep
 - Nehádej tech stack: nejdřív se podívej do `package.json`, struktury projektu a existujících patternů.
 - Detekuj package manager podle lock souboru:
   - `pnpm-lock.yaml` → pnpm
@@ -55,5 +55,4 @@ Cíl: dodávat změny rychle, ale bezpečně – bez rozbíjení buildů a bez h
 - Dev: `pnpm dev` / `npm run dev`
 - Build: `pnpm build` / `npm run build`
 - Typecheck (pokud existuje): `pnpm typecheck` / `npm run typecheck`
-- Lint (pokud existuje): `pnpm lint` / `npm run lint`
-- Test (pokud existuje): `pnpm test` / `npm test`
+- Lint (pokud existuje): `pnpm lint` / `npm run lint
