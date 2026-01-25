@@ -25,7 +25,7 @@ export async function getRecentPosts(limit = 20) {
   
   const { data, error } = await supabase
     .from("Post")
-    .select("*")
+    .select("id, title, slug, excerpt, coverImageUrl, publishedAt, updatedAt, isFeatured")
     .order("publishedAt", { ascending: false })
     .limit(limit);
 
