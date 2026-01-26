@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { logSupabaseError } from "@/lib/queries/utils";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AlbumForm } from "./AlbumForm";
 import { AlbumList } from "./AlbumList";
@@ -8,13 +9,34 @@ export const dynamic = "force-dynamic";
 export default async function AdminGalleryPage() {
   const supabase = await createClient();
 
-  // Nahrazeno prisma.album.findMany(...)
-  const { data: albums } = await supabase
+  // 1) První pokus: photos(count)
+  let { data: albums, error } = await supabase
     .from("Album")
-    .select("*, photos(count)") // Získáme i počet fotek
+    .select("*, photos(count)")
     .order("dateTaken", { ascending: false });
 
-  // Fallback pro případ chyby nebo null
+  // 2) Při chybě (typicky špatný název relace) zkusit Photo(count)
+  if (error && error?.hint?.includes?.("Photo")) {
+    const res = await supabase
+      .from("Album")
+      .select("*, Photo(count)")
+      .order("dateTaken", { ascending: false });
+    if (!res.error && res.data) {
+      albums = res.data.map((a: { Photo?: { count: number }[]; photos?: { count: number }[]; [k: string]: unknown }) => ({
+        ...a,
+        photos: a.Photo ?? a.photos,
+      }));
+      error = null;
+    }
+  }
+
+  // 3) Při stále přítomné chybě: pouze sloupce Album, bez vazby
+  if (error) {
+    logSupabaseError("AdminGalleryPage (albums)", error);
+    const res = await supabase.from("Album").select("*").order("dateTaken", { ascending: false });
+    albums = res.error ? [] : (res.data || []).map((a) => ({ ...a, photos: [{ count: 0 }] }));
+  }
+
   const safeAlbums = albums || [];
 
   return (

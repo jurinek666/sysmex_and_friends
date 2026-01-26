@@ -7,8 +7,11 @@ import { getAlbum } from "@/lib/queries/albums";
 
 export const revalidate = 300;
 
-// Tvůj Cloud Name
-const CLOUD_NAME = "gear-gaming";
+// Cloud name: NEXT_PUBLIC_ / CLOUDINARY_CLOUD_NAME / fallback
+const CLOUD_NAME =
+  process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
+  process.env.CLOUDINARY_CLOUD_NAME ||
+  "gear-gaming";
 
 // Pomocná funkce pro generování URL z Cloudinary
 function getCloudinaryUrl(publicId: string) {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { format, isToday, isTomorrow, differenceInDays } from "date-fns";
 import { cs } from "date-fns/locale";
-import { Calendar } from "lucide-react";
+import { Calendar, Users } from "lucide-react";
 import { getRecentPosts } from "@/lib/queries/posts";
 import { getLatestResults } from "@/lib/queries/results";
 import { getAllPlaylists } from "@/lib/queries/playlists";
@@ -11,6 +11,7 @@ import { getUpcomingEvents } from "@/lib/queries/events";
 import { PlaylistCarousel } from "@/components/PlaylistCarousel";
 import { PostsCarousel } from "@/components/PostsCarousel";
 import { Hero } from "@/components/Hero";
+import { MemberCard } from "@/components/team/MemberCard";
 
 export const revalidate = 60;
 
@@ -79,49 +80,41 @@ export default async function Home() {
         </div>
 
 
-        {/* 5. TEAM LIST CARD */}
-        <div id="tym" className="col-span-2 bento-card p-8 group hover:border-neon-magenta/50 bg-slate-100 border-slate-200">
+        {/* 5. TEAM LIST CARD — Varianta A (Neon roster) */}
+        <div
+          id="tym"
+          className="col-span-2 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-sysmex-900 to-sysmex-950 p-8 group hover:border-neon-magenta/50 hover:shadow-[0_0_20px_-8px_rgba(255,79,216,0.3)] transition-all duration-300"
+        >
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-neon-cyan via-neon-magenta to-transparent" />
           <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Náš Tým</h2>
-              <p className="text-slate-600 text-sm">Mozky operace. Každý ví něco, nikdo neví všechno.</p>
+            <div className="flex items-start gap-3">
+              <Users className="w-8 h-8 text-neon-magenta shrink-0 mt-0.5" strokeWidth={2} />
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">
+                  Náš <span className="text-neon-magenta">Tým</span>
+                </h2>
+                <p className="text-gray-400 text-sm">Mozky operace. Každý ví něco, nikdo neví všechno.</p>
+              </div>
             </div>
-            <Link 
-              href="/team" 
-              className="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 font-semibold text-sm transition-colors text-slate-900"
+            <Link
+              href="/team"
+              className="px-4 py-2 rounded-lg border border-neon-magenta/40 bg-neon-magenta/10 text-neon-magenta font-semibold text-sm hover:bg-neon-magenta/20 transition-colors shrink-0"
             >
               Zobrazit všechny →
             </Link>
           </div>
-          
+
           {members && members.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {members.slice(0, 10).map((member) => (
-                <div 
-                  key={member.id} 
-                  className="flex flex-col items-center text-center p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors group/item"
-                >
-                  <div className="relative w-16 h-16 mb-3">
-                    <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan to-neon-magenta rounded-full blur opacity-20 group-hover/item:opacity-40 transition-opacity"></div>
-                    <div className="relative w-full h-full rounded-full bg-sysmex-800 border-2 border-white/10 flex items-center justify-center overflow-hidden">
-                      <span className="text-lg font-black text-white/90">
-                        {member.displayName.slice(0, 2).toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-900 mb-1 line-clamp-1">
-                    {member.displayName}
-                  </h3>
-                  {member.nickname && (
-                    <p className="text-xs text-neon-cyan font-mono line-clamp-1">
-                      &quot;{member.nickname}&quot;
-                    </p>
-                  )}
-                </div>
+                <MemberCard key={member.id} member={member} variant="compact" />
               ))}
             </div>
           ) : (
-            <div className="text-center text-slate-400 py-8">Zatím tu nikdo není. Tým je asi na baru.</div>
+            <div className="flex flex-col items-center justify-center text-gray-400 py-8">
+              <Users className="w-12 h-12 mb-3 opacity-50 text-gray-400" strokeWidth={1.5} />
+              <p>Zatím tu nikdo není. Tým je asi na baru.</p>
+            </div>
           )}
         </div>
 

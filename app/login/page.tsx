@@ -1,6 +1,7 @@
 import { login } from "./actions";
 import { PendingButton } from "@/components/ui/PendingButton";
 import { PasswordFieldWrapper } from "@/components/login/PasswordFieldWrapper";
+import { LoginHydrationDebug } from "@/components/login/LoginHydrationDebug";
 
 export default function LoginPage() {
   return (
@@ -13,7 +14,7 @@ export default function LoginPage() {
         
         <form className="mt-8 space-y-6">
           <div className="space-y-4">
-            <div>
+            <div suppressHydrationWarning>
               <label htmlFor="email" className="sr-only">Email</label>
               <input
                 id="email"
@@ -34,6 +35,7 @@ export default function LoginPage() {
           >
             Přihlásit se
           </PendingButton>
+          <LoginHydrationDebug />
         </form>
       </div>
     </div>

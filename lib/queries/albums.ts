@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { fetchImageIdsByFolder } from "@/lib/cloudinary";
 import { withRetry, logSupabaseError } from "./utils";
 
 export async function getAlbums() {
@@ -67,7 +68,7 @@ export async function getAlbums() {
 
 export async function getAlbum(id: string) {
   const supabase = await createClient();
-  
+
   const { data, error } = await supabase
     .from("Album")
     .select("*, photos(*)")
@@ -78,11 +79,26 @@ export async function getAlbum(id: string) {
     return null;
   }
 
-  // Seřadíme fotky v JS, protože řazení vnořených relací v jednoduchém selectu je složitější
-  if (data.photos && Array.isArray(data.photos)) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data.photos.sort((a: any, b: any) => a.sortOrder - b.sortOrder);
+  // Sjednocení tvaru: photos nebo Photo z Supabase
+  const raw = data as { photos?: unknown[]; Photo?: unknown[] };
+  data.photos = Array.isArray(raw.photos) ? raw.photos : (Array.isArray(raw.Photo) ? raw.Photo : []);
+
+  // Načtení fotek z Cloudinary podle cloudinaryFolder, pokud je vyplněné a Cloudinary vrátí výsledky
+  const folder = (data.cloudinaryFolder || "").trim();
+  if (folder) {
+    const fromCloud = await fetchImageIdsByFolder(folder);
+    if (fromCloud.length > 0) {
+      data.photos = fromCloud.map((r, i) => ({
+        id: r.public_id,
+        cloudinaryPublicId: r.public_id,
+        caption: null,
+        sortOrder: i,
+      }));
+    }
   }
+
+  // Seřadíme fotky podle sortOrder
+  data.photos.sort((a: { sortOrder?: number }, b: { sortOrder?: number }) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 
   return data;
 }

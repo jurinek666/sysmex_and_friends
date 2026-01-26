@@ -69,20 +69,24 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Přesný název složky v Cloudinary
+            Složka v Cloudinary (identifikátor)
           </label>
           <div className="relative">
             <Folder className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
             <input 
               name="cloudinaryFolder" 
-              placeholder="např. 2024-vanocni-vecirek" 
+              placeholder="01_leden nebo galerie/01_leden" 
               required 
               defaultValue={album?.cloudinaryFolder}
               className="w-full p-3 pl-10 border rounded-xl font-mono text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
             />
           </div>
           <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded-lg border border-gray-100">
-            ℹ️ Zadejte přesný název složky v Cloudinary, kde jsou nahrané fotky pro toto album. Název musí přesně odpovídat názvu složky v Cloudinary.
+            <strong>Jak vyplnit:</strong><br />
+            • <strong>Dynamic režim</strong> (Media Library): název složky či cesta, např. <code>01_leden</code> nebo <code>galerie/01_leden</code>.<br />
+            • <strong>Fixed režim</strong>: prefix cesty v public_id, např. <code>01_leden</code> když máte <code>01_leden/foto.jpg</code>.<br />
+            • <strong>Záložně</strong>: pokud složka nevrátí obrázky, zkusí se načíst obrázky s tímto <strong>tagem</strong> (napište přesně ten tag, který mají v Cloudinary).<br />
+            Bez úvodního lomítka; u názvů složek se rozlišuje velikost písmen. V dev módu: <code>/api/debug-cloudinary?folder=01_leden</code> ukáže, která metoda funguje.
           </p>
         </div>
 
