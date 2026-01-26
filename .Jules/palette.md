@@ -7,3 +7,7 @@
 ## 2024-05-24 - Async Action Feedback
 **Learning:** Users in admin interfaces often click submit buttons multiple times if there is no immediate visual feedback, causing duplicate entries or race conditions.
 **Action:** Always wrap submit buttons in forms with `useFormStatus` (or similar) to provide a loading spinner and disable the button during processing. This simple "micro-interaction" significantly improves perceived performance and data integrity.
+
+## 2025-01-29 - Admin Form Accessibility
+**Learning:** Inconsistent form patterns (some using labels, others placeholders) create accessibility gaps and cognitive load. Placeholders are not a substitute for labels.
+**Action:** Standardize all admin forms to use explicit `<label>` elements linked via `htmlFor/id`, ensuring screen reader support and visual consistency across the admin panel.
