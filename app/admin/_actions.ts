@@ -75,7 +75,7 @@ async function handleAction<T>(
 // 1. ČLÁNKY (POSTS)
 // ==========================================
 
-export async function adminCreatePost(formData: FormData): Promise<ActionResult> {
+export async function adminCreatePost(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -116,7 +116,7 @@ export async function adminCreatePost(formData: FormData): Promise<ActionResult>
   });
 }
 
-export async function adminUpdatePost(formData: FormData): Promise<ActionResult> {
+export async function adminUpdatePost(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -155,7 +155,7 @@ export async function adminUpdatePost(formData: FormData): Promise<ActionResult>
   });
 }
 
-export async function adminDeletePost(formData: FormData): Promise<ActionResult> {
+export async function adminDeletePost(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
@@ -180,7 +180,7 @@ export async function adminDeletePost(formData: FormData): Promise<ActionResult>
 // 2. VÝSLEDKY (RESULTS)
 // ==========================================
 
-export async function adminCreateResult(formData: FormData): Promise<ActionResult> {
+export async function adminCreateResult(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -231,7 +231,7 @@ export async function adminCreateResult(formData: FormData): Promise<ActionResul
   });
 }
 
-export async function adminUpdateResult(formData: FormData): Promise<ActionResult> {
+export async function adminUpdateResult(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -282,7 +282,7 @@ export async function adminUpdateResult(formData: FormData): Promise<ActionResul
   });
 }
 
-export async function adminDeleteResult(formData: FormData): Promise<ActionResult> {
+export async function adminDeleteResult(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
@@ -307,7 +307,7 @@ export async function adminDeleteResult(formData: FormData): Promise<ActionResul
 // 3. TÝM (MEMBERS)
 // ==========================================
 
-export async function adminCreateMember(formData: FormData): Promise<ActionResult> {
+export async function adminCreateMember(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -344,7 +344,7 @@ export async function adminCreateMember(formData: FormData): Promise<ActionResul
   });
 }
 
-export async function adminUpdateMember(formData: FormData): Promise<ActionResult> {
+export async function adminUpdateMember(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -381,7 +381,7 @@ export async function adminUpdateMember(formData: FormData): Promise<ActionResul
   });
 }
 
-export async function adminDeleteMember(formData: FormData): Promise<ActionResult> {
+export async function adminDeleteMember(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
@@ -474,7 +474,7 @@ export async function adminUpdatePlaylist(_prevState: unknown, formData: FormDat
   });
 }
 
-export async function adminDeletePlaylist(formData: FormData): Promise<ActionResult> {
+export async function adminDeletePlaylist(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
@@ -498,7 +498,7 @@ export async function adminDeletePlaylist(formData: FormData): Promise<ActionRes
 // 5. GALERIE (ALBUMS) - NOVÉ
 // ==========================================
 
-export async function adminCreateAlbum(formData: FormData): Promise<ActionResult> {
+export async function adminCreateAlbum(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -535,7 +535,7 @@ export async function adminCreateAlbum(formData: FormData): Promise<ActionResult
   });
 }
 
-export async function adminUpdateAlbum(formData: FormData): Promise<ActionResult> {
+export async function adminUpdateAlbum(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -572,7 +572,7 @@ export async function adminUpdateAlbum(formData: FormData): Promise<ActionResult
   });
 }
 
-export async function adminDeleteAlbum(formData: FormData): Promise<ActionResult> {
+export async function adminDeleteAlbum(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
@@ -597,7 +597,7 @@ export async function adminDeleteAlbum(formData: FormData): Promise<ActionResult
 // 6. KALENDÁŘ (EVENTS)
 // ==========================================
 
-export async function adminCreateEvent(formData: FormData): Promise<ActionResult> {
+export async function adminCreateEvent(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -638,7 +638,7 @@ export async function adminCreateEvent(formData: FormData): Promise<ActionResult
   });
 }
 
-export async function adminUpdateEvent(formData: FormData): Promise<ActionResult> {
+export async function adminUpdateEvent(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
@@ -678,7 +678,7 @@ export async function adminUpdateEvent(formData: FormData): Promise<ActionResult
   });
 }
 
-export async function adminDeleteEvent(formData: FormData): Promise<ActionResult> {
+export async function adminDeleteEvent(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));

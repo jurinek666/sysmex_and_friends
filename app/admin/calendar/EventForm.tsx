@@ -31,9 +31,9 @@ export function EventForm({ event, onCancel }: EventFormProps) {
       action={async (prevState, formData) => {
         if (isEdit) {
           formData.append("id", event.id);
-          return await adminUpdateEvent(formData);
+          return await adminUpdateEvent(prevState, formData);
         }
-        return await adminCreateEvent(formData);
+        return await adminCreateEvent(prevState, formData);
       }}
       successMessage={isEdit ? "Termín byl úspěšně upraven" : "Termín byl úspěšně vytvořen"}
       submitButtonText={isEdit ? "Uložit změny" : "Vytvořit termín"}

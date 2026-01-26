@@ -53,7 +53,7 @@ export function PostList({ posts }: PostListProps) {
               Upravit
             </button>
             <DeleteFormButton
-              action={async (formData) => await adminDeletePost(formData)}
+              action={async (formData) => await adminDeletePost(null, formData)}
               itemId={post.id}
               itemName={post.title}
             />

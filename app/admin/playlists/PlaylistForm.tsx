@@ -1,7 +1,7 @@
 "use client";
 
 import { ActionForm } from "@/components/admin/ActionForm";
-import { adminCreatePlaylist } from "../_actions";
+import { adminCreatePlaylist, adminUpdatePlaylist } from "../_actions";
 import { X } from "lucide-react";
 
 interface Playlist {
@@ -22,8 +22,14 @@ export function PlaylistForm({ playlist, onCancel }: PlaylistFormProps) {
 
   return (
     <ActionForm
-      action={adminCreatePlaylist}
-      successMessage="Playlist byl úspěšně vytvořen"
+      action={async (prevState, formData) => {
+        if (isEdit) {
+          formData.append("id", playlist.id);
+          return await adminUpdatePlaylist(prevState, formData);
+        }
+        return await adminCreatePlaylist(prevState, formData);
+      }}
+      successMessage={isEdit ? "Playlist byl úspěšně upraven" : "Playlist byl úspěšně vytvořen"}
       submitButtonText="Uložit playlist"
       submitButtonClassName="w-full bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 font-medium transition-colors disabled:opacity-50"
       onSuccess={onCancel}
