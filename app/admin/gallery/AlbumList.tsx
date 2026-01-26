@@ -64,7 +64,7 @@ export function AlbumList({ albums }: AlbumListProps) {
               Upravit
             </button>
             <DeleteFormButton
-              action={async (formData) => await adminDeleteAlbum(formData)}
+              action={async (formData) => await adminDeleteAlbum(null, formData)}
               itemId={album.id}
               itemName={album.title}
             />

@@ -27,9 +27,9 @@ export function PostForm({ post, onCancel }: PostFormProps) {
       action={async (prevState, formData) => {
         if (isEdit) {
           formData.append("id", post.id);
-          return await adminUpdatePost(formData);
+          return await adminUpdatePost(prevState, formData);
         }
-        return await adminCreatePost(formData);
+        return await adminCreatePost(prevState, formData);
       }}
       successMessage={isEdit ? "Článek byl úspěšně upraven" : "Článek byl úspěšně vytvořen"}
       submitButtonText={isEdit ? "Uložit změny" : "Publikovat článek"}

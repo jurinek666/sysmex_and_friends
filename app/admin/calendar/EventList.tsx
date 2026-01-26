@@ -88,7 +88,7 @@ export function EventList({ events }: EventListProps) {
                 Upravit
               </button>
               <DeleteFormButton
-                action={async (formData) => await adminDeleteEvent(formData)}
+                action={async (formData) => await adminDeleteEvent(null, formData)}
                 itemId={event.id}
                 itemName={event.title}
               />

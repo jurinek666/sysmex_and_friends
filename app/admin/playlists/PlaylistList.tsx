@@ -42,11 +42,6 @@ export function PlaylistList({ playlists }: PlaylistListProps) {
             </div>
             <div className="text-xs text-gray-500 truncate max-w-md mt-1">{p.spotifyUrl}</div>
           </div>
-          <DeleteFormButton
-            action={adminDeletePlaylist}
-            itemId={p.id}
-            itemName={p.title}
-          />
           <div className="flex items-center gap-2">
             <button
               onClick={() => setEditingId(p.id)}
@@ -56,7 +51,7 @@ export function PlaylistList({ playlists }: PlaylistListProps) {
               Upravit
             </button>
             <DeleteFormButton
-              action={async (formData) => await adminDeletePlaylist(formData)}
+              action={async (formData) => await adminDeletePlaylist(null, formData)}
               itemId={p.id}
               itemName={p.title}
             />

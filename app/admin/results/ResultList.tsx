@@ -74,7 +74,7 @@ export function ResultList({ results, seasons }: ResultListProps) {
                     Upravit
                   </button>
                   <DeleteFormButton
-                    action={async (formData) => await adminDeleteResult(formData)}
+                    action={async (formData) => await adminDeleteResult(null, formData)}
                     itemId={r.id}
                     itemName={`${r.placement}. místo v ${r.venue}`}
                     className="text-red-600 hover:underline"
