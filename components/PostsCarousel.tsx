@@ -138,7 +138,7 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
                 </p>
               )}
               <Link
-                href={`/posts/${currentPost.slug}`}
+                href={`/clanky/${currentPost.slug}`}
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-black font-bold hover:scale-105 transition-transform"
               >
                 ČTI DÁLE...
