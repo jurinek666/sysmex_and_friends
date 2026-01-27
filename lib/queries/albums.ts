@@ -11,12 +11,12 @@ export async function getAlbums() {
   // Načteme alba a počet fotek. 
   // 'photos(count)' vrátí pole objektů [{ count: N }]
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/3a03f1e8-5044-4fd7-a566-9802511bf37d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/queries/albums.ts:11',message:'Before query execution - trying photos',data:{tableName:'Album',selectClause:'*, photos(count)',relationshipName:'photos'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  fetch('http://127.0.0.1:7242/ingest/3a03f1e8-5044-4fd7-a566-9802511bf37d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/queries/albums.ts:11',message:'Before query execution - trying photos',data:{tableName:'Album',selectClause:'id, title, dateTaken, createdAt, cloudinaryFolder, photos(count)',relationshipName:'photos'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
   // #endregion
   let { data, error } = await withRetry(async () => {
     return await supabase
       .from("Album")
-      .select("*, photos(count)")
+      .select("id, title, dateTaken, createdAt, cloudinaryFolder, photos(count)")
       .order("dateTaken", { ascending: false });
   });
 
@@ -32,14 +32,15 @@ export async function getAlbums() {
     const result2 = await withRetry(async () => {
       return await supabase
         .from("Album")
-        .select("*, Photo(count)")
+        .select("id, title, dateTaken, createdAt, cloudinaryFolder, Photo(count)")
         .order("dateTaken", { ascending: false });
     });
     // #region agent log
     fetch('http://127.0.0.1:7242/ingest/3a03f1e8-5044-4fd7-a566-9802511bf37d',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/queries/albums.ts:32',message:'Second attempt result',data:{hasError:!!result2.error,errorCode:result2.error?.code,errorMessage:result2.error?.message,hasData:!!result2.data},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
     // #endregion
     if (!result2.error) {
-      data = result2.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data = result2.data as any;
       error = null;
     }
   }
@@ -61,7 +62,7 @@ export async function getAlbums() {
   return (data || []).map((album: any) => ({
     ...album,
     _count: {
-      photos: album.photos?.[0]?.count ?? 0
+      photos: album.photos?.[0]?.count ?? album.Photo?.[0]?.count ?? 0
     }
   }));
 }
