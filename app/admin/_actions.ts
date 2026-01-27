@@ -111,7 +111,7 @@ export async function adminCreatePost(_prevState: unknown, formData: FormData): 
     }
 
     revalidatePath("/admin/posts");
-    revalidatePath("/posts");
+    revalidatePath("/clanky");
     revalidatePath("/");
   });
 }
@@ -150,7 +150,7 @@ export async function adminUpdatePost(_prevState: unknown, formData: FormData): 
     }
 
     revalidatePath("/admin/posts");
-    revalidatePath("/posts");
+    revalidatePath("/clanky");
     revalidatePath("/");
   });
 }
@@ -171,7 +171,7 @@ export async function adminDeletePost(_prevState: unknown, formData: FormData): 
     }
 
     revalidatePath("/admin/posts");
-    revalidatePath("/posts");
+    revalidatePath("/clanky");
     revalidatePath("/");
   });
 }
@@ -339,7 +339,7 @@ export async function adminCreateMember(_prevState: unknown, formData: FormData)
     }
 
     revalidatePath("/admin/members");
-    revalidatePath("/team");
+    revalidatePath("/tym");
     revalidatePath("/");
   });
 }
@@ -376,7 +376,7 @@ export async function adminUpdateMember(_prevState: unknown, formData: FormData)
     }
 
     revalidatePath("/admin/members");
-    revalidatePath("/team");
+    revalidatePath("/tym");
     revalidatePath("/");
   });
 }
@@ -397,7 +397,7 @@ export async function adminDeleteMember(_prevState: unknown, formData: FormData)
     }
 
     revalidatePath("/admin/members");
-    revalidatePath("/team");
+    revalidatePath("/tym");
     revalidatePath("/");
   });
 }
