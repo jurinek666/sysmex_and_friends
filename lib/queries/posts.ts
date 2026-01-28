@@ -8,6 +8,7 @@ export async function getFeaturedPost() {
     .from("Post")
     .select("*")
     .eq("isFeatured", true)
+    .not("publishedAt", "is", null)
     .order("publishedAt", { ascending: false })
     .limit(1)
     .maybeSingle(); // .maybeSingle() nehodí chybu, když nic nenajde, vrátí null
@@ -26,6 +27,7 @@ export async function getRecentPosts(limit = 20) {
   const { data, error } = await supabase
     .from("Post")
     .select("id, title, slug, excerpt, coverImageUrl, publishedAt, updatedAt, isFeatured")
+    .not("publishedAt", "is", null)
     .order("publishedAt", { ascending: false })
     .limit(limit);
 
