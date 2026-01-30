@@ -3,6 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { requireAuth } from "@/lib/admin/auth";
 import { randomUUID } from "crypto";
+import {
+  postSchema,
+  resultSchema,
+  memberSchema,
+  playlistSchema,
+  albumSchema,
+  eventSchema
+} from "@/lib/schemas";
+import { ZodError } from "zod";
 
 // Helper pro error handling
 type ActionResult = { success: true } | { success: false; error: string };
@@ -34,6 +43,13 @@ async function handleAction<T>(
     if (isRedirectError(error)) {
       throw error;
     }
+
+    if (error instanceof ZodError) {
+      // Format Zod errors
+      const errorMessage = error.issues.map(e => e.message).join(", ");
+      return { success: false, error: errorMessage };
+    }
+
     // Handle Supabase errors (they have a 'message' property but aren't Error instances)
     let errorMessage = "Nastala neznámá chyba";
     if (error instanceof Error) {
@@ -79,30 +95,28 @@ export async function adminCreatePost(_prevState: unknown, formData: FormData): 
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
-    const title = String(formData.get("title"));
-    const slug = String(formData.get("slug"));
-    const excerpt = String(formData.get("excerpt"));
-    const content = String(formData.get("content"));
-    const coverImageUrl = formData.get("coverImageUrl")?.toString() || null;
-    const isFeatured = formData.get("isFeatured") === "on";
+    const rawData = {
+      title: formData.get("title")?.toString() || "",
+      slug: formData.get("slug")?.toString() || "",
+      excerpt: formData.get("excerpt")?.toString() || "",
+      content: formData.get("content")?.toString() || "",
+      coverImageUrl: formData.get("coverImageUrl")?.toString() || null,
+      isFeatured: formData.get("isFeatured") === "on",
+    };
+
+    const validated = postSchema.parse(rawData);
 
     const id = randomUUID();
     const now = new Date().toISOString();
     const { error } = await supabase.from("Post").insert({
       id,
-      title,
-      slug,
-      excerpt,
-      content,
-      coverImageUrl,
-      isFeatured,
+      ...validated,
       publishedAt: now,
       createdAt: now,
       updatedAt: now,
     });
 
     if (error) {
-      // Convert Supabase error to Error instance for proper handling
       const dbError = new Error(error.message || 'Database error') as SupabaseError;
       dbError.code = error.code;
       dbError.details = error.details;
@@ -121,22 +135,22 @@ export async function adminUpdatePost(_prevState: unknown, formData: FormData): 
     const { supabase } = await requireAuth();
 
     const id = String(formData.get("id"));
-    const title = String(formData.get("title"));
-    const slug = String(formData.get("slug"));
-    const excerpt = String(formData.get("excerpt"));
-    const content = String(formData.get("content"));
-    const coverImageUrl = formData.get("coverImageUrl")?.toString() || null;
-    const isFeatured = formData.get("isFeatured") === "on";
+
+    const rawData = {
+      title: formData.get("title")?.toString() || "",
+      slug: formData.get("slug")?.toString() || "",
+      excerpt: formData.get("excerpt")?.toString() || "",
+      content: formData.get("content")?.toString() || "",
+      coverImageUrl: formData.get("coverImageUrl")?.toString() || null,
+      isFeatured: formData.get("isFeatured") === "on",
+    };
+
+    const validated = postSchema.parse(rawData);
 
     const { error } = await supabase
       .from("Post")
       .update({
-        title,
-        slug,
-        excerpt,
-        content,
-        coverImageUrl,
-        isFeatured,
+        ...validated,
         updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
@@ -184,34 +198,39 @@ export async function adminCreateResult(_prevState: unknown, formData: FormData)
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
-    const seasonCode = String(formData.get("seasonCode"));
-    const dateStr = String(formData.get("date"));
-    const venue = String(formData.get("venue"));
-    const teamName = String(formData.get("teamName"));
-    const placement = Number(formData.get("placement"));
-    const score = Number(formData.get("score"));
-    const note = formData.get("note")?.toString() || null;
+    const rawData = {
+      seasonCode: formData.get("seasonCode")?.toString() || "",
+      date: formData.get("date")?.toString() || "",
+      venue: formData.get("venue")?.toString() || "",
+      teamName: formData.get("teamName")?.toString() || "",
+      placement: formData.get("placement")?.toString() || "0",
+      score: formData.get("score")?.toString() || "0",
+      note: formData.get("note")?.toString() || null,
+    };
+
+    const validated = resultSchema.parse(rawData);
 
     const { data: season, error: seasonError } = await supabase
       .from("Season")
       .select("id")
-      .eq("code", seasonCode)
+      .eq("code", validated.seasonCode)
       .single();
 
     if (seasonError || !season) {
-      throw new Error(`Sezóna s kódem ${seasonCode} nebyla nalezena.`);
+      throw new Error(`Sezóna s kódem ${validated.seasonCode} nebyla nalezena.`);
     }
 
     const id = randomUUID();
     const now = new Date().toISOString();
+
+    // Omit seasonCode from insert object as it's not in the table
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { seasonCode, ...insertData } = validated;
+
     const { error } = await supabase.from("Result").insert({
       id,
-      date: new Date(dateStr).toISOString(),
-      venue,
-      teamName,
-      placement,
-      score,
-      note,
+      ...insertData,
+      date: new Date(validated.date).toISOString(),
       seasonId: season.id,
       createdAt: now,
       updatedAt: now,
@@ -234,35 +253,38 @@ export async function adminCreateResult(_prevState: unknown, formData: FormData)
 export async function adminUpdateResult(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
-
     const id = String(formData.get("id"));
-    const seasonCode = String(formData.get("seasonCode"));
-    const dateStr = String(formData.get("date"));
-    const venue = String(formData.get("venue"));
-    const teamName = String(formData.get("teamName"));
-    const placement = Number(formData.get("placement"));
-    const score = Number(formData.get("score"));
-    const note = formData.get("note")?.toString() || null;
+
+    const rawData = {
+      seasonCode: formData.get("seasonCode")?.toString() || "",
+      date: formData.get("date")?.toString() || "",
+      venue: formData.get("venue")?.toString() || "",
+      teamName: formData.get("teamName")?.toString() || "",
+      placement: formData.get("placement")?.toString() || "0",
+      score: formData.get("score")?.toString() || "0",
+      note: formData.get("note")?.toString() || null,
+    };
+
+    const validated = resultSchema.parse(rawData);
 
     const { data: season, error: seasonError } = await supabase
       .from("Season")
       .select("id")
-      .eq("code", seasonCode)
+      .eq("code", validated.seasonCode)
       .single();
 
     if (seasonError || !season) {
-      throw new Error(`Sezóna s kódem ${seasonCode} nebyla nalezena.`);
+      throw new Error(`Sezóna s kódem ${validated.seasonCode} nebyla nalezena.`);
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { seasonCode, ...updateData } = validated;
 
     const { error } = await supabase
       .from("Result")
       .update({
-        date: new Date(dateStr).toISOString(),
-        venue,
-        teamName,
-        placement,
-        score,
-        note,
+        ...updateData,
+        date: new Date(validated.date).toISOString(),
         seasonId: season.id,
         updatedAt: new Date().toISOString(),
       })
@@ -311,21 +333,21 @@ export async function adminCreateMember(_prevState: unknown, formData: FormData)
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
-    const displayName = String(formData.get("displayName"));
-    const nickname = formData.get("nickname")?.toString() || null;
-    const role = formData.get("role")?.toString() || null;
-    const gender = String(formData.get("gender"));
-    const bio = formData.get("bio")?.toString() || null;
+    const rawData = {
+      displayName: formData.get("displayName")?.toString() || "",
+      nickname: formData.get("nickname")?.toString() || null,
+      role: formData.get("role")?.toString() || null,
+      gender: formData.get("gender")?.toString() || "",
+      bio: formData.get("bio")?.toString() || null,
+    };
+
+    const validated = memberSchema.parse(rawData);
 
     const id = randomUUID();
     const now = new Date().toISOString();
     const { error } = await supabase.from("Member").insert({
       id,
-      displayName,
-      nickname,
-      role,
-      gender,
-      bio,
+      ...validated,
       createdAt: now,
       updatedAt: now,
     });
@@ -347,22 +369,22 @@ export async function adminCreateMember(_prevState: unknown, formData: FormData)
 export async function adminUpdateMember(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
-
     const id = String(formData.get("id"));
-    const displayName = String(formData.get("displayName"));
-    const nickname = formData.get("nickname")?.toString() || null;
-    const role = formData.get("role")?.toString() || null;
-    const gender = String(formData.get("gender"));
-    const bio = formData.get("bio")?.toString() || null;
+
+    const rawData = {
+      displayName: formData.get("displayName")?.toString() || "",
+      nickname: formData.get("nickname")?.toString() || null,
+      role: formData.get("role")?.toString() || null,
+      gender: formData.get("gender")?.toString() || "",
+      bio: formData.get("bio")?.toString() || null,
+    };
+
+    const validated = memberSchema.parse(rawData);
 
     const { error } = await supabase
       .from("Member")
       .update({
-        displayName,
-        nickname,
-        role,
-        gender,
-        bio,
+        ...validated,
         updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
@@ -410,19 +432,20 @@ export async function adminCreatePlaylist(_prevState: unknown, formData: FormDat
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
-    const title = String(formData.get("title"));
-    const spotifyUrl = String(formData.get("spotifyUrl"));
-    const description = formData.get("description")?.toString() || null;
-    const isActive = formData.get("isActive") === "on";
+    const rawData = {
+      title: formData.get("title")?.toString() || "",
+      spotifyUrl: formData.get("spotifyUrl")?.toString() || "",
+      description: formData.get("description")?.toString() || null,
+      isActive: formData.get("isActive") === "on",
+    };
+
+    const validated = playlistSchema.parse(rawData);
 
     const id = randomUUID();
     const now = new Date().toISOString();
     const { error } = await supabase.from("Playlist").insert({
       id,
-      title,
-      spotifyUrl,
-      description,
-      isActive,
+      ...validated,
       createdAt: now,
       updatedAt: now,
     });
@@ -443,20 +466,21 @@ export async function adminCreatePlaylist(_prevState: unknown, formData: FormDat
 export async function adminUpdatePlaylist(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
-
     const id = String(formData.get("id"));
-    const title = String(formData.get("title"));
-    const spotifyUrl = String(formData.get("spotifyUrl"));
-    const description = formData.get("description")?.toString() || null;
-    const isActive = formData.get("isActive") === "on";
+
+    const rawData = {
+      title: formData.get("title")?.toString() || "",
+      spotifyUrl: formData.get("spotifyUrl")?.toString() || "",
+      description: formData.get("description")?.toString() || null,
+      isActive: formData.get("isActive") === "on",
+    };
+
+    const validated = playlistSchema.parse(rawData);
 
     const { error } = await supabase
       .from("Playlist")
       .update({
-        title,
-        spotifyUrl,
-        description,
-        isActive,
+        ...validated,
         updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
@@ -502,21 +526,22 @@ export async function adminCreateAlbum(_prevState: unknown, formData: FormData):
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
-    const title = String(formData.get("title"));
-    const dateStr = String(formData.get("dateTaken"));
-    const cloudinaryFolder = String(formData.get("cloudinaryFolder"));
-    const description = formData.get("description")?.toString() || null;
-    const coverPublicId = formData.get("coverPublicId")?.toString() || null;
+    const rawData = {
+      title: formData.get("title")?.toString() || "",
+      dateTaken: formData.get("dateTaken")?.toString() || "",
+      cloudinaryFolder: formData.get("cloudinaryFolder")?.toString() || "",
+      description: formData.get("description")?.toString() || null,
+      coverPublicId: formData.get("coverPublicId")?.toString() || null,
+    };
+
+    const validated = albumSchema.parse(rawData);
 
     const id = randomUUID();
     const now = new Date().toISOString();
     const { error } = await supabase.from("Album").insert({
       id,
-      title,
-      dateTaken: new Date(dateStr).toISOString(),
-      cloudinaryFolder,
-      description,
-      coverPublicId,
+      ...validated,
+      dateTaken: new Date(validated.dateTaken).toISOString(),
       createdAt: now,
       updatedAt: now,
     });
@@ -538,22 +563,23 @@ export async function adminCreateAlbum(_prevState: unknown, formData: FormData):
 export async function adminUpdateAlbum(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
-
     const id = String(formData.get("id"));
-    const title = String(formData.get("title"));
-    const dateStr = String(formData.get("dateTaken"));
-    const cloudinaryFolder = String(formData.get("cloudinaryFolder"));
-    const description = formData.get("description")?.toString() || null;
-    const coverPublicId = formData.get("coverPublicId")?.toString() || null;
+
+    const rawData = {
+      title: formData.get("title")?.toString() || "",
+      dateTaken: formData.get("dateTaken")?.toString() || "",
+      cloudinaryFolder: formData.get("cloudinaryFolder")?.toString() || "",
+      description: formData.get("description")?.toString() || null,
+      coverPublicId: formData.get("coverPublicId")?.toString() || null,
+    };
+
+    const validated = albumSchema.parse(rawData);
 
     const { error } = await supabase
       .from("Album")
       .update({
-        title,
-        dateTaken: new Date(dateStr).toISOString(),
-        cloudinaryFolder,
-        description,
-        coverPublicId,
+        ...validated,
+        dateTaken: new Date(validated.dateTaken).toISOString(),
         updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
@@ -601,25 +627,26 @@ export async function adminCreateEvent(_prevState: unknown, formData: FormData):
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
-    const title = String(formData.get("title"));
-    const dateStr = String(formData.get("date"));
-    const venue = String(formData.get("venue"));
-    const description = formData.get("description")?.toString() || null;
-    const isUpcoming = formData.get("isUpcoming") === "on";
+    const rawData = {
+      title: formData.get("title")?.toString() || "",
+      date: formData.get("date")?.toString() || "",
+      venue: formData.get("venue")?.toString() || "",
+      description: formData.get("description")?.toString() || null,
+      isUpcoming: formData.get("isUpcoming") === "on",
+    };
+
+    const validated = eventSchema.parse(rawData);
 
     const id = randomUUID();
     const now = new Date().toISOString();
     
     // Convert datetime-local to ISO string
-    const eventDate = new Date(dateStr).toISOString();
+    const eventDate = new Date(validated.date).toISOString();
     
     const { error } = await supabase.from("Event").insert({
       id,
-      title,
+      ...validated,
       date: eventDate,
-      venue,
-      description,
-      isUpcoming,
       createdAt: now,
       updatedAt: now,
     });
@@ -641,25 +668,26 @@ export async function adminCreateEvent(_prevState: unknown, formData: FormData):
 export async function adminUpdateEvent(_prevState: unknown, formData: FormData): Promise<ActionResult> {
   return handleAction(async () => {
     const { supabase } = await requireAuth();
-
     const id = String(formData.get("id"));
-    const title = String(formData.get("title"));
-    const dateStr = String(formData.get("date"));
-    const venue = String(formData.get("venue"));
-    const description = formData.get("description")?.toString() || null;
-    const isUpcoming = formData.get("isUpcoming") === "on";
+
+    const rawData = {
+      title: formData.get("title")?.toString() || "",
+      date: formData.get("date")?.toString() || "",
+      venue: formData.get("venue")?.toString() || "",
+      description: formData.get("description")?.toString() || null,
+      isUpcoming: formData.get("isUpcoming") === "on",
+    };
+
+    const validated = eventSchema.parse(rawData);
 
     // Convert datetime-local to ISO string
-    const eventDate = new Date(dateStr).toISOString();
+    const eventDate = new Date(validated.date).toISOString();
 
     const { error } = await supabase
       .from("Event")
       .update({
-        title,
+        ...validated,
         date: eventDate,
-        venue,
-        description,
-        isUpcoming,
         updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
