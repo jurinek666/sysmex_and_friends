@@ -1,0 +1,24 @@
+
+> sysmex-friends@0.1.0 check /app
+> npm run lint && tsc --noEmit && npm run build
+
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
+
+> sysmex-friends@0.1.0 lint
+> eslint .
+
+app/clanky/[slug]/page.tsx(36,15): error TS2339: Property 'coverImageUrl' does not exist on type 'never'.
+app/clanky/[slug]/page.tsx(39,25): error TS2339: Property 'coverImageUrl' does not exist on type 'never'.
+app/clanky/[slug]/page.tsx(40,25): error TS2339: Property 'title' does not exist on type 'never'.
+app/clanky/[slug]/page.tsx(57,39): error TS2339: Property 'publishedAt' does not exist on type 'never'.
+app/clanky/[slug]/page.tsx(59,20): error TS2339: Property 'isFeatured' does not exist on type 'never'.
+app/clanky/[slug]/page.tsx(67,19): error TS2339: Property 'title' does not exist on type 'never'.
+app/clanky/[slug]/page.tsx(71,19): error TS2339: Property 'excerpt' does not exist on type 'never'.
+app/clanky/[slug]/page.tsx(84,34): error TS2339: Property 'content' does not exist on type 'never'.
+app/page.tsx(39,24): error TS18047: 'latestResults' is possibly 'null'.
+app/page.tsx(51,26): error TS2322: Type '{ id: any; title: any; slug: any; excerpt: any; coverImageUrl: any; publishedAt: any; updatedAt: any; isFeatured: any; }[] | null' is not assignable to type 'PostItem[]'.
+  Type 'null' is not assignable to type 'PostItem[]'.
+app/sitemap.ts(38,45): error TS18047: 'posts' is possibly 'null'.
+app/vysledky/page.tsx(15,23): error TS18047: 'seasons' is possibly 'null'.
+ ELIFECYCLE  Command failed with exit code 2.

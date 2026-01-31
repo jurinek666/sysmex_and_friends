@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { logSupabaseError } from "@/lib/queries/utils";
+import { logSupabaseError, withRetry } from "@/lib/queries/utils";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AlbumForm } from "./AlbumForm";
 import { AlbumList } from "./AlbumList";
@@ -10,17 +10,22 @@ export default async function AdminGalleryPage() {
   const supabase = await createClient();
 
   // 1) První pokus: photos(count)
-  let { data: albums, error } = await supabase
-    .from("Album")
-    .select("*, photos(count)")
-    .order("dateTaken", { ascending: false });
+  let { data: albums, error } = await withRetry(async () => {
+    return await supabase
+      .from("Album")
+      .select("*, photos(count)")
+      .order("dateTaken", { ascending: false });
+  });
 
   // 2) Při chybě (typicky špatný název relace) zkusit Photo(count)
   if (error && error?.hint?.includes?.("Photo")) {
-    const res = await supabase
-      .from("Album")
-      .select("*, Photo(count)")
-      .order("dateTaken", { ascending: false });
+    const res = await withRetry(async () => {
+      return await supabase
+        .from("Album")
+        .select("*, Photo(count)")
+        .order("dateTaken", { ascending: false });
+    });
+
     if (!res.error && res.data) {
       albums = res.data.map((a: { Photo?: { count: number }[]; photos?: { count: number }[]; [k: string]: unknown }) => ({
         ...a,
@@ -33,11 +38,15 @@ export default async function AdminGalleryPage() {
   // 3) Při stále přítomné chybě: pouze sloupce Album, bez vazby
   if (error) {
     logSupabaseError("AdminGalleryPage (albums)", error);
-    const res = await supabase.from("Album").select("*").order("dateTaken", { ascending: false });
-    albums = res.error ? [] : (res.data || []).map((a) => ({ ...a, photos: [{ count: 0 }] }));
+    const res = await withRetry(async () => {
+      return await supabase.from("Album").select("*").order("dateTaken", { ascending: false });
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    albums = res.error ? [] : (res.data || []).map((a: any) => ({ ...a, photos: [{ count: 0 }] }));
   }
 
-  const safeAlbums = albums || [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const safeAlbums = (albums || []) as any[];
 
   return (
     <AdminLayout title="Admin • Galerie">

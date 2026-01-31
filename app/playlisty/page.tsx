@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Music2 } from "lucide-react";
 import { getAllPlaylists } from "@/lib/queries/playlists";
+import { PlaylistEmbed } from "@/components/PlaylistEmbed";
 
 export const metadata: Metadata = {
   title: "Playlisty | SYSMEX & Friends Quiz Team",
@@ -72,24 +73,10 @@ export default async function PlaylistyPage() {
                   {/* Spotify Embed */}
                   <div className="mt-4 w-full overflow-hidden rounded-lg">
                     {playlist.spotifyUrl ? (
-                      <div className="w-full">
-                        {playlist.spotifyUrl.includes('<iframe') ? (
-                          <div
-                            dangerouslySetInnerHTML={{ __html: playlist.spotifyUrl }}
-                            className="w-full [&>iframe]:w-full [&>iframe]:h-[352px] [&>iframe]:rounded-lg [&>iframe]:border-0 [&>iframe]:min-h-[352px]"
-                          />
-                        ) : (
-                          <iframe
-                            src={playlist.spotifyUrl}
-                            width="100%"
-                            height="352"
-                            frameBorder="0"
-                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                            loading="lazy"
-                            className="w-full h-[352px] rounded-lg border-0"
-                          />
-                        )}
-                      </div>
+                      <PlaylistEmbed
+                        spotifyUrl={playlist.spotifyUrl}
+                        className="w-full h-[352px]"
+                      />
                     ) : (
                       <div className="text-gray-500 text-sm italic p-4 text-center bg-white/5 rounded-lg">
                         Playlist není k dispozici

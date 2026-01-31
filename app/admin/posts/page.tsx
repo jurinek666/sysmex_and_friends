@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { withRetry, logSupabaseError } from "@/lib/queries/utils";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { PostForm } from "./PostForm";
 import { PostList } from "./PostList";
@@ -22,10 +23,16 @@ export default async function AdminPostsPage() {
   const supabase = await createClient();
   
   // Nahrazeno prisma.post.findMany(...)
-  const { data: posts } = await supabase
-    .from("Post")
-    .select("*")
-    .order("createdAt", { ascending: false });
+  const { data: posts, error } = await withRetry(async () => {
+    return await supabase
+      .from("Post")
+      .select("*")
+      .order("createdAt", { ascending: false });
+  });
+
+  if (error) {
+    logSupabaseError("AdminPostsPage", error);
+  }
 
   // Převedeme na náš typ a zajistíme, že to není null
   const safePosts = (posts || []) as Post[];
