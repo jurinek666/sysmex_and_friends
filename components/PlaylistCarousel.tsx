@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { PlaylistEmbed } from "./PlaylistEmbed";
 
 interface Playlist {
   id: string;
@@ -97,24 +98,7 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
           >
             <div className="w-full h-full overflow-hidden">
               {currentPlaylist.spotifyUrl ? (
-                <div className="w-full h-full">
-                  {currentPlaylist.spotifyUrl.includes('<iframe') ? (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: currentPlaylist.spotifyUrl }}
-                      className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0"
-                    />
-                  ) : (
-                    <iframe
-                      src={currentPlaylist.spotifyUrl}
-                      width="100%"
-                      height="100%"
-                      frameBorder="0"
-                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                      loading="lazy"
-                      className="w-full h-full border-0"
-                    />
-                  )}
-                </div>
+                <PlaylistEmbed spotifyUrl={currentPlaylist.spotifyUrl} className="w-full h-full" />
               ) : (
                 <div className="w-full h-full" />
               )}
