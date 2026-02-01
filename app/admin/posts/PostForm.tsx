@@ -3,16 +3,7 @@
 import { ActionForm } from "@/components/admin/ActionForm";
 import { adminCreatePost, adminUpdatePost } from "../_actions";
 import { X } from "lucide-react";
-
-interface Post {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  coverImageUrl: string | null;
-  isFeatured: boolean;
-}
+import { Post } from "@/lib/types";
 
 interface PostFormProps {
   post?: Post;
