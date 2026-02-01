@@ -30,7 +30,7 @@ export async function getAllPlaylists() {
   const { data, error } = await withRetry(async () => {
     return await supabase
       .from("Playlist")
-      .select("*")
+      .select("id, title, description, spotifyUrl, isActive")
       .order("createdAt", { ascending: false });
   });
 

@@ -9,7 +9,7 @@ export async function getUpcomingEvents(limit = 5) {
   const { data, error } = await withRetry(async () => {
     return await supabase
       .from("Event")
-      .select("*")
+      .select("id, title, date, venue, description")
       .eq("isUpcoming", true)
       .gte("date", now)
       .order("date", { ascending: true })

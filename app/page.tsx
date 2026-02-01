@@ -21,9 +21,9 @@ interface Event {
   date: string;
   venue: string;
   description: string | null;
-  isUpcoming: boolean;
-  createdAt: string;
-  updatedAt: string;
+  isUpcoming?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export default async function Home() {

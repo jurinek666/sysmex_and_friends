@@ -15,7 +15,7 @@ interface Playlist {
   spotifyUrl: string;
   description: string | null;
   isActive: boolean;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export default async function PlaylistyPage() {
