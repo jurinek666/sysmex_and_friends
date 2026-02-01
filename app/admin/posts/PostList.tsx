@@ -5,18 +5,7 @@ import { adminDeletePost } from "../_actions";
 import { PostForm } from "./PostForm";
 import { useState } from "react";
 import { Edit2 } from "lucide-react";
-
-interface Post {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  coverImageUrl: string | null;
-  isFeatured: boolean;
-  publishedAt: string;
-  createdAt: string;
-}
+import { Post } from "@/lib/types";
 
 interface PostListProps {
   posts: Post[];
