@@ -4,21 +4,20 @@ import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { getAlbum } from "@/lib/queries/albums";
+import { AlbumGallery } from "@/components/galerie/AlbumGallery";
+import { Images } from "lucide-react";
 
 export const revalidate = 300;
 
-// Cloud name: NEXT_PUBLIC_ / CLOUDINARY_CLOUD_NAME / fallback
 const CLOUD_NAME =
   process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
   process.env.CLOUDINARY_CLOUD_NAME ||
   "gear-gaming";
 
-// Pomocná funkce pro generování URL z Cloudinary
-function getCloudinaryUrl(publicId: string) {
-  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_800/${publicId}`;
+function getCloudinaryUrl(publicId: string, width = 800) {
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_${width}/${publicId}`;
 }
 
-// 1. Definujeme typy pro data z databáze
 interface Photo {
   id: string;
   cloudinaryPublicId: string;
@@ -28,83 +27,94 @@ interface Photo {
 interface Album {
   id: string;
   title: string;
-  dateTaken: string; // Supabase vrací datum jako string
+  dateTaken: string;
+  description: string | null;
+  coverPublicId: string | null;
   photos: Photo[];
 }
 
-// Next.js 15+ očekává, že params je Promise
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 export default async function AlbumDetailPage(props: PageProps) {
-  // Await params
   const { id } = await props.params;
-  
-  // Načteme data (zatím jako 'any')
   const rawAlbum = await getAlbum(id);
 
   if (!rawAlbum) return notFound();
 
-  // 2. Přetypujeme data na náš interface
   const album = rawAlbum as Album;
+  const coverId = (album.coverPublicId || "").trim();
 
   return (
-    <main className="min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
-      
+    <main className="relative min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+      {/* Neon accent pruh */}
+      <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-neon-cyan via-neon-magenta to-transparent" />
+
       {/* HLAVIČKA ALBA */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-white/5 pb-8">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <Link 
-              href="/galerie"
-              className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
-            >
-              ← Zpět do galerie
-            </Link>
-            <span className="text-neon-gold text-sm font-mono tracking-wider">
-               {format(new Date(album.dateTaken), "d. MMMM yyyy", { locale: cs })}
-            </span>
-          </div>
-          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
-            {album.title}
-          </h1>
-        </div>
-      </div>
-
-      {/* GRID FOTEK */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {album.photos.length === 0 ? (
-          <div className="col-span-full py-20 text-center text-gray-500 border border-dashed border-gray-800 rounded-3xl">
-            V tomto albu zatím nejsou žádné fotky.
-          </div>
-        ) : (
-          album.photos.map((photo, index) => (
-            <div 
-              key={photo.id}
-              className="group relative aspect-square overflow-hidden rounded-2xl bg-sysmex-900 border border-white/5 hover:border-neon-cyan/50 transition-all duration-300 hover:shadow-[0_0_30px_-10px_rgba(70,214,255,0.3)]"
-            >
-              <Image
-                src={getCloudinaryUrl(photo.cloudinaryPublicId)}
-                alt={photo.caption || `Fotka ${index + 1} z alba ${album.title}`}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              
-              {/* Overlay s popiskem */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                {photo.caption && (
-                  <p className="text-white text-sm font-medium line-clamp-2">
-                    {photo.caption}
-                  </p>
-                )}
-              </div>
+      <header className="relative mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
+              <Link
+                href="/galerie"
+                className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
+              >
+                ← Zpět do galerie
+              </Link>
+              <span className="text-neon-gold text-sm font-mono tracking-wider">
+                {format(new Date(album.dateTaken), "d. MMMM yyyy", { locale: cs })}
+              </span>
+              <span className="flex items-center gap-1.5 text-gray-400 text-sm">
+                <Images className="w-4 h-4" strokeWidth={2} />
+                <span className="font-medium">{album.photos.length} fotek</span>
+              </span>
             </div>
-          ))
-        )}
-      </div>
+            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight mt-1">
+              {album.title}
+            </h1>
+            {album.description && (
+              <p className="mt-4 text-gray-400 text-lg max-w-2xl leading-relaxed">
+                {album.description}
+              </p>
+            )}
+          </div>
+        </div>
 
+        {/* Cover / hero obrázek (pokud je vyplněný coverPublicId) */}
+        {coverId && (
+          <div className="mt-8 -mx-4 md:mx-0">
+            <div className="relative w-full aspect-[21/9] max-h-[320px] rounded-2xl overflow-hidden border border-white/10 bg-sysmex-900">
+              <Image
+                src={getCloudinaryUrl(coverId, 1600)}
+                alt={`Obálka alba ${album.title}`}
+                fill
+                sizes="(max-width: 768px) 100vw, 1024px"
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-sysmex-950/80 via-transparent to-transparent" />
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* GRID FOTEK + LIGHTBOX */}
+      {album.photos.length === 0 ? (
+        <div className="py-20 text-center text-gray-500 border border-dashed border-white/10 rounded-3xl bg-white/[0.02]">
+          <Images className="w-16 h-16 mx-auto mb-4 text-gray-600" strokeWidth={1.5} />
+          <p className="text-lg">V tomto albu zatím nejsou žádné fotky.</p>
+          <Link href="/galerie" className="mt-4 inline-block text-neon-cyan hover:underline text-sm">
+            Zpět na galerii
+          </Link>
+        </div>
+      ) : (
+        <AlbumGallery
+          photos={album.photos}
+          cloudName={CLOUD_NAME}
+          albumTitle={album.title}
+        />
+      )}
     </main>
   );
 }

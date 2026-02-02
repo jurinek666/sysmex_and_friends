@@ -531,6 +531,7 @@ export async function adminCreateAlbum(formData: FormData): Promise<ActionResult
 
     revalidatePath("/admin/gallery");
     revalidatePath("/galerie");
+    revalidatePath(`/galerie/${id}`);
     revalidatePath("/");
   });
 }
@@ -568,6 +569,7 @@ export async function adminUpdateAlbum(formData: FormData): Promise<ActionResult
 
     revalidatePath("/admin/gallery");
     revalidatePath("/galerie");
+    revalidatePath(`/galerie/${id}`);
     revalidatePath("/");
   });
 }

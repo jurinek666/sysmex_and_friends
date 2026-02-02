@@ -86,7 +86,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
             • <strong>Dynamic režim</strong> (Media Library): název složky či cesta, např. <code>01_leden</code> nebo <code>galerie/01_leden</code>.<br />
             • <strong>Fixed režim</strong>: prefix cesty v public_id, např. <code>01_leden</code> když máte <code>01_leden/foto.jpg</code>.<br />
             • <strong>Záložně</strong>: pokud složka nevrátí obrázky, zkusí se načíst obrázky s tímto <strong>tagem</strong> (napište přesně ten tag, který mají v Cloudinary).<br />
-            Bez úvodního lomítka; u názvů složek se rozlišuje velikost písmen. V dev módu: <code>/api/debug-cloudinary?folder=01_leden</code> ukáže, která metoda funguje.
+            Bez úvodního lomítka; u názvů složek se rozlišuje velikost písmen. V dev módu: <code>/api/debug-cloudinary</code> ověří připojení (connection) a <code>?folder=01_leden</code> ukáže, která metoda vyhledání funguje.
           </p>
         </div>
 

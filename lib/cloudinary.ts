@@ -133,8 +133,44 @@ export async function fetchImageIdsByFolder(folderInput: string): Promise<Cloudi
 /** Výsledek pro jednu metodu: počet nebo "error" když volání selhalo. */
 type DebugCount = number | "error";
 
+/**
+ * Ověří připojení k Cloudinary: správnost env a platnost API klíčů.
+ * Volá cloudinary.api.usage() – při úspěchu jsou credentials v pořádku.
+ */
+export async function testCloudinaryConnection(): Promise<
+  { ok: true } | { ok: false; error: string }
+> {
+  const cloudName =
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+  if (!cloudName)
+    return { ok: false, error: "Chybí NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME nebo CLOUDINARY_CLOUD_NAME" };
+  if (!apiKey) return { ok: false, error: "Chybí CLOUDINARY_API_KEY" };
+  if (!apiSecret) return { ok: false, error: "Chybí CLOUDINARY_API_SECRET" };
+
+  cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret });
+
+  try {
+    await cloudinary.api.usage();
+    return { ok: true };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return { ok: false, error: msg };
+  }
+}
+
 export interface DebugFolderResult {
   config: { hasCloudName: boolean; hasApiKey: boolean; hasApiSecret: boolean };
+  /** Hodnota ?folder= po oříznutí (pro ověření, co se hledalo). */
+  folder_requested: string;
+  /** Počet assetů z resources() bez prefixu (0–5). Když connection ok a tohle 0, účet nemá obrázky nebo nemáme práva listovat. */
+  resources_root: DebugCount;
+  /** Ukázka public_id z kořene (prvních 5) – uvidíte skutečnou strukturu a jak zadat prefix/složku. */
+  sample_public_ids: string[];
+  /** Skutečné chybové hlášky u metod, které hodily výjimku. */
+  errors: Record<string, string>;
   results: {
     by_asset_folder: DebugCount;
     search_asset_folder: DebugCount;
@@ -157,12 +193,18 @@ export async function debugFolderMethods(folderInput: string): Promise<DebugFold
   const apiSecret = process.env.CLOUDINARY_API_SECRET;
   const p = (folderInput || "").trim().replace(/^\/+/, "");
 
+  const err = (e: unknown) => (e instanceof Error ? e.message : String(e));
+
   const out: DebugFolderResult = {
     config: {
       hasCloudName: !!cloudName,
       hasApiKey: !!apiKey,
       hasApiSecret: !!apiSecret,
     },
+    folder_requested: p,
+    resources_root: "error",
+    sample_public_ids: [],
+    errors: {},
     results: {
       by_asset_folder: "error",
       search_asset_folder: "error",
@@ -174,39 +216,56 @@ export async function debugFolderMethods(folderInput: string): Promise<DebugFold
     },
   };
 
-  if (!p || !cloudName || !apiKey || !apiSecret) return out;
+  if (!cloudName || !apiKey || !apiSecret) return out;
 
   cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret });
+
+  // resources_root: můžeme vůbec vypsat nějaké assety? (bez prefixu/složky)
+  try {
+    const r = await cloudinary.api.resources({ resource_type: "image", type: "upload", max_results: 5 });
+    const list = toList(r);
+    out.resources_root = list.length;
+    out.sample_public_ids = list.slice(0, 5).map((x) => x.public_id);
+  } catch (e) {
+    out.resources_root = "error";
+    out.errors.resources_root = err(e);
+  }
+
+  if (!p) return out;
 
   try {
     const r = await cloudinary.api.resources_by_asset_folder(p, { max_results: 500 });
     out.results.by_asset_folder = toList(r).length;
-  } catch {
+  } catch (e) {
     out.results.by_asset_folder = "error";
+    out.errors.by_asset_folder = err(e);
   }
 
   try {
     const q = cloudinary.search.expression(`asset_folder=${p}`).max_results(500);
     const r = await q.execute();
     out.results.search_asset_folder = toList(r).length;
-  } catch {
+  } catch (e) {
     out.results.search_asset_folder = "error";
+    out.errors.search_asset_folder = err(e);
   }
 
   try {
     const q = cloudinary.search.expression(`folder=${p}`).max_results(500);
     const r = await q.execute();
     out.results.search_folder = toList(r).length;
-  } catch {
+  } catch (e) {
     out.results.search_folder = "error";
+    out.errors.search_folder = err(e);
   }
 
   try {
     const q = cloudinary.search.expression(`public_id:${p}*`).max_results(500);
     const r = await q.execute();
     out.results.search_public_id = toList(r).length;
-  } catch {
+  } catch (e) {
     out.results.search_public_id = "error";
+    out.errors.search_public_id = err(e);
   }
 
   try {
@@ -217,8 +276,9 @@ export async function debugFolderMethods(folderInput: string): Promise<DebugFold
       max_results: 500,
     });
     out.results.prefix = toList(r).length;
-  } catch {
+  } catch (e) {
     out.results.prefix = "error";
+    out.errors.prefix = err(e);
   }
 
   try {
@@ -229,15 +289,17 @@ export async function debugFolderMethods(folderInput: string): Promise<DebugFold
       max_results: 500,
     });
     out.results.prefix_slash = toList(r).length;
-  } catch {
+  } catch (e) {
     out.results.prefix_slash = "error";
+    out.errors.prefix_slash = err(e);
   }
 
   try {
     const r = await cloudinary.api.resources_by_tag(p, { max_results: 500, resource_type: "image" });
     out.results.by_tag = toList(r).length;
-  } catch {
+  } catch (e) {
     out.results.by_tag = "error";
+    out.errors.by_tag = err(e);
   }
 
   return out;

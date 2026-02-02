@@ -41,24 +41,27 @@ export default async function GaleriePage() {
             </div>
           ) : (
             albums.map((a) => (
-              <div
+              <Link
                 key={a.id}
-                className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
+                href={`/galerie/${a.id}`}
+                className="group block rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:border-blue-300 hover:shadow-md transition-all"
               >
-                <div className="text-lg font-bold text-gray-900">{a.title}</div>
+                <div className="text-lg font-bold text-gray-900 group-hover:text-blue-700">{a.title}</div>
                 <div className="mt-1 text-sm text-gray-500">
-                  {/* Převedeme ISO string na Date objekt pro formátování */}
                   {format(new Date(a.dateTaken), "d. MMMM yyyy", { locale: cs })}
                 </div>
                 <div className="mt-3 text-sm text-gray-700">
-                  Fotek: <span className="font-semibold">{a._count.photos}</span>
+                  Fotek: <span className="font-semibold">{a._count?.photos ?? "–"}</span>
                 </div>
                 {a.cloudinaryFolder ? (
                   <div className="mt-3 text-xs text-gray-500">
                     Složka: <span className="font-mono text-gray-700">{a.cloudinaryFolder}</span>
                   </div>
                 ) : null}
-              </div>
+                <span className="mt-3 inline-block text-sm text-blue-600 font-medium">
+                  Zobrazit album →
+                </span>
+              </Link>
             ))
           )}
         </div>
