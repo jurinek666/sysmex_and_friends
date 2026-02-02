@@ -11,3 +11,7 @@
 ## 2025-01-29 - Admin Form Accessibility
 **Learning:** Inconsistent form patterns (some using labels, others placeholders) create accessibility gaps and cognitive load. Placeholders are not a substitute for labels.
 **Action:** Standardize all admin forms to use explicit `<label>` elements linked via `htmlFor/id`, ensuring screen reader support and visual consistency across the admin panel.
+
+## 2025-01-29 - Mobile Header Overlap
+**Learning:** Centered logos with absolute positioning can silently overlap with other centered elements (like mobile menu toggles) when the screen size reduces and surrounding elements disappear.
+**Action:** Always verify mobile layouts with real content overlap checks. Use `justify-end` or explicit spacing to ensure interactive elements like menu toggles are not obscured by centered decorative elements.
