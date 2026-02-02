@@ -6,9 +6,9 @@ export interface Member {
   displayName: string;
   nickname: string | null;
   role: string | null;
-  gender: string;
+  gender?: string;
   bio: string | null;
-  isActive: boolean;
+  isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -19,7 +19,7 @@ export async function getActiveMembers(): Promise<Member[]> {
   const { data, error } = await withRetry(async () => {
     return await supabase
       .from("Member")
-      .select("*")
+      .select("id, displayName, nickname, role, bio")
       .eq("isActive", true)
       .order("displayName", { ascending: true });
   });
