@@ -21,7 +21,7 @@ export function Footer() {
         </div>
 
         <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-12">
-          <FooterLink href="/team">Náš tým</FooterLink>
+          <FooterLink href="/tym">Náš tým</FooterLink>
           <FooterLink href="/vysledky">Výsledky</FooterLink>
           <FooterLink href="/#aktuality">Kronika</FooterLink>
           <FooterLink href="/galerie">Galerie</FooterLink>

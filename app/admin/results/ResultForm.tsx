@@ -37,9 +37,9 @@ export function ResultForm({ seasons, result, onCancel }: ResultFormProps) {
       action={async (prevState, formData) => {
         if (isEdit) {
           formData.append("id", result.id);
-          return await adminUpdateResult(formData);
+          return await adminUpdateResult(prevState, formData);
         }
-        return await adminCreateResult(formData);
+        return await adminCreateResult(prevState, formData);
       }}
       successMessage={isEdit ? "Výsledek byl úspěšně upraven" : "Výsledek byl úspěšně uložen"}
       submitButtonText={isEdit ? "Uložit změny" : "Uložit výsledek"}

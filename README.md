@@ -1,97 +1,87 @@
 # SYSMEX & Friends
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Technická dokumentace webové aplikace pro tým Sysmex & Friends.
 
-## Getting Started
+## 🛠 Tech Stack
 
-First, run the development server:
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+- **Jazyk:** TypeScript
+- **Databáze & Auth:** [Supabase](https://supabase.com/)
+- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
+- **Package Manager:** [pnpm](https://pnpm.io/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📋 Požadavky
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Node.js 20.9+ (LTS)
+- pnpm (`npm install -g pnpm`)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Instalace a spuštění (Lokálně)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Instalace závislostí**
+   ```bash
+   pnpm install
+   ```
 
-## Project notes (SYSMEX & Friends)
+2. **Konfigurace prostředí**
+   Vytvořte soubor `.env` v kořenovém adresáři. Aplikace vyžaduje pro základní běh připojení k Supabase.
 
-### Requirements
+   Příklad `.env`:
+   ```env
+   # Supabase (Povinné)
+   NEXT_PUBLIC_SUPABASE_URL="https://vase-project-id.supabase.co"
+   NEXT_PUBLIC_SUPABASE_ANON_KEY="vas-anon-key"
 
-- Node.js 20.9+ recommended (LTS)
-- PostgreSQL database (Prisma)
+   # Cloudinary (Volitelné – pro funkčnost galerie)
+   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=""
+   CLOUDINARY_API_KEY=""
+   CLOUDINARY_API_SECRET=""
+   ```
 
-### Setup (local)
+3. **Spuštění vývojového serveru**
+   ```bash
+   pnpm dev
+   ```
+   Aplikace bude dostupná na [http://localhost:3000](http://localhost:3000) (nebo na portu specifikovaném v konzoli).
 
-1) Install deps
+## 📜 Dostupné skripty
 
-```bash
-npm ci
-```
+- `pnpm dev` – Spustí lokální vývojový server.
+- `pnpm build` – Vytvoří optimalizovaný produkční build.
+- `pnpm start` – Spustí produkční server (vyžaduje předchozí build).
+- `pnpm lint` – Spustí kontrolu kódu pomocí ESLint.
+- `pnpm check` – Spustí kompletní kontrolu kvality (Lint + TypeScript Typecheck + Build test). **Doporučeno spouštět před pushnutím.**
 
-1) Create `.env` from `.env.example` and set `DATABASE_URL`.
+## 📂 Struktura projektu
 
-2) Prisma: generate + migrate + seed (optional)
+- `app/` – Hlavní kód aplikace (App Router).
+  - `app/admin/` – Administrační sekce (chráněná).
+  - `app/api/` – API endpointy (včetně cron jobů).
+- `components/` – Znovupoužitelné React komponenty.
+- `lib/` – Pomocné knihovny a utility.
+  - `lib/queries/` – Funkce pro čtení dat ze Supabase.
+  - `lib/types.ts` – Sdílené TypeScript definice (zdroj pravdy pro typy).
+  - `lib/env.ts` – Validace environment proměnných pomocí Zod.
+- `public/` – Statické soubory.
 
-```bash
-npx prisma generate
-npx prisma migrate dev
-npx prisma db seed
-```
+## 🔐 Administrace
 
-1) Run dev server
+Administrační rozhraní se nachází na `/admin`.
+- **Přístup:** Vyžaduje přihlášení uživatele (Supabase Auth).
+- **Ochrana:** Zajištěna pomocí `middleware.ts` (přesměrování na login) a `app/admin/layout.tsx` (kontrola server-side).
 
-1) Run dev server
+## ☁️ Deployment (Render)
 
-```bash
-npm run dev
-```
+Aplikace je primárně určena pro nasazení na [Render.com](https://render.com).
 
-### Routes implemented
+**Postup nasazení:**
+1. Propojit repozitář s Render službou (Web Service).
+2. Nastavit **Build Command**: `pnpm install && pnpm build`.
+3. Nastavit **Start Command**: `pnpm start`.
+4. V sekci **Environment** nastavit proměnné definované v `.env` (Supabase URL, Keys, Cloudinary).
 
-- `/` (home)
-- `/clanky` + `/clanky/[slug]`
-- `/vysledky` (filter via `?season=CODE`)
-- `/tym`
-- `/galerie`
+## ✅ Code Quality & Workflow
 
-### Admin (interní)
+Projekt používá **ESLint** a **TypeScript** v striktním režimu.
+Před commitem spusťte `pnpm check` pro ověření, že změny nerozbily build nebo typy.
 
-Admin je na `/admin` a je chráněný HTTP Basic Auth přes `proxy.ts`.
-
-V `.env` / Render nastav:
-
-- `ADMIN_USER`
-- `ADMIN_PASSWORD`
-
-Pokud nejsou proměnné nastavené, `/admin` se v dev režimu neblokuje.
-
-### Lint / Typecheck / Build
-
-```bash
-npm run lint
-npm run check
-```
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Všechny routy a API endpointy jsou typované. Nové databázové dotazy by měly využívat sdílené typy z `lib/types.ts` a ošetřovat chyby pomocí wrapperů (např. `withRetry`).

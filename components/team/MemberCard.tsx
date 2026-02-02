@@ -35,7 +35,7 @@ export function MemberCard({ member, variant }: MemberCardProps) {
     );
   }
 
-  // variant === "full" (stránka /team, tmavé téma)
+  // variant === "full" (stránka /tym, tmavé téma)
   return (
     <div className="bento-card group flex flex-col items-center text-center p-8 hover:border-neon-magenta/50 hover:shadow-[0_0_25px_-8px_rgba(255,79,216,0.25)] transition-all duration-500">
       <div className="relative w-32 h-32 mb-6">

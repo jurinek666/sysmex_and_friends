@@ -27,9 +27,9 @@ export function MemberForm({ member, onCancel }: MemberFormProps) {
       action={async (prevState, formData) => {
         if (isEdit) {
           formData.append("id", member.id);
-          return await adminUpdateMember(formData);
+          return await adminUpdateMember(prevState, formData);
         }
-        return await adminCreateMember(formData);
+        return await adminCreateMember(prevState, formData);
       }}
       successMessage={isEdit ? "Člen byl úspěšně upraven" : "Člen byl úspěšně přidán"}
       submitButtonText={isEdit ? "Uložit změny" : "Přidat člena"}

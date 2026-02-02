@@ -69,9 +69,33 @@ export function Navbar() {
   // Removed unused scrollBlur
   const isScrolled = scrollPosition > 50;
 
+  // Handle click outside and Escape key to close menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isOpen && navRef.current && !navRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (isOpen && event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscKey);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [isOpen]);
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex flex-col items-center px-4 md:px-8 pt-6 md:pt-8">
       <motion.div
+        ref={navRef}
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -79,7 +103,6 @@ export function Navbar() {
       >
         {/* FLOATING NAVBAR with Glassmorphism */}
         <motion.div
-          ref={navRef}
           animate={{
             opacity: 1,
             scale: isScrolled ? 0.98 : 1,
@@ -221,7 +244,7 @@ export function Navbar() {
             </Link>
           </motion.div>
 
-          <div className="relative flex items-center justify-center h-16 md:h-20 px-6 md:px-10">
+          <div className="relative flex items-center justify-end lg:justify-center h-16 md:h-20 px-6 md:px-10">
             {/* DESKTOP NAV - Left side */}
             <div className="hidden lg:flex items-center gap-3 flex-1 justify-end pr-8">
               {navLinks.slice(0, Math.ceil(navLinks.length / 2)).map((link, index) => (
@@ -245,6 +268,8 @@ export function Navbar() {
               className="lg:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors backdrop-blur-sm"
               onClick={() => setIsOpen(!isOpen)}
               aria-label={isOpen ? "Zavřít menu" : "Otevřít menu"}
+              aria-expanded={isOpen}
+              aria-controls="mobile-menu"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </motion.button>
@@ -253,6 +278,7 @@ export function Navbar() {
 
         {/* MOBILE NAV with Glassmorphism */}
         <motion.div
+          id="mobile-menu"
           initial={false}
           animate={{
             height: isOpen ? "auto" : 0,

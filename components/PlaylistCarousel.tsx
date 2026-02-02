@@ -7,10 +7,10 @@ import { motion, AnimatePresence } from "framer-motion";
 interface Playlist {
   id: string;
   title: string;
-  description: string | null;
+  description?: string | null;
   spotifyUrl: string;
-  isActive: boolean;
-  createdAt: string;
+  isActive?: boolean;
+  createdAt?: string;
 }
 
 interface PlaylistCarouselProps {
@@ -112,6 +112,7 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
                       allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                       loading="lazy"
                       className="w-full h-full border-0"
+                      title={currentPlaylist.title}
                     />
                   )}
                 </div>

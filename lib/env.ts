@@ -6,6 +6,9 @@ import { z } from "zod";
  * Ostatní je optional, aby šel projekt spustit i v dev režimu bez Cloudinary.
  */
 const envSchema = z.object({
+  // Supabase (povinné)
+  NEXT_PUBLIC_SUPABASE_URL: z.string().min(1, "Supabase URL is required"),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, "Supabase Anon Key is required"),
 
   // Cloudinary (volitelné – použiješ až při napojení galerie / uploadů)
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().min(1).optional(),

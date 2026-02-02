@@ -29,9 +29,9 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
       action={async (prevState, formData) => {
         if (isEdit) {
           formData.append("id", album.id);
-          return await adminUpdateAlbum(formData);
+          return await adminUpdateAlbum(prevState, formData);
         }
-        return await adminCreateAlbum(formData);
+        return await adminCreateAlbum(prevState, formData);
       }}
       successMessage={isEdit ? "Album bylo úspěšně upraveno" : "Album bylo úspěšně vytvořeno"}
       submitButtonText={isEdit ? "Uložit změny" : "Vytvořit album"}

@@ -21,9 +21,9 @@ interface Event {
   date: string;
   venue: string;
   description: string | null;
-  isUpcoming: boolean;
-  createdAt: string;
-  updatedAt: string;
+  isUpcoming?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export default async function Home() {
@@ -97,7 +97,7 @@ export default async function Home() {
               </div>
             </div>
             <Link
-              href="/team"
+              href="/tym"
               className="px-4 py-2 rounded-lg border border-neon-magenta/40 bg-neon-magenta/10 text-neon-magenta font-semibold text-sm hover:bg-neon-magenta/20 transition-colors shrink-0"
             >
               Zobrazit všechny →

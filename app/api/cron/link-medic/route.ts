@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export const maxDuration = 300; // Allow 5 minutes for many links
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request) {
+export async function GET() {
   // Optional: Verify CRON_SECRET if you want to secure this endpoint
   // const authHeader = request.headers.get('authorization');
   // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {

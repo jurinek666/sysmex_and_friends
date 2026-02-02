@@ -51,7 +51,7 @@ export function MemberList({ members }: MemberListProps) {
               Upravit
             </button>
             <DeleteFormButton
-              action={async (formData) => await adminDeleteMember(formData)}
+              action={async (formData) => await adminDeleteMember(null, formData)}
               itemId={m.id}
               itemName={m.displayName}
             />
