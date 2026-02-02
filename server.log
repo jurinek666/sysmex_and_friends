@@ -1,10 +1,17 @@
 
-> sysmex-friends@0.1.0 start /app
-> next start
+> sysmex-friends@0.1.0 dev
+> next dev
 
-▲ Next.js 16.1.1
+▲ Next.js 16.1.1 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
+- Environments: .env
+- Experiments (use with caution):
+  · serverActions
 
 ✓ Starting...
-✓ Ready in 343ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+✓ Ready in 1629ms
+○ Compiling /clanky ...
+ GET /clanky 200 in 9.1s (compile: 6.8s, proxy.ts: 147ms, render: 2.1s)
+ GET /clanky/bezpecny-prostor-house-music-lek-na-samotu 200 in 3.8s (compile: 3.2s, proxy.ts: 12ms, render: 607ms)

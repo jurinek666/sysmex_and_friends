@@ -1,6 +1,20 @@
 import { createClient } from "@/lib/supabase/server";
 
-export async function getFeaturedPost() {
+export interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  coverImageUrl: string | null;
+  publishedAt: string;
+  updatedAt: string;
+  isFeatured: boolean;
+}
+
+export type PostSummary = Pick<Post, "id" | "title" | "slug" | "excerpt" | "coverImageUrl" | "publishedAt" | "updatedAt" | "isFeatured">;
+
+export async function getFeaturedPost(): Promise<Post | null> {
   const supabase = await createClient();
   
   // Hledáme jeden zvýrazněný post
@@ -17,10 +31,10 @@ export async function getFeaturedPost() {
     return null;
   }
   
-  return data;
+  return data as Post;
 }
 
-export async function getRecentPosts(limit = 20) {
+export async function getRecentPosts(limit = 20): Promise<PostSummary[]> {
   const supabase = await createClient();
   
   const { data, error } = await supabase
@@ -33,10 +47,10 @@ export async function getRecentPosts(limit = 20) {
     return [];
   }
 
-  return data;
+  return data as PostSummary[];
 }
 
-export async function getPostBySlug(slug: string) {
+export async function getPostBySlug(slug: string): Promise<Post | null> {
   const supabase = await createClient();
   
   const { data, error } = await supabase
@@ -49,5 +63,5 @@ export async function getPostBySlug(slug: string) {
     return null;
   }
   
-  return data;
+  return data as Post;
 }
