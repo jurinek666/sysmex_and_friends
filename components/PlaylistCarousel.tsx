@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getSpotifyEmbedSrc } from "@/lib/spotify";
 
 interface Playlist {
   id: string;
@@ -35,6 +36,7 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
   }
 
   const currentPlaylist = playlists[currentIndex];
+  const embedSrc = getSpotifyEmbedSrc(currentPlaylist.spotifyUrl);
   const canGoLeft = currentIndex > 0;
   const canGoRight = currentIndex < playlists.length - 1;
 
@@ -96,25 +98,18 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
             className="w-full h-[360px] md:h-[420px]"
           >
             <div className="w-full h-full overflow-hidden">
-              {currentPlaylist.spotifyUrl ? (
+              {embedSrc ? (
                 <div className="w-full h-full">
-                  {currentPlaylist.spotifyUrl.includes('<iframe') ? (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: currentPlaylist.spotifyUrl }}
-                      className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0"
-                    />
-                  ) : (
-                    <iframe
-                      src={currentPlaylist.spotifyUrl}
-                      width="100%"
-                      height="100%"
-                      frameBorder="0"
-                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                      loading="lazy"
-                      className="w-full h-full border-0"
-                      title={currentPlaylist.title}
-                    />
-                  )}
+                  <iframe
+                    src={embedSrc}
+                    width="100%"
+                    height="100%"
+                    frameBorder="0"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    className="w-full h-full border-0"
+                    title={currentPlaylist.title}
+                  />
                 </div>
               ) : (
                 <div className="w-full h-full" />

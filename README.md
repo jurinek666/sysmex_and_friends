@@ -8,18 +8,18 @@ Technická dokumentace webové aplikace pro tým Sysmex & Friends.
 - **Jazyk:** TypeScript
 - **Databáze & Auth:** [Supabase](https://supabase.com/)
 - **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
-- **Package Manager:** [pnpm](https://pnpm.io/)
+- **Package Manager:** npm
 
 ## 📋 Požadavky
 
 - Node.js 20.9+ (LTS)
-- pnpm (`npm install -g pnpm`)
+- npm (součást Node.js)
 
 ## 🚀 Instalace a spuštění (Lokálně)
 
 1. **Instalace závislostí**
    ```bash
-   pnpm install
+   npm install
    ```
 
 2. **Konfigurace prostředí**
@@ -35,27 +35,31 @@ Technická dokumentace webové aplikace pro tým Sysmex & Friends.
    NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=""
    CLOUDINARY_API_KEY=""
    CLOUDINARY_API_SECRET=""
+
+   # Cron endpoint (povinné pro /api/cron/link-medic)
+   CRON_SECRET="silny-tajny-retezec"
    ```
 
 3. **Spuštění vývojového serveru**
    ```bash
-   pnpm dev
+   npm run dev
    ```
    Aplikace bude dostupná na [http://localhost:3000](http://localhost:3000) (nebo na portu specifikovaném v konzoli).
 
 ## 📜 Dostupné skripty
 
-- `pnpm dev` – Spustí lokální vývojový server.
-- `pnpm build` – Vytvoří optimalizovaný produkční build.
-- `pnpm start` – Spustí produkční server (vyžaduje předchozí build).
-- `pnpm lint` – Spustí kontrolu kódu pomocí ESLint.
-- `pnpm check` – Spustí kompletní kontrolu kvality (Lint + TypeScript Typecheck + Build test). **Doporučeno spouštět před pushnutím.**
+- `npm run dev` – Spustí lokální vývojový server.
+- `npm run build` – Vytvoří optimalizovaný produkční build.
+- `npm run start` – Spustí produkční server (vyžaduje předchozí build).
+- `npm run lint` – Spustí kontrolu kódu pomocí ESLint.
+- `npm run check` – Spustí kompletní kontrolu kvality (Lint + TypeScript Typecheck + Build test). **Doporučeno spouštět před pushnutím.**
 
 ## 📂 Struktura projektu
 
 - `app/` – Hlavní kód aplikace (App Router).
   - `app/admin/` – Administrační sekce (chráněná).
   - `app/api/` – API endpointy (včetně cron jobů).
+- `proxy.ts` – Proxy/middleware vrstva pro Supabase session a ochranu `/admin`.
 - `components/` – Znovupoužitelné React komponenty.
 - `lib/` – Pomocné knihovny a utility.
   - `lib/queries/` – Funkce pro čtení dat ze Supabase.
@@ -67,7 +71,7 @@ Technická dokumentace webové aplikace pro tým Sysmex & Friends.
 
 Administrační rozhraní se nachází na `/admin`.
 - **Přístup:** Vyžaduje přihlášení uživatele (Supabase Auth).
-- **Ochrana:** Zajištěna pomocí `middleware.ts` (přesměrování na login) a `app/admin/layout.tsx` (kontrola server-side).
+- **Ochrana:** Zajištěna pomocí `proxy.ts` (přesměrování na login) a `app/admin/layout.tsx` (kontrola server-side).
 
 ## ☁️ Deployment (Render)
 
@@ -75,13 +79,20 @@ Aplikace je primárně určena pro nasazení na [Render.com](https://render.com)
 
 **Postup nasazení:**
 1. Propojit repozitář s Render službou (Web Service).
-2. Nastavit **Build Command**: `pnpm install && pnpm build`.
-3. Nastavit **Start Command**: `pnpm start`.
+2. Nastavit **Build Command**: `npm install && npm run build`.
+3. Nastavit **Start Command**: `npm run start`.
 4. V sekci **Environment** nastavit proměnné definované v `.env` (Supabase URL, Keys, Cloudinary).
 
 ## ✅ Code Quality & Workflow
 
 Projekt používá **ESLint** a **TypeScript** v striktním režimu.
-Před commitem spusťte `pnpm check` pro ověření, že změny nerozbily build nebo typy.
+Před commitem spusťte `npm run check` pro ověření, že změny nerozbily build nebo typy.
+
+Pozn.: Next.js 16 varuje před `middleware.ts`. Používáme proto `proxy.ts` se stejným chováním.
+
+## ⏱ Cron: Link Medic
+
+Endpoint `GET /api/cron/link-medic` vyžaduje hlavičku:
+`Authorization: Bearer <CRON_SECRET>`
 
 Všechny routy a API endpointy jsou typované. Nové databázové dotazy by měly využívat sdílené typy z `lib/types.ts` a ošetřovat chyby pomocí wrapperů (např. `withRetry`).

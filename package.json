@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "check": "npm run lint && tsc --noEmit && npm run build"
+    "clean:next": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
+    "check": "npm run lint && npm run clean:next && tsc --noEmit && npm run build"
   },
   "dependencies": {
     "@supabase/ssr": "0.8.0",

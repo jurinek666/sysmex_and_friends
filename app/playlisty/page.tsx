@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Music2 } from "lucide-react";
 import { getAllPlaylists } from "@/lib/queries/playlists";
+import { getSpotifyEmbedSrc } from "@/lib/spotify";
 
 export const metadata: Metadata = {
   title: "Playlisty | SYSMEX & Friends Quiz Team",
@@ -40,7 +41,9 @@ export default async function PlaylistyPage() {
         {/* Playlists Grid */}
         {playlists && playlists.length > 0 ? (
           <div className="grid md:grid-cols-2 gap-6">
-            {playlists.map((playlist: Playlist) => (
+            {playlists.map((playlist: Playlist) => {
+              const embedSrc = getSpotifyEmbedSrc(playlist.spotifyUrl);
+              return (
               <div
                 key={playlist.id}
                 className="bento-card p-6 group hover:border-neon-magenta/50 transition-all"
@@ -71,24 +74,17 @@ export default async function PlaylistyPage() {
 
                   {/* Spotify Embed */}
                   <div className="mt-4 w-full overflow-hidden rounded-lg">
-                    {playlist.spotifyUrl ? (
+                    {embedSrc ? (
                       <div className="w-full">
-                        {playlist.spotifyUrl.includes('<iframe') ? (
-                          <div
-                            dangerouslySetInnerHTML={{ __html: playlist.spotifyUrl }}
-                            className="w-full [&>iframe]:w-full [&>iframe]:h-[352px] [&>iframe]:rounded-lg [&>iframe]:border-0 [&>iframe]:min-h-[352px]"
-                          />
-                        ) : (
-                          <iframe
-                            src={playlist.spotifyUrl}
-                            width="100%"
-                            height="352"
-                            frameBorder="0"
-                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                            loading="lazy"
-                            className="w-full h-[352px] rounded-lg border-0"
-                          />
-                        )}
+                        <iframe
+                          src={embedSrc}
+                          width="100%"
+                          height="352"
+                          frameBorder="0"
+                          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                          loading="lazy"
+                          className="w-full h-[352px] rounded-lg border-0"
+                        />
                       </div>
                     ) : (
                       <div className="text-gray-500 text-sm italic p-4 text-center bg-white/5 rounded-lg">
@@ -98,7 +94,8 @@ export default async function PlaylistyPage() {
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="bento-card p-12 text-center">

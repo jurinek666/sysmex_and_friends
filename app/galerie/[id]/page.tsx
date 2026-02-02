@@ -43,7 +43,7 @@ export default async function AlbumDetailPage(props: PageProps) {
 
   if (!rawAlbum) return notFound();
 
-  const album = rawAlbum as Album;
+  const album = rawAlbum as unknown as Album;
   const coverId = (album.coverPublicId || "").trim();
 
   return (

@@ -35,7 +35,9 @@ export default function LoginPage() {
           >
             Přihlásit se
           </PendingButton>
-          <LoginHydrationDebug />
+          {process.env.NODE_ENV === "development" ? (
+            <LoginHydrationDebug />
+          ) : null}
         </form>
       </div>
     </div>

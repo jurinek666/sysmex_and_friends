@@ -2,10 +2,17 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchImageIdsByFolder } from "@/lib/cloudinary";
 import { withRetry, logSupabaseError } from "./utils";
 
+type AlbumRecord = Record<string, unknown> & {
+  photos?: { sortOrder?: number }[];
+  Photo?: { sortOrder?: number }[];
+  cloudinaryFolder?: string;
+  cloudinary_folder?: string;
+};
+
 export async function getAlbums() {
   const supabase = await createClient();
-  
-  // Načteme alba a počet fotek. 
+
+  // Načteme alba a počet fotek.
   // 'photos(count)' vrátí pole objektů [{ count: N }]
   let { data, error } = await withRetry(async () => {
     return await supabase
@@ -15,7 +22,7 @@ export async function getAlbums() {
   });
 
   // Test alternative relationship name if first attempt fails
-  if (error && error?.hint?.includes('Photo')) {
+  if (error && error?.hint?.includes("Photo")) {
     const result2 = await withRetry(async () => {
       return await supabase
         .from("Album")
@@ -40,77 +47,27 @@ export async function getAlbums() {
   return (data || []).map((album: any) => ({
     ...album,
     _count: {
-      photos: album.photos?.[0]?.count ?? album.Photo?.[0]?.count ?? 0
-    }
+      photos: album.photos?.[0]?.count ?? album.Photo?.[0]?.count ?? 0,
+    },
   }));
 }
 
-<<<<<<< HEAD
-async function applyPhotosAndCloudinary(
-  data: Record<string, unknown> & { photos: { sortOrder?: number }[] }
-): Promise<unknown> {
+async function applyPhotosAndCloudinary(data: AlbumRecord): Promise<AlbumRecord> {
   const raw = data as { photos?: unknown[]; Photo?: unknown[] };
-  data.photos = (Array.isArray(raw.photos) ? raw.photos : Array.isArray(raw.Photo) ? raw.Photo : []) as {
-    sortOrder?: number;
-  }[];
+  data.photos = (Array.isArray(raw.photos)
+    ? raw.photos
+    : Array.isArray(raw.Photo)
+    ? raw.Photo
+    : []) as { sortOrder?: number }[];
 
   const folder = (
-    (data as { cloudinaryFolder?: string; cloudinary_folder?: string }).cloudinaryFolder ??
-    (data as { cloudinary_folder?: string }).cloudinary_folder ??
-    ""
+    data.cloudinaryFolder ?? data.cloudinary_folder ?? ""
   ).trim();
-=======
-export async function getAlbum(id: string) {
-  const supabase = await createClient();
 
-  let { data, error } = await withRetry(async () => {
-    return await supabase
-      .from("Album")
-      .select("*, photos(*)")
-      .eq("id", id)
-      .single();
-  });
-
-  // Test alternative relationship name if first attempt fails
-  if (error && error?.hint?.includes('Photo')) {
-    const result2 = await withRetry(async () => {
-      return await supabase
-        .from("Album")
-        .select("*, Photo(*)")
-        .eq("id", id)
-        .single();
-    });
-
-    if (!result2.error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data = result2.data as any;
-      error = null;
-    }
-  }
-
-  if (error || !data) {
-    if (error) {
-      // Ignorujeme chybu, pokud se jen nenašlo (kód PGRST116 je "Results contain 0 rows")
-      if (error.code !== 'PGRST116') {
-        logSupabaseError("getAlbum", error);
-      }
-    }
-    return null;
-  }
-
-  // Sjednocení tvaru: photos nebo Photo z Supabase
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const albumData = data as any;
-  const raw = albumData as { photos?: unknown[]; Photo?: unknown[] };
-  albumData.photos = Array.isArray(raw.photos) ? raw.photos : (Array.isArray(raw.Photo) ? raw.Photo : []);
-
-  // Načtení fotek z Cloudinary podle cloudinaryFolder, pokud je vyplněné a Cloudinary vrátí výsledky
-  const folder = (albumData.cloudinaryFolder || "").trim();
->>>>>>> 57f7d4661be098848aeffe68efbe6b16ee3a7f43
   if (folder) {
     const fromCloud = await fetchImageIdsByFolder(folder);
     if (fromCloud.length > 0) {
-      albumData.photos = fromCloud.map((r, i) => ({
+      data.photos = fromCloud.map((r, i) => ({
         id: r.public_id,
         cloudinaryPublicId: r.public_id,
         caption: null,
@@ -119,54 +76,57 @@ export async function getAlbum(id: string) {
     }
   }
 
-<<<<<<< HEAD
-  data.photos.sort((a: { sortOrder?: number }, b: { sortOrder?: number }) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-  return data as unknown;
+  data.photos.sort(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
+  );
+
+  return data;
 }
 
 export async function getAlbum(id: string) {
   const supabase = await createClient();
 
-  // Schéma typicky používá Photo (velké P); zkusíme nejdřív Photo, pak photos
-  let res = await supabase
-    .from("Album")
-    .select("*, Photo(*)")
-    .eq("id", id)
-    .single();
+  const fetchWithRelation = async (relation: "Photo" | "photos") =>
+    withRetry<AlbumRecord>(async () => {
+      return await supabase
+        .from("Album")
+        .select(`*, ${relation}(*)`)
+        .eq("id", id)
+        .single();
+    });
 
-  if (!res.error && res.data) {
-    return await applyPhotosAndCloudinary(res.data as Record<string, unknown> & { photos: { sortOrder?: number }[] });
-  }
+  let { data, error } = await fetchWithRelation("Photo");
 
-  if (res.error) logSupabaseError("getAlbum", res.error);
-
-  const hintOrMessage = (res.error?.hint ?? "") + (res.error?.message ?? "");
-  if (hintOrMessage.includes("photos")) {
-    const res2 = await supabase
-      .from("Album")
-      .select("*, photos(*)")
-      .eq("id", id)
-      .single();
-    if (!res2.error && res2.data) {
-      return await applyPhotosAndCloudinary(res2.data as Record<string, unknown> & { photos: { sortOrder?: number }[] });
+  if (error) {
+    const hintOrMessage = `${error.hint ?? ""}${error.message ?? ""}`;
+    if (hintOrMessage.includes("photos") || hintOrMessage.includes("Photo")) {
+      const result2 = await fetchWithRelation("photos");
+      if (!result2.error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data = result2.data as any;
+        error = null;
+      }
     }
-    if (res2.error) logSupabaseError("getAlbum", res2.error);
   }
 
-  const res3 = await supabase.from("Album").select("*").eq("id", id).single();
-  if (!res3.error && res3.data) {
-    const data = res3.data as Record<string, unknown> & { photos: { sortOrder?: number }[] };
-    data.photos = [];
-    return await applyPhotosAndCloudinary(data);
+  if (error) {
+    const result3 = await withRetry<AlbumRecord>(async () => {
+      return await supabase.from("Album").select("*").eq("id", id).single();
+    });
+    if (!result3.error) {
+      data = result3.data as AlbumRecord;
+      error = null;
+    } else {
+      error = result3.error;
+    }
   }
-  if (res3.error) logSupabaseError("getAlbum", res3.error);
 
-  return null;
-}
-=======
-  // Seřadíme fotky podle sortOrder
-  albumData.photos.sort((a: { sortOrder?: number }, b: { sortOrder?: number }) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  if (error || !data) {
+    if (error && error.code !== "PGRST116") {
+      logSupabaseError("getAlbum", error);
+    }
+    return null;
+  }
 
-  return albumData;
+  return await applyPhotosAndCloudinary(data as AlbumRecord);
 }
->>>>>>> 57f7d4661be098848aeffe68efbe6b16ee3a7f43

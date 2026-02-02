@@ -28,6 +28,10 @@ function log(
 
 export function LoginHydrationDebug() {
   useEffect(() => {
+    if (process.env.NODE_ENV !== "development") {
+      return;
+    }
+
     // #region agent log
     const keeperLock = document.querySelectorAll("keeper-lock");
     const keeperById = document.querySelectorAll("[id^='k-']");
