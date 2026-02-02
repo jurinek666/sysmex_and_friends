@@ -22,7 +22,7 @@ export default async function GaleriePage() {
   const albums = (rawAlbums || []) as Album[];
 
   return (
-    <main className="min-h-screen bg-white px-6 py-14">
+    <main className="min-h-screen bg-white px-6 pt-32 md:pt-36 pb-14">
       <div className="mx-auto max-w-5xl">
         <div className="flex items-end justify-between gap-4">
           <div>

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getAlbums } from "@/lib/queries/albums";
 import { logSupabaseError } from "@/lib/queries/utils";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AlbumForm } from "./AlbumForm";
@@ -38,6 +39,14 @@ export default async function AdminGalleryPage() {
   }
 
   const safeAlbums = albums || [];
+  const albumCounts = await getAlbums();
+  const countById = new Map(
+    albumCounts.map((album) => [album.id, album._count?.photos ?? 0])
+  );
+  const albumsWithCounts = safeAlbums.map((album) => ({
+    ...album,
+    photos: [{ count: countById.get(album.id) ?? album.photos?.[0]?.count ?? 0 }],
+  }));
 
   return (
     <AdminLayout title="Admin • Galerie">
@@ -46,7 +55,7 @@ export default async function AdminGalleryPage() {
         <AlbumForm />
       </section>
 
-      <AlbumList albums={safeAlbums} />
+      <AlbumList albums={albumsWithCounts} />
     </AdminLayout>
   );
 }

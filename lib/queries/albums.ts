@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { fetchImageIdsByFolder } from "@/lib/cloudinary";
+import { unstable_cache } from "next/cache";
 import { withRetry, logSupabaseError } from "./utils";
 
 type AlbumRecord = Record<string, unknown> & {
@@ -44,12 +45,42 @@ export async function getAlbums() {
   // Transformujeme data do formátu, který očekává komponenta (styl Prisma)
   // Prisma vrací: _count: { photos: number }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data || []).map((album: any) => ({
+  const albums = (data || []).map((album: any) => ({
     ...album,
     _count: {
       photos: album.photos?.[0]?.count ?? album.Photo?.[0]?.count ?? 0,
     },
   }));
+
+  const getCloudinaryCountCached = unstable_cache(
+    async (folder: string) => {
+      const fromCloud = await fetchImageIdsByFolder(folder);
+      return fromCloud.length;
+    },
+    (folder) => ["cloudinary-count", folder],
+    { revalidate: 300 }
+  );
+
+  const withCloudCounts = await Promise.all(
+    albums.map(async (album) => {
+      const folder = String(album.cloudinaryFolder || "").trim();
+      if (album._count.photos === 0 && folder) {
+        const count = await getCloudinaryCountCached(folder);
+        if (count > 0) {
+          return {
+            ...album,
+            _count: {
+              ...album._count,
+              photos: count,
+            },
+          };
+        }
+      }
+      return album;
+    })
+  );
+
+  return withCloudCounts;
 }
 
 async function applyPhotosAndCloudinary(data: AlbumRecord): Promise<AlbumRecord> {
