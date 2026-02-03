@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { format, isToday, isTomorrow, differenceInDays } from "date-fns";
+﻿import Link from "next/link";
+import { format } from "date-fns";
 import { cs } from "date-fns/locale";
-import { Calendar, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { getRecentPosts } from "@/lib/queries/posts";
 import { getLatestResults } from "@/lib/queries/results";
 import { getAllPlaylists } from "@/lib/queries/playlists";
@@ -15,32 +15,21 @@ import { MemberCard } from "@/components/team/MemberCard";
 
 export const revalidate = 60;
 
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  venue: string;
-  description: string | null;
-  isUpcoming?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
 export default async function Home() {
   const [recentPosts, latestResults, allPlaylists, members, albums, upcomingEvents] = await Promise.all([
     getRecentPosts(6),
-    getLatestResults(3),
+    getLatestResults(5),
     getAllPlaylists(),
     getActiveMembers(),
     getAlbums(),
     getUpcomingEvents(5),
   ]);
 
-  const latestResult = latestResults[0]; 
+  const upcomingEvent = upcomingEvents[0] ?? null;
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-20">
-      <Hero />
+      <Hero upcomingEvent={upcomingEvent} />
 
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* BENTO GRID LAYOUT */}
@@ -61,26 +50,43 @@ export default async function Home() {
         {/* 3. RESULTS CARD */}
         <div id="vysledky" className="col-span-1 bento-card p-8 flex flex-col justify-between group hover:border-neon-gold/50 bg-slate-100 border-slate-200">
            <div className="flex justify-between items-start">
-             <div className="text-slate-500 text-sm font-medium uppercase tracking-wider">Poslední hra</div>
-             <div className="text-2xl">🏆</div>
+             <div>
+               <div className="text-slate-500 text-sm font-medium uppercase tracking-wider">Poslední výsledky</div>
+               <div className="text-xs text-slate-400 mt-1">Top 5</div>
+             </div>
+             <Link
+               href="/vysledky"
+               className="text-xs font-semibold text-slate-700 hover:text-slate-900 hover:underline"
+             >
+               Zobrazit všechny ›
+             </Link>
            </div>
            
-           {latestResult ? (
-             <div className="mt-4">
-               <div className="text-3xl font-black text-slate-900">{latestResult.placement}. místo</div>
-               <div className="text-sm text-slate-500 mt-1">{latestResult.venue}</div>
-               <div className="mt-4 flex items-center gap-3">
-                  <div className="px-2 py-1 rounded bg-slate-100 text-xs font-mono text-slate-700">{latestResult.score} bodů</div>
-                  <div className="text-xs text-slate-500">{format(new Date(latestResult.date), "d. M.", { locale: cs })}</div>
-               </div>
+           {latestResults && latestResults.length > 0 ? (
+             <div className="mt-5 space-y-3">
+               {latestResults.map((result) => (
+                 <div
+                   key={result.id}
+                   className="rounded-xl border border-slate-200 bg-white/70 px-4 py-3 text-sm text-slate-700"
+                 >
+                   <div className="flex items-center justify-between gap-3">
+                     <div className="font-bold text-slate-900">
+                       {result.placement}. místo
+                     </div>
+                     <div className="text-xs font-mono text-slate-500">
+                       {format(new Date(result.date), "d. M.", { locale: cs })}
+                     </div>
+                   </div>
+                   <div className="mt-1 text-xs text-slate-500">{result.venue}</div>
+                 </div>
+               ))}
              </div>
            ) : (
              <div className="mt-auto text-slate-400 italic">Žádná data</div>
            )}
         </div>
 
-
-        {/* 5. TEAM LIST CARD — Varianta A (Neon roster) */}
+        {/* 5. TEAM LIST CARD â€” Varianta A (Neon roster) */}
         <div
           id="tym"
           className="col-span-2 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-sysmex-900 to-sysmex-950 p-8 group hover:border-neon-magenta/50 hover:shadow-[0_0_20px_-8px_rgba(255,79,216,0.3)] transition-all duration-300"
@@ -91,16 +97,16 @@ export default async function Home() {
               <Users className="w-8 h-8 text-neon-magenta shrink-0 mt-0.5" strokeWidth={2} />
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">
-                  Náš <span className="text-neon-magenta">Tým</span>
+                  NĂˇĹˇ <span className="text-neon-magenta">TĂ˝m</span>
                 </h2>
-                <p className="text-gray-400 text-sm">Mozky operace. Každý ví něco, nikdo neví všechno.</p>
+                <p className="text-gray-400 text-sm">Mozky operace. KaĹľdĂ˝ vĂ­ nÄ›co, nikdo nevĂ­ vĹˇechno.</p>
               </div>
             </div>
             <Link
               href="/tym"
               className="px-4 py-2 rounded-lg border border-neon-magenta/40 bg-neon-magenta/10 text-neon-magenta font-semibold text-sm hover:bg-neon-magenta/20 transition-colors shrink-0"
             >
-              Zobrazit všechny →
+              Zobrazit vĹˇechny â†’
             </Link>
           </div>
 
@@ -113,7 +119,7 @@ export default async function Home() {
           ) : (
             <div className="flex flex-col items-center justify-center text-gray-400 py-8">
               <Users className="w-12 h-12 mb-3 opacity-50 text-gray-400" strokeWidth={1.5} />
-              <p>Zatím tu nikdo není. Tým je asi na baru.</p>
+              <p>ZatĂ­m tu nikdo nenĂ­. TĂ˝m je asi na baru.</p>
             </div>
           )}
         </div>
@@ -123,13 +129,13 @@ export default async function Home() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Galerie</h2>
-              <p className="text-slate-600 text-sm">Alba a fotky z akcí.</p>
+              <p className="text-slate-600 text-sm">Alba a fotky z akcĂ­.</p>
             </div>
             <Link 
               href="/galerie" 
               className="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 font-semibold text-sm transition-colors text-slate-900"
             >
-              Zobrazit všechny →
+              Zobrazit vĹˇechny â†’
             </Link>
           </div>
           
@@ -142,7 +148,7 @@ export default async function Home() {
                   className="group/item rounded-lg bg-slate-50 hover:bg-slate-100 p-4 transition-all border border-slate-200 hover:border-neon-cyan/30"
                 >
                   <div className="aspect-square rounded-lg bg-gradient-to-br from-sysmex-800 to-sysmex-900 mb-3 flex items-center justify-center border border-white/5 group-hover/item:border-neon-cyan/30 transition-colors">
-                    <span className="text-4xl">📷</span>
+                    <span className="text-4xl">đź“·</span>
                   </div>
                   <h3 className="text-lg font-bold text-slate-900 mb-1 line-clamp-1">
                     {album.title}
@@ -155,99 +161,17 @@ export default async function Home() {
               ))}
             </div>
           ) : (
-            <div className="text-center text-slate-400 py-8">Zatím nejsou žádná alba.</div>
+            <div className="text-center text-slate-400 py-8">ZatĂ­m nejsou ĹľĂˇdnĂˇ alba.</div>
           )}
         </div>
 
-        {/* 7. CALENDAR CARD */}
-        <div id="kalendar" className="col-span-2 bento-card p-8 group hover:border-neon-gold/50 bg-slate-100 border-slate-200">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2 flex items-center gap-3">
-                <Calendar className="w-8 h-8 text-neon-gold" strokeWidth={2} />
-                Kalendář
-              </h2>
-              <p className="text-slate-600 text-sm">Nadcházející termíny kvízů a akcí.</p>
-            </div>
-            <Link 
-              href="/kalendar" 
-              className="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 font-semibold text-sm transition-colors text-slate-900"
-            >
-              Zobrazit všechny →
-            </Link>
-          </div>
-          
-          {upcomingEvents && upcomingEvents.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {upcomingEvents.map((event: Event, index: number) => {
-                const eventDate = new Date(event.date);
-                const isEventToday = isToday(eventDate);
-                const isEventTomorrow = isTomorrow(eventDate);
-                const daysUntil = differenceInDays(eventDate, new Date());
-                
-                return (
-                  <div
-                    key={event.id}
-                    className={`rounded-lg p-4 transition-all border ${
-                      index === 0 
-                        ? "bg-neon-gold/10 border-neon-gold/50 hover:border-neon-gold/80" 
-                        : "bg-slate-50 border-slate-200 hover:border-neon-gold/30"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className={`text-xs font-mono ${
-                            index === 0 ? "text-neon-gold" : "text-slate-600"
-                          }`}>
-                            {format(eventDate, "d. M. yyyy", { locale: cs })}
-                          </span>
-                          <span className={`text-xs font-mono ${
-                            index === 0 ? "text-neon-gold" : "text-slate-500"
-                          }`}>
-                            {format(eventDate, "HH:mm", { locale: cs })}
-                          </span>
-                        </div>
-                        <h3 className={`text-lg font-bold mb-1 ${
-                          index === 0 ? "text-slate-900" : "text-slate-900"
-                        }`}>
-                          {event.title}
-                        </h3>
-                        {event.venue && (
-                          <p className="text-sm text-slate-600">{event.venue}</p>
-                        )}
-                      </div>
-                      {(isEventToday || isEventTomorrow || daysUntil <= 7) && (
-                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                          isEventToday 
-                            ? "bg-neon-gold text-black" 
-                            : isEventTomorrow
-                            ? "bg-neon-cyan/20 text-neon-cyan"
-                            : "bg-slate-200 text-slate-700"
-                        }`}>
-                          {isEventToday ? "Dnes" : isEventTomorrow ? "Zítra" : `Za ${daysUntil} dní`}
-                        </span>
-                      )}
-                    </div>
-                    {event.description && (
-                      <p className="text-xs text-slate-500 line-clamp-2 mt-2">
-                        {event.description}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center text-slate-400 py-8">
-              <Calendar className="w-16 h-16 text-neon-gold/50 mx-auto mb-4" strokeWidth={1.5} />
-              <p>Zatím nejsou naplánované žádné termíny.</p>
-            </div>
-          )}
-        </div>
 
         </div>
       </div>
     </main>
   );
 }
+
+
+
+

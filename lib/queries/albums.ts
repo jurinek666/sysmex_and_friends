@@ -52,14 +52,15 @@ export async function getAlbums() {
     },
   }));
 
-  const getCloudinaryCountCached = unstable_cache(
-    async (folder: string) => {
-      const fromCloud = await fetchImageIdsByFolder(folder);
-      return fromCloud.length;
-    },
-    (folder) => ["cloudinary-count", folder],
-    { revalidate: 300 }
-  );
+  const getCloudinaryCountCached = (folder: string) =>
+    unstable_cache(
+      async () => {
+        const fromCloud = await fetchImageIdsByFolder(folder);
+        return fromCloud.length;
+      },
+      ["cloudinary-count", folder],
+      { revalidate: 300 }
+    )();
 
   const withCloudCounts = await Promise.all(
     albums.map(async (album) => {

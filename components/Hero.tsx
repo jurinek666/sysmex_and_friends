@@ -1,7 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
+import { format, isToday, isTomorrow, differenceInDays } from "date-fns";
+import { cs } from "date-fns/locale";
+import { Calendar, MapPin } from "lucide-react";
 
-export function Hero() {
+interface UpcomingEvent {
+  id: string;
+  title: string;
+  date: string;
+  venue: string;
+  description: string | null;
+}
+
+interface HeroProps {
+  upcomingEvent?: UpcomingEvent | null;
+}
+
+export function Hero({ upcomingEvent }: HeroProps) {
+  const eventDate = upcomingEvent ? new Date(upcomingEvent.date) : null;
+  const isEventToday = eventDate ? isToday(eventDate) : false;
+  const isEventTomorrow = eventDate ? isTomorrow(eventDate) : false;
+  const daysUntil = eventDate ? differenceInDays(eventDate, new Date()) : 0;
+
   return (
     <section className="relative overflow-hidden bg-white">
       <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-slate-50" />
@@ -22,12 +42,57 @@ export function Hero() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="#kalendar"
+                href="/kalendar"
                 className="px-5 py-3 rounded-xl bg-sysmex-900 text-white font-semibold hover:bg-sysmex-800 transition-colors"
               >
                 Nadcházející akce
               </Link>
             </div>
+
+            {upcomingEvent && eventDate ? (
+              <div className="mt-6 rounded-2xl border border-slate-200 bg-white/80 p-5 shadow-sm">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+                      <Calendar className="h-4 w-4 text-neon-gold" />
+                      Nejbližší akce
+                    </div>
+                    <h2 className="mt-2 text-xl font-bold text-sysmex-900">
+                      {upcomingEvent.title}
+                    </h2>
+                    <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                      <span className="font-mono">
+                        {format(eventDate, "d. M. yyyy", { locale: cs })} ·{" "}
+                        {format(eventDate, "HH:mm", { locale: cs })}
+                      </span>
+                      {upcomingEvent.venue ? (
+                        <span className="flex items-center gap-1 text-slate-500">
+                          <MapPin className="h-4 w-4" />
+                          {upcomingEvent.venue}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                  {(isEventToday || isEventTomorrow || daysUntil <= 7) && (
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        isEventToday
+                          ? "bg-neon-gold text-black"
+                          : isEventTomorrow
+                          ? "bg-neon-cyan/20 text-neon-cyan"
+                          : "bg-slate-200 text-slate-700"
+                      }`}
+                    >
+                      {isEventToday
+                        ? "Dnes"
+                        : isEventTomorrow
+                        ? "Zítra"
+                        : `Za ${daysUntil} dnů`}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="relative">
