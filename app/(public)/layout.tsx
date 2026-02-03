@@ -1,15 +1,12 @@
-"use client";
-
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
-export function ConditionalNavAndFooter({
+export default function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Always render Navbar/Footer to prevent hydration mismatch
-  // CSS will hide them on admin/login pages using data-admin-page and data-login-page attributes
   return (
     <>
       <Navbar />
@@ -17,6 +14,7 @@ export function ConditionalNavAndFooter({
         {children}
       </div>
       <Footer />
+      <ScrollToTop />
     </>
   );
 }
