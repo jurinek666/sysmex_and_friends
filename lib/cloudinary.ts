@@ -11,8 +11,7 @@
  * 5) resources_by_tag (záložní – stejný identifikátor lze použít jako tag, když složka nefunguje).
  */
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const cloudinary = require("cloudinary").v2;
+import { v2 as cloudinary } from "cloudinary";
 
 export interface CloudinaryResource {
   public_id: string;
