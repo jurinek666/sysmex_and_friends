@@ -1,10 +1,23 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
+import { BarChart3 } from "lucide-react";
 import { getResultsBySeasonCode, getSeasons } from "@/lib/queries/results";
-import { getPlacementTone } from "@/lib/ui/resultPlacementStyles";
 
 export const revalidate = 60;
+
+function getPlacementBadgeClass(placement: number) {
+  if (placement === 1) return "bg-[#F1C84B] text-black shadow-[0_0_15px_rgba(241,200,75,0.5)]";
+  if (placement === 2) return "bg-[#B9C0CC] text-black";
+  if (placement === 3) return "bg-[#C46B2C] text-black";
+  return "bg-slate-700 text-white";
+}
+
+function teamNameToPills(teamName: string) {
+  const trimmed = (teamName || "").trim();
+  if (!trimmed) return [];
+  return trimmed.split(/,\s*/).map((s) => s.trim()).filter(Boolean);
+}
 
 export default async function VysledkyPage() {
   const [seasons, allResults] = await Promise.all([
@@ -12,7 +25,6 @@ export default async function VysledkyPage() {
     getResultsBySeasonCode(),
   ]);
 
-  // Group results by season
   const seasonsData = seasons.map((season) => ({
     season,
     results: allResults.filter((r) => r.season.id === season.id),
@@ -20,7 +32,6 @@ export default async function VysledkyPage() {
 
   return (
     <main className="min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
-      
       {/* HLAVIČKA */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-white/5 pb-8">
         <div>
@@ -28,7 +39,7 @@ export default async function VysledkyPage() {
             TABULKA <span className="text-neon-cyan">VÝSLEDKŮ</span>
           </h1>
           <p className="text-gray-400 max-w-xl text-lg">
-            Historie našich bitev. Vítězství, prohry a všechno mezi tím.
+            Cesta za vítězstvím je dlážděná vědomostmi, pivem a občas i čistým štěstím.
           </p>
         </div>
         <Link
@@ -47,64 +58,74 @@ export default async function VysledkyPage() {
         ) : (
           seasonsData.map((seasonGroup: typeof seasonsData[number]) => (
             <section key={seasonGroup.season.id} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-              
               <div className="flex items-center gap-4 mb-6">
                 <h2 className="text-2xl font-bold text-white uppercase tracking-wider">
                   {seasonGroup.season.name}
                 </h2>
-                <span className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent"></span>
+                <span className="h-px flex-1 bg-gradient-to-r from-white/20 to-transparent" />
               </div>
 
-              <div className="bento-card overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-white/10 bg-sysmex-900/50 text-xs uppercase tracking-wider text-gray-400">
-                        <th className="p-4 font-semibold">Datum</th>
-                        <th className="p-4 font-semibold">Místo konání</th>
-                        <th className="p-4 font-semibold">Tým</th>
-                        <th className="p-4 font-semibold text-center">Umístění</th>
-                        <th className="p-4 font-semibold text-right">Skóre</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {seasonGroup.results.map((r: typeof seasonGroup.results[number]) => (
-                        <tr 
-                          key={r.id} 
-                          className={`group transition-colors duration-200 border-l-4 ${getPlacementTone(r.placement, "dark")}`}
-                        >
-                          <td className="p-4 text-gray-300 font-mono text-sm whitespace-nowrap">
-                            {format(new Date(r.date), "d. M. yyyy", { locale: cs })}
-                          </td>
-                          <td className="p-4 text-white font-medium">
-                            {r.venue}
-                            {r.note && (
-                              <span className="ml-2 inline-block w-2 h-2 rounded-full bg-neon-cyan/50" title={r.note} />
-                            )}
-                          </td>
-                          <td className="p-4 text-gray-400 text-sm">
-                            {r.teamName}
-                          </td>
-                          <td className="p-4 text-center">
-                            <span 
-                              className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm
-                                ${r.placement === 1 ? 'bg-[#F1C84B] text-black shadow-[0_0_15px_rgba(241,200,75,0.5)]' : 
-                                  r.placement === 2 ? 'bg-[#B9C0CC] text-black' :
-                                  r.placement === 3 ? 'bg-[#C46B2C] text-black' :
-                                  'text-gray-400 bg-white/5'}
-                              `}
-                            >
-                              {r.placement}.
+              <div className="space-y-6">
+                {seasonGroup.results.map((r: typeof seasonGroup.results[number]) => {
+                  const pills = teamNameToPills(r.teamName);
+                  return (
+                    <div
+                      key={r.id}
+                      className="group bento-card p-6 border border-white/10 hover:border-neon-cyan/30 transition-all duration-300"
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                        <div className="md:col-span-3 flex items-center gap-6">
+                          <div className="flex flex-col">
+                            <span className="text-xs uppercase font-bold text-gray-400">Datum</span>
+                            <span className="text-lg font-bold text-white">
+                              {format(new Date(r.date), "d. M. yyyy", { locale: cs })}
                             </span>
-                          </td>
-                          <td className="p-4 text-right font-mono text-neon-cyan font-bold">
-                            {r.score}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                          </div>
+                          <div
+                            className={`flex flex-col items-center justify-center rounded-xl px-4 py-2 min-w-[70px] ${getPlacementBadgeClass(r.placement)}`}
+                          >
+                            <span className="text-[10px] uppercase font-black opacity-80 leading-none">Místo</span>
+                            <span className="text-2xl font-black leading-none">{r.placement}.</span>
+                          </div>
+                        </div>
+                        <div className="md:col-span-2">
+                          <div className="flex flex-col">
+                            <span className="text-xs uppercase font-bold text-gray-400">Celkem bodů</span>
+                            <span className="text-2xl font-black text-neon-cyan">{r.score}</span>
+                          </div>
+                        </div>
+                        <div className="md:col-span-5">
+                          <span className="text-xs uppercase font-bold text-gray-400 block mb-2">Sestava dne</span>
+                          <div className="flex flex-wrap gap-2">
+                            {pills.length > 0 ? (
+                              pills.map((name, i) => (
+                                <span
+                                  key={i}
+                                  className="px-3 py-1 bg-white/5 rounded-full text-xs font-semibold border border-white/10 text-gray-300"
+                                >
+                                  {name}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="px-3 py-1 bg-white/5 rounded-full text-xs font-semibold border border-white/10 text-gray-400">
+                                {r.teamName || "–"}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="md:col-span-2 flex justify-end">
+                          <button
+                            type="button"
+                            className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-neon-cyan/20 hover:text-neon-cyan transition-all group-hover:scale-110 border border-white/10"
+                            aria-label="Statistiky"
+                          >
+                            <BarChart3 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </section>
           ))
