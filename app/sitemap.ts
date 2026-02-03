@@ -34,8 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // Define dynamic routes for posts
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const postRoutes: MetadataRoute.Sitemap = posts.map((post: any) => ({
+  const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${BASE_URL}/clanky/${post.slug}`,
     lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(post.publishedAt),
     changeFrequency: 'weekly',
@@ -43,8 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // Define dynamic routes for albums
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const albumRoutes: MetadataRoute.Sitemap = albums.map((album: any) => ({
+  const albumRoutes: MetadataRoute.Sitemap = albums.map((album) => ({
     url: `${BASE_URL}/galerie/${album.id}`,
     lastModified: new Date(album.dateTaken || album.createdAt || new Date()),
     changeFrequency: 'monthly',
