@@ -53,7 +53,7 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
   };
 
   return (
-    <div className="bento-card p-0 group hover:border-neon-cyan/50 relative overflow-hidden">
+    <div className="bento-card p-0 group hover:border-neon-cyan/50 relative overflow-hidden h-full flex flex-col">
 
       {/* Navigation Arrows */}
       {playlists.length > 1 && (
@@ -87,7 +87,7 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
       )}
 
       {/* Playlist Content */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative flex flex-col min-h-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPlaylist.id}
@@ -95,7 +95,7 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="w-full h-[360px] md:h-[420px]"
+            className="w-full flex-1 min-h-0"
           >
             <div className="w-full h-full overflow-hidden">
               {embedSrc ? (

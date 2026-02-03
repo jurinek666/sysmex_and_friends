@@ -23,3 +23,25 @@ export async function getUpcomingEvents(limit = 5) {
   
   return data || [];
 }
+
+/** Všechny nadcházející akce pro stránku kalendáře (bez filtru isUpcoming, vyšší limit). */
+export async function getEventsForCalendar(limit = 100) {
+  const supabase = await createClient();
+  const now = new Date().toISOString();
+
+  const { data, error } = await withRetry(async () => {
+    return await supabase
+      .from("Event")
+      .select("id, title, date, venue, description")
+      .gte("date", now)
+      .order("date", { ascending: true })
+      .limit(limit);
+  });
+
+  if (error) {
+    logSupabaseError("getEventsForCalendar", error);
+    return [];
+  }
+
+  return data || [];
+}

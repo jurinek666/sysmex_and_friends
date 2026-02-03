@@ -2,6 +2,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { getResultsBySeasonCode, getSeasons } from "@/lib/queries/results";
+import { getPlacementTone } from "@/lib/ui/resultPlacementStyles";
 
 export const revalidate = 60;
 
@@ -70,7 +71,7 @@ export default async function VysledkyPage() {
                       {seasonGroup.results.map((r: typeof seasonGroup.results[number]) => (
                         <tr 
                           key={r.id} 
-                          className="group hover:bg-white/5 transition-colors duration-200"
+                          className={`group transition-colors duration-200 border-l-4 ${getPlacementTone(r.placement, "dark")}`}
                         >
                           <td className="p-4 text-gray-300 font-mono text-sm whitespace-nowrap">
                             {format(new Date(r.date), "d. M. yyyy", { locale: cs })}
@@ -87,10 +88,10 @@ export default async function VysledkyPage() {
                           <td className="p-4 text-center">
                             <span 
                               className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm
-                                ${r.placement === 1 ? 'bg-neon-gold text-black shadow-[0_0_15px_rgba(251,217,134,0.4)]' : 
-                                  r.placement === 2 ? 'bg-gray-300 text-black' :
-                                  r.placement === 3 ? 'bg-orange-300 text-black' :
-                                  'text-gray-500 bg-white/5'}
+                                ${r.placement === 1 ? 'bg-[#F1C84B] text-black shadow-[0_0_15px_rgba(241,200,75,0.5)]' : 
+                                  r.placement === 2 ? 'bg-[#B9C0CC] text-black' :
+                                  r.placement === 3 ? 'bg-[#C46B2C] text-black' :
+                                  'text-gray-400 bg-white/5'}
                               `}
                             >
                               {r.placement}.

@@ -84,6 +84,24 @@ export async function getAlbums() {
   return withCloudCounts;
 }
 
+/** Alba s náhodnou fotkou pro náhled (např. karty na homepage). Prvních maxToEnrich alb má randomCoverPublicId. */
+export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4) {
+  const albums = await getAlbums();
+  const toEnrich = albums.slice(0, maxToEnrich);
+  const enriched = await Promise.all(
+    toEnrich.map(async (album) => {
+      const folder = String(album.cloudinaryFolder || "").trim();
+      const count = album._count?.photos ?? 0;
+      if (!folder || count === 0) return { ...album, randomCoverPublicId: null as string | null };
+      const list = await fetchImageIdsByFolder(folder);
+      if (list.length === 0) return { ...album, randomCoverPublicId: null as string | null };
+      const random = list[Math.floor(Math.random() * list.length)];
+      return { ...album, randomCoverPublicId: random.public_id };
+    })
+  );
+  return [...enriched, ...albums.slice(maxToEnrich)];
+}
+
 async function applyPhotosAndCloudinary(data: AlbumRecord): Promise<AlbumRecord> {
   const raw = data as { photos?: unknown[]; Photo?: unknown[] };
   data.photos = (Array.isArray(raw.photos)
