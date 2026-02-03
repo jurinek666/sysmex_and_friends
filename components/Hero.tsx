@@ -41,12 +41,12 @@ export function Hero({ upcomingEvent }: HeroProps) {
               Novinky, statistiky a galerie v jednom dashboardu. Přidej se k fanouškům SYSMEX & Friends.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link
-                href="/kalendar"
-                className="px-5 py-3 rounded-xl bg-sysmex-900 text-white font-semibold hover:bg-sysmex-800 transition-colors"
-              >
-                Nadcházející akce
-              </Link>
+          <Link
+            href="/onas"
+            className="px-5 py-3 rounded-xl bg-sysmex-900 text-white font-semibold hover:bg-sysmex-800 transition-colors"
+          >
+            Poznej náš tým
+          </Link>
             </div>
 
             {upcomingEvent && eventDate ? (
