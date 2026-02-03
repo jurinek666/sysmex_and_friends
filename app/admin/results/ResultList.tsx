@@ -5,6 +5,7 @@ import { adminDeleteResult } from "../_actions";
 import { ResultForm } from "./ResultForm";
 import { useState } from "react";
 import { Edit2 } from "lucide-react";
+import type { Member } from "@/lib/queries/members";
 
 interface Season {
   id: string;
@@ -21,14 +22,16 @@ interface Result {
   score: number;
   note: string | null;
   season: Season;
+  memberIds?: string[];
 }
 
 interface ResultListProps {
   results: Result[];
   seasons: Season[];
+  members: Member[];
 }
 
-export function ResultList({ results, seasons }: ResultListProps) {
+export function ResultList({ results, seasons, members }: ResultListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const editingResult = editingId ? results.find(r => r.id === editingId) : null;
 
@@ -36,7 +39,7 @@ export function ResultList({ results, seasons }: ResultListProps) {
     return (
       <div className="bg-white p-6 rounded-2xl border shadow-sm mb-12">
         <h2 className="text-xl font-bold mb-4">Upravit výsledek</h2>
-        <ResultForm seasons={seasons} result={editingResult} onCancel={() => setEditingId(null)} />
+        <ResultForm seasons={seasons} members={members} result={editingResult} onCancel={() => setEditingId(null)} />
       </div>
     );
   }

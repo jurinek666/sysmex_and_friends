@@ -67,7 +67,9 @@ export default async function VysledkyPage() {
 
               <div className="space-y-6">
                 {seasonGroup.results.map((r: typeof seasonGroup.results[number]) => {
-                  const pills = teamNameToPills(r.teamName);
+                  const participants = "participants" in r && Array.isArray(r.participants) && r.participants.length > 0
+                    ? (r.participants as { displayName: string }[]).map((p) => p.displayName)
+                    : teamNameToPills(r.teamName);
                   return (
                     <div
                       key={r.id}
@@ -97,8 +99,8 @@ export default async function VysledkyPage() {
                         <div className="md:col-span-5">
                           <span className="text-xs uppercase font-bold text-gray-400 block mb-2">Sestava dne</span>
                           <div className="flex flex-wrap gap-2">
-                            {pills.length > 0 ? (
-                              pills.map((name, i) => (
+                            {participants.length > 0 ? (
+                              participants.map((name, i) => (
                                 <span
                                   key={i}
                                   className="px-3 py-1 bg-white/5 rounded-full text-xs font-semibold border border-white/10 text-gray-300"

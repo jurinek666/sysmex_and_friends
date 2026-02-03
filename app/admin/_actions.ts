@@ -206,6 +206,7 @@ export async function adminCreateResult(_prevState: unknown, formData: FormData)
       placement: formData.get("placement")?.toString() || "0",
       score: formData.get("score")?.toString() || "0",
       note: formData.get("note")?.toString() || null,
+      memberIds: formData.getAll("memberIds").filter((v): v is string => typeof v === "string"),
     };
 
     const validated = resultSchema.parse(rawData);
@@ -223,9 +224,9 @@ export async function adminCreateResult(_prevState: unknown, formData: FormData)
     const id = randomUUID();
     const now = new Date().toISOString();
 
-    // Omit seasonCode from insert object as it's not in the table
+    // Omit seasonCode and memberIds from insert object (not columns on Result)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { seasonCode, ...insertData } = validated;
+    const { seasonCode, memberIds, ...insertData } = validated;
 
     const { error } = await supabase.from("Result").insert({
       id,
@@ -242,6 +243,23 @@ export async function adminCreateResult(_prevState: unknown, formData: FormData)
       dbError.details = error.details;
       dbError.hint = error.hint;
       throw dbError;
+    }
+
+    if (memberIds.length > 0) {
+      const { error: rmError } = await supabase.from("ResultMember").insert(
+        memberIds.map((memberId, index) => ({
+          result_id: id,
+          member_id: memberId,
+          sort_order: index,
+        }))
+      );
+      if (rmError) {
+        const dbError = new Error(rmError.message || 'ResultMember insert error') as SupabaseError;
+        dbError.code = rmError.code;
+        dbError.details = rmError.details;
+        dbError.hint = rmError.hint;
+        throw dbError;
+      }
     }
 
     revalidatePath("/admin/results");
@@ -263,6 +281,7 @@ export async function adminUpdateResult(_prevState: unknown, formData: FormData)
       placement: formData.get("placement")?.toString() || "0",
       score: formData.get("score")?.toString() || "0",
       note: formData.get("note")?.toString() || null,
+      memberIds: formData.getAll("memberIds").filter((v): v is string => typeof v === "string"),
     };
 
     const validated = resultSchema.parse(rawData);
@@ -278,7 +297,7 @@ export async function adminUpdateResult(_prevState: unknown, formData: FormData)
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { seasonCode, ...updateData } = validated;
+    const { seasonCode, memberIds, ...updateData } = validated;
 
     const { error } = await supabase
       .from("Result")
@@ -296,6 +315,32 @@ export async function adminUpdateResult(_prevState: unknown, formData: FormData)
       dbError.details = error.details;
       dbError.hint = error.hint;
       throw dbError;
+    }
+
+    const { error: deleteRmError } = await supabase.from("ResultMember").delete().eq("result_id", id);
+    if (deleteRmError) {
+      const dbError = new Error(deleteRmError.message || 'ResultMember delete error') as SupabaseError;
+      dbError.code = deleteRmError.code;
+      dbError.details = deleteRmError.details;
+      dbError.hint = deleteRmError.hint;
+      throw dbError;
+    }
+
+    if (memberIds.length > 0) {
+      const { error: rmError } = await supabase.from("ResultMember").insert(
+        memberIds.map((memberId, index) => ({
+          result_id: id,
+          member_id: memberId,
+          sort_order: index,
+        }))
+      );
+      if (rmError) {
+        const dbError = new Error(rmError.message || 'ResultMember insert error') as SupabaseError;
+        dbError.code = rmError.code;
+        dbError.details = rmError.details;
+        dbError.hint = rmError.hint;
+        throw dbError;
+      }
     }
 
     revalidatePath("/admin/results");

@@ -17,6 +17,7 @@ export const resultSchema = z.object({
   placement: z.coerce.number().int("Umístění musí být celé číslo").min(1, "Umístění musí být alespoň 1"),
   score: z.coerce.number().int("Skóre musí být celé číslo").min(0, "Skóre nemůže být záporné"),
   note: z.string().optional().nullable(),
+  memberIds: z.array(z.string().uuid()).max(8, "Maximálně 8 členů na výsledek").optional().default([]),
 });
 
 export const memberSchema = z.object({

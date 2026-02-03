@@ -3,6 +3,8 @@
 import { ActionForm } from "@/components/admin/ActionForm";
 import { adminCreateResult, adminUpdateResult } from "../_actions";
 import { X } from "lucide-react";
+import { useState } from "react";
+import type { Member } from "@/lib/queries/members";
 
 interface Season {
   id: string;
@@ -19,18 +21,22 @@ interface Result {
   score: number;
   note: string | null;
   season: Season;
+  memberIds?: string[];
 }
 
 interface ResultFormProps {
   seasons: Season[];
+  members: Member[];
   result?: Result;
   onCancel?: () => void;
 }
 
-export function ResultForm({ seasons, result, onCancel }: ResultFormProps) {
+const MAX_MEMBERS = 8;
+
+export function ResultForm({ seasons, members, result, onCancel }: ResultFormProps) {
   const isEdit = !!result;
-  // Extract date part only, avoiding timezone offset issues
-  const dateValue = result?.date ? result.date.split('T')[0] : '';
+  const dateValue = result?.date ? result.date.split("T")[0] : "";
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(() => result?.memberIds ?? []);
 
   return (
     <ActionForm
@@ -89,6 +95,43 @@ export function ResultForm({ seasons, result, onCancel }: ResultFormProps) {
 
         <div className="md:col-span-2">
           <input name="note" placeholder="Poznámka (volitelné)" defaultValue={result?.note || undefined} className="w-full p-2 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Sestava (max {MAX_MEMBERS} členů)</label>
+          <div className="flex flex-wrap gap-3 p-3 border rounded-xl bg-gray-50 border-gray-200">
+            {members.length === 0 ? (
+              <span className="text-sm text-gray-500">Žádní aktivní členové.</span>
+            ) : (
+              members.map((member) => {
+                const isChecked = selectedMemberIds.includes(member.id);
+                const disabled = !isChecked && selectedMemberIds.length >= MAX_MEMBERS;
+                return (
+                  <label
+                    key={member.id}
+                    className={`flex items-center gap-2 cursor-pointer ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+                  >
+                    <input
+                      type="checkbox"
+                      name="memberIds"
+                      value={member.id}
+                      checked={isChecked}
+                      disabled={disabled}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedMemberIds((prev) => (prev.length < MAX_MEMBERS ? [...prev, member.id] : prev));
+                        } else {
+                          setSelectedMemberIds((prev) => prev.filter((id) => id !== member.id));
+                        }
+                      }}
+                      className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                    />
+                    <span className="text-sm text-gray-800">{member.displayName}</span>
+                  </label>
+                );
+              })
+            )}
+          </div>
         </div>
 
         {onCancel && (
