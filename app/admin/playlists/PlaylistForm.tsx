@@ -3,14 +3,7 @@
 import { ActionForm } from "@/components/admin/ActionForm";
 import { adminCreatePlaylist, adminUpdatePlaylist } from "../_actions";
 import { X } from "lucide-react";
-
-interface Playlist {
-  id: string;
-  title: string;
-  spotifyUrl: string;
-  description: string | null;
-  isActive: boolean;
-}
+import type { Playlist } from "@/lib/types";
 
 interface PlaylistFormProps {
   playlist?: Playlist;

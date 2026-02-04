@@ -6,24 +6,7 @@ import { ResultForm } from "./ResultForm";
 import { useState } from "react";
 import { Edit2 } from "lucide-react";
 import type { Member } from "@/lib/queries/members";
-
-interface Season {
-  id: string;
-  code: string;
-  name: string;
-}
-
-interface Result {
-  id: string;
-  date: string;
-  venue: string;
-  teamName: string;
-  placement: number;
-  score: number;
-  note: string | null;
-  season: Season;
-  memberIds?: string[];
-}
+import type { Result, Season } from "@/lib/types";
 
 interface ResultListProps {
   results: Result[];
