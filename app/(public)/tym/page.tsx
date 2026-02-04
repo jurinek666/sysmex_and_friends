@@ -19,7 +19,7 @@ export default async function TeamPage() {
       {/* HLAVIČKA */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-white/5 pb-8">
         <div>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
+          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2">
             NÁŠ <span className="text-neon-magenta">TÝM</span>
           </h1>
           <p className="text-gray-400 max-w-xl text-lg">

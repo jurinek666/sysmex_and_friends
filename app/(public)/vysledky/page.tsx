@@ -35,7 +35,7 @@ export default async function VysledkyPage() {
       {/* HLAVIČKA */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-white/5 pb-8">
         <div>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
+          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2">
             TABULKA <span className="text-neon-cyan">VÝSLEDKŮ</span>
           </h1>
           <p className="text-gray-400 max-w-xl text-lg">
@@ -73,7 +73,7 @@ export default async function VysledkyPage() {
                   return (
                     <div
                       key={r.id}
-                      className="group bento-card p-6 border border-white/10 hover:border-neon-cyan/30 transition-all duration-300"
+                      className="group bento-card p-4 md:p-6 border border-white/10 hover:border-neon-cyan/30 transition-all duration-300"
                     >
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
                         <div className="md:col-span-3 flex items-center gap-6">
