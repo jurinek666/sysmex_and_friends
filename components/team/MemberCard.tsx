@@ -37,7 +37,7 @@ export function MemberCard({ member, variant }: MemberCardProps) {
 
   // variant === "full" (stránka /tym, tmavé téma)
   return (
-    <div className="bento-card group flex flex-col items-center text-center p-8 hover:border-neon-magenta/50 hover:shadow-[0_0_25px_-8px_rgba(255,79,216,0.25)] transition-all duration-500">
+    <div className="bento-card group flex flex-col items-center text-center p-5 md:p-8 hover:border-neon-magenta/50 hover:shadow-[0_0_25px_-8px_rgba(255,79,216,0.25)] transition-all duration-500">
       <div className="relative w-32 h-32 mb-6">
         <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan to-neon-magenta rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
         <div className="relative w-full h-full rounded-full bg-sysmex-800 border-2 border-white/10 flex items-center justify-center overflow-hidden ring-2 ring-neon-magenta/30 group-hover:ring-neon-magenta/60 group-hover:scale-105 transition-all duration-300">
