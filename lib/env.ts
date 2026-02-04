@@ -15,8 +15,11 @@ const envSchema = z.object({
   CLOUDINARY_API_KEY: z.string().min(1).optional(),
   CLOUDINARY_API_SECRET: z.string().min(1).optional(),
 
-  // Secret pro případné revalidate endpointy (volitelné)
-  REVALIDATE_SECRET: z.string().min(1).optional(),
+  // Secret pro případné revalidate endpointy (volitelné; prázdný řetězec = jako by nebyl nastaven)
+  REVALIDATE_SECRET: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : val),
+    z.string().min(1).optional()
+  ),
 
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });

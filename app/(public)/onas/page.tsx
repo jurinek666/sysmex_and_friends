@@ -265,7 +265,7 @@ export default function AboutPage() {
               O týmu
             </h2>
             <p className="text-gray-300 leading-relaxed">
-              Jsme nesourodá, ale sehraná parta z laboratoří Sysmexu a jejich přátel. Každý čtvrtek vybojujeme ve Sborovně další kapitolu brněnské kvízové historie.
+              Jsme nesourodá, ale sehraná parta ze Sysmexu a jejich přátel. Každý čtvrtek vybojujeme ve Sborovně další kapitolu brněnské kvízové historie.
             </p>
             <div className="p-4 rounded-xl border border-white/10 bg-black/20 text-gray-300 italic">
               „Není důležité vyhrát, ale porazit tým u vedlejšího stolu.“
@@ -411,7 +411,7 @@ export default function AboutPage() {
                 text: "Naladění, sdílení drbů z laboratoře, první rozcvička mozkových závitů.",
               },
               {
-                time: "19:30",
+                time: "19:00",
                 title: "Start kvízu",
                 side: "right",
                 icon: "🔥",
