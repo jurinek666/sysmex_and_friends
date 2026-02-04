@@ -63,4 +63,4 @@ Cíl: dodávat změny rychle, ale bezpečně – bez rozbíjení buildů a bez h
 - Dev: `pnpm dev` / `npm run dev`
 - Build: `pnpm build` / `npm run build`
 - Typecheck (pokud existuje): `pnpm typecheck` / `npm run typecheck`
-- Lint (pokud existuje): `pnpm lint` / `npm run lint
+- Lint (pokud existuje): `pnpm lint` / `npm run lint`

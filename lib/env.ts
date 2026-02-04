@@ -21,6 +21,9 @@ const envSchema = z.object({
     z.string().min(1).optional()
   ),
 
+  // Google Gemini API – pro AI na stránce O nás (volitelné)
+  GOOGLE_API_KEY: z.string().min(1).optional(),
+
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 
