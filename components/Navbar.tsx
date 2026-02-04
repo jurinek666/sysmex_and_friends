@@ -220,7 +220,7 @@ export function Navbar() {
                 className="relative w-24 h-24 md:w-32 md:h-32 overflow-hidden rounded-full bg-white border-4 border-white/90 group-hover:border-neon-cyan transition-all shadow-[0_0_40px_rgba(70,214,255,0.5)] group-hover:shadow-[0_0_80px_rgba(70,214,255,0.9)] animate-glass-glow ring-2 ring-white/80 shadow-lg md:ring-0"
               >
                 <Image
-                  src="https://res.cloudinary.com/gear-gaming/image/upload/v1767027578/SYS_and_friends_logo_r6esig.png"
+                  src="https://res.cloudinary.com/gear-gaming/image/upload/v1770237109/logo_ympqem.png"
                   alt="SYSMEX & Friends Logo"
                   fill
                   className="object-cover"
