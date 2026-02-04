@@ -14,6 +14,7 @@ function mapResultToParticipants<T extends Record<string, unknown>>(row: T): T &
       id: r.Member?.id ?? r.member_id,
       displayName: r.Member?.displayName ?? "",
     }));
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { ResultMember: _, ...rest } = row;
   return { ...rest, participants } as T & { participants: ResultParticipant[] };
 }

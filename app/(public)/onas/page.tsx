@@ -1,18 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import {
   Chart,
   ChartConfiguration,
   ChartTypeRegistry,
   registerables,
 } from "chart.js";
-import { Users, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 Chart.register(...registerables);
-
-const plotlyPromise = import("plotly.js-dist-min");
 
 type ChartRef = React.MutableRefObject<HTMLCanvasElement | null>;
 
@@ -173,7 +170,7 @@ export default function AboutPage() {
     let mounted = true;
 
     (async () => {
-      const plotly = await plotlyPromise;
+      const plotly = await import("plotly.js-dist-min");
       if (!mounted) return;
 
       const traces = [
@@ -430,7 +427,7 @@ export default function AboutPage() {
                 icon: "🎉",
                 text: "Finálová otázka, výpočty v hlavě a u baru doladíme plán na další týden.",
               },
-            ].map((item, idx) => (
+            ].map((item) => (
               <div
                 key={item.title}
                 className={`relative flex items-center mb-12 ${item.side === "left" ? "justify-end" : "justify-start"} gap-6`}
