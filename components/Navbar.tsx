@@ -96,13 +96,13 @@ export function Navbar() {
   }, [isOpen, isLoginMenuOpen]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex flex-col items-center px-4 md:px-8 pt-6 md:pt-8">
+    <nav className="fixed top-0 left-0 right-0 z-50 flex flex-col items-center px-4 md:px-8 pt-6 md:pt-8 overflow-visible">
       <motion.div
         ref={navRef}
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full max-w-6xl"
+        className="w-full max-w-6xl overflow-visible"
       >
         {/* FLOATING NAVBAR with Glassmorphism */}
         <motion.div
@@ -117,7 +117,7 @@ export function Navbar() {
           }}
         >
           {/* Particle Effects Background */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
             {[...Array(6)].map((_, i) => (
               <motion.div
                 key={i}
@@ -172,7 +172,7 @@ export function Navbar() {
 
           {/* Animated Gradient Border */}
           <motion.div
-            className="absolute inset-0 rounded-3xl"
+            className="absolute inset-0 rounded-3xl z-[1]"
             style={{
               background: `linear-gradient(90deg, 
                 rgba(70,214,255,0.3) 0%, 
@@ -206,7 +206,7 @@ export function Navbar() {
               damping: 15,
               delay: 0.2 
             }}
-            className="absolute left-1/2 -translate-x-1/2 -mt-6 md:-mt-8 z-20"
+            className="absolute left-1/2 -translate-x-1/2 -mt-6 md:-mt-8 z-30"
           >
             <Link href="/" className="flex items-center group" onClick={() => setIsOpen(false)}>
               <motion.div
@@ -217,7 +217,7 @@ export function Navbar() {
                 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "tween", duration: 0.4, ease: "easeInOut" }}
-                className="relative w-24 h-24 md:w-32 md:h-32 overflow-hidden rounded-full bg-white border-4 border-white/90 group-hover:border-neon-cyan transition-all shadow-[0_0_40px_rgba(70,214,255,0.5)] group-hover:shadow-[0_0_80px_rgba(70,214,255,0.9)] animate-glass-glow"
+                className="relative w-24 h-24 md:w-32 md:h-32 overflow-hidden rounded-full bg-white border-4 border-white/90 group-hover:border-neon-cyan transition-all shadow-[0_0_40px_rgba(70,214,255,0.5)] group-hover:shadow-[0_0_80px_rgba(70,214,255,0.9)] animate-glass-glow ring-2 ring-white/80 shadow-lg md:ring-0"
               >
                 <Image
                   src="https://res.cloudinary.com/gear-gaming/image/upload/v1767027578/SYS_and_friends_logo_r6esig.png"
@@ -247,7 +247,7 @@ export function Navbar() {
             </Link>
           </motion.div>
 
-          <div className="relative flex items-center justify-end lg:justify-center h-16 md:h-20 px-6 md:px-10">
+          <div className="relative z-10 flex items-center justify-end lg:justify-center h-16 md:h-20 px-6 md:px-10">
             {/* DESKTOP NAV - Left side */}
             <div className="hidden lg:flex items-center gap-3 flex-1 justify-end pr-8">
               {navLinks.slice(0, Math.ceil(navLinks.length / 2)).map((link, index) => (
@@ -352,7 +352,10 @@ export function Navbar() {
           className="lg:hidden overflow-y-auto max-h-[85vh] w-full"
         >
           <motion.div
-            className="mt-2 glass-nav bg-sysmex-900/95 rounded-2xl shadow-2xl border border-white/20 overflow-hidden"
+            className="mt-2 rounded-2xl shadow-2xl border border-white/20 overflow-hidden backdrop-blur-md"
+            style={{
+              background: "linear-gradient(135deg, rgba(11,30,75,0.98) 0%, rgba(30,78,168,0.96) 100%)",
+            }}
             initial={{ y: -20 }}
             animate={{ y: isOpen ? 0 : -20 }}
             transition={{ duration: 0.3 }}
@@ -393,7 +396,7 @@ export function Navbar() {
                             relative overflow-hidden rounded-lg
                             ${active
                               ? "bg-gradient-to-r from-neon-cyan/30 via-neon-cyan/40 to-neon-magenta/30 border-2 border-neon-cyan shadow-[0_0_20px_rgba(70,214,255,0.6)]"
-                              : "bg-white/5 border-2 border-transparent hover:border-neon-cyan/60 hover:bg-white/10"
+                              : "bg-white/15 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/20"
                             }
                           `}
                         >
@@ -431,14 +434,14 @@ export function Navbar() {
                 <div className="flex flex-col space-y-2">
                   <Link
                     href="/login"
-                    className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-white/5 border-2 border-transparent hover:border-neon-cyan/60 hover:bg-white/10 transition-all"
+                    className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-sysmex-800/80 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
                     onClick={() => setIsOpen(false)}
                   >
                     ČLEN TÝMU
                   </Link>
                   <Link
                     href="/login"
-                    className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-white/5 border-2 border-transparent hover:border-neon-cyan/60 hover:bg-white/10 transition-all"
+                    className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-sysmex-800/80 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
                     onClick={() => setIsOpen(false)}
                   >
                     ADMIN
