@@ -5,14 +5,7 @@ import { adminDeletePlaylist } from "../_actions";
 import { PlaylistForm } from "./PlaylistForm";
 import { useState } from "react";
 import { Edit2 } from "lucide-react";
-
-interface Playlist {
-  id: string;
-  title: string;
-  spotifyUrl: string;
-  description: string | null;
-  isActive: boolean;
-}
+import type { Playlist } from "@/lib/types";
 
 interface PlaylistListProps {
   playlists: Playlist[];

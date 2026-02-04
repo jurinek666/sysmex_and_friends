@@ -3,16 +3,7 @@
 import { ActionForm } from "@/components/admin/ActionForm";
 import { adminCreateMember, adminUpdateMember } from "../_actions";
 import { X } from "lucide-react";
-
-interface Member {
-  id: string;
-  displayName: string;
-  nickname: string | null;
-  role: string | null;
-  gender: string;
-  bio: string | null;
-  isActive: boolean;
-}
+import type { Member } from "@/lib/types";
 
 interface MemberFormProps {
   member?: Member;

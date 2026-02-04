@@ -4,15 +4,7 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getSpotifyEmbedSrc } from "@/lib/spotify";
-
-interface Playlist {
-  id: string;
-  title: string;
-  description?: string | null;
-  spotifyUrl: string;
-  isActive?: boolean;
-  createdAt?: string;
-}
+import type { Playlist } from "@/lib/types";
 
 interface PlaylistCarouselProps {
   playlists: Playlist[];

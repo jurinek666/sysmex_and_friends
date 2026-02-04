@@ -3,15 +3,7 @@
 import { ActionForm } from "@/components/admin/ActionForm";
 import { adminCreateEvent, adminUpdateEvent } from "../_actions";
 import { X } from "lucide-react";
-
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  venue: string;
-  description: string | null;
-  isUpcoming: boolean;
-}
+import type { Event } from "@/lib/types";
 
 interface EventFormProps {
   event?: Event;

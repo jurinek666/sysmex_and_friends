@@ -8,6 +8,7 @@ import {
   registerables,
 } from "chart.js";
 import { Sparkles } from "lucide-react";
+import { generateQuestionAction, generateStrategyAction } from "./actions";
 
 Chart.register(...registerables);
 
