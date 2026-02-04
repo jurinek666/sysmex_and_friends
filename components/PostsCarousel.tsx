@@ -72,7 +72,7 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
   };
 
   return (
-    <div className="bento-card px-4 md:px-12 py-8 flex flex-col gap-6 relative overflow-hidden group hover:border-neon-cyan/50">
+    <div className="bento-card px-5 py-6 md:px-12 md:py-8 flex flex-col gap-6 relative overflow-hidden group hover:border-neon-cyan/50">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-2xl md:text-3xl font-bold text-white">Aktuality</h2>
         <div className="flex items-center gap-3">

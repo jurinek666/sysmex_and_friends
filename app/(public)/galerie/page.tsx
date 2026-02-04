@@ -41,7 +41,7 @@ export default async function GaleriePage() {
       <header className="relative mb-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
+            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2">
               <span className="text-neon-cyan">GALERIE</span>
             </h1>
             <p className="text-gray-400 text-lg max-w-xl">
