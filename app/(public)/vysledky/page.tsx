@@ -35,7 +35,7 @@ export default async function VysledkyPage() {
       {/* HLAVIČKA */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-white/5 pb-8">
         <div>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
+          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2">
             TABULKA <span className="text-neon-cyan">VÝSLEDKŮ</span>
           </h1>
           <p className="text-gray-400 max-w-xl text-lg">
@@ -73,10 +73,12 @@ export default async function VysledkyPage() {
                   return (
                     <div
                       key={r.id}
-                      className="group bento-card p-6 border border-white/10 hover:border-neon-cyan/30 transition-all duration-300"
+                      className="group bento-card p-4 md:p-6 border border-white/10 hover:border-neon-cyan/30 transition-all duration-300"
                     >
-                      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                        <div className="md:col-span-3 flex items-center gap-6">
+                      <div className="grid grid-cols-2 md:grid-cols-12 gap-4 md:gap-6 items-center">
+
+                        {/* 1. Date & Placement */}
+                        <div className="col-span-1 md:col-span-3 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-6">
                           <div className="flex flex-col">
                             <span className="text-xs uppercase font-bold text-gray-400">Datum</span>
                             <span className="text-lg font-bold text-white">
@@ -90,13 +92,17 @@ export default async function VysledkyPage() {
                             <span className="text-2xl font-black leading-none">{r.placement}.</span>
                           </div>
                         </div>
-                        <div className="md:col-span-2">
-                          <div className="flex flex-col">
+
+                        {/* 2. Score */}
+                        <div className="col-span-1 md:col-span-2 flex justify-end md:justify-start">
+                          <div className="flex flex-col items-end md:items-start">
                             <span className="text-xs uppercase font-bold text-gray-400">Celkem bodů</span>
                             <span className="text-2xl font-black text-neon-cyan">{r.score}</span>
                           </div>
                         </div>
-                        <div className="md:col-span-5">
+
+                        {/* 3. Roster */}
+                        <div className="col-span-2 md:col-span-5">
                           <span className="text-xs uppercase font-bold text-gray-400 block mb-2">Sestava dne</span>
                           <div className="flex flex-wrap gap-2">
                             {participants.length > 0 ? (
@@ -115,7 +121,9 @@ export default async function VysledkyPage() {
                             )}
                           </div>
                         </div>
-                        <div className="md:col-span-2 flex justify-end">
+
+                        {/* 4. Button */}
+                        <div className="col-span-2 md:col-span-2 flex justify-end">
                           <button
                             type="button"
                             className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-neon-cyan/20 hover:text-neon-cyan transition-all group-hover:scale-110 border border-white/10"
@@ -124,6 +132,7 @@ export default async function VysledkyPage() {
                             <BarChart3 className="w-5 h-5" />
                           </button>
                         </div>
+
                       </div>
                     </div>
                   );

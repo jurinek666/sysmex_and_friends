@@ -53,7 +53,7 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
           <button
             onClick={goToPrevious}
             disabled={!canGoLeft}
-            className={`absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/80 backdrop-blur-md border-2 border-white/30 hover:bg-black/90 transition-all shadow-lg ${
+            className={`absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/80 backdrop-blur-md border-2 border-white/30 hover:bg-black/90 transition-all shadow-lg ${
               canGoLeft
                 ? "text-white hover:text-neon-cyan hover:border-neon-cyan cursor-pointer hover:scale-110"
                 : "text-gray-600 cursor-not-allowed opacity-50"
@@ -66,7 +66,7 @@ export function PlaylistCarousel({ playlists }: PlaylistCarouselProps) {
           <button
             onClick={goToNext}
             disabled={!canGoRight}
-            className={`absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/80 backdrop-blur-md border-2 border-white/30 hover:bg-black/90 transition-all shadow-lg ${
+            className={`absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/80 backdrop-blur-md border-2 border-white/30 hover:bg-black/90 transition-all shadow-lg ${
               canGoRight
                 ? "text-white hover:text-neon-cyan hover:border-neon-cyan cursor-pointer hover:scale-110"
                 : "text-gray-600 cursor-not-allowed opacity-50"

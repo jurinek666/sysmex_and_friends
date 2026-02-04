@@ -72,7 +72,7 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
   };
 
   return (
-    <div className="bento-card px-8 md:px-12 py-8 flex flex-col gap-6 relative overflow-hidden group hover:border-neon-cyan/50">
+    <div className="bento-card px-5 py-6 md:px-12 md:py-8 flex flex-col gap-6 relative overflow-hidden group hover:border-neon-cyan/50">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-2xl md:text-3xl font-bold text-white">Aktuality</h2>
         <div className="flex items-center gap-3">
@@ -90,7 +90,7 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
           <button
             onClick={goToPrevious}
             disabled={!canGoLeft}
-            className={`absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/80 backdrop-blur-md border-2 border-white/30 hover:bg-black/90 transition-all shadow-lg ${
+            className={`hidden md:block absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/80 backdrop-blur-md border-2 border-white/30 hover:bg-black/90 transition-all shadow-lg ${
               canGoLeft
                 ? "text-white hover:text-neon-cyan hover:border-neon-cyan cursor-pointer hover:scale-110"
                 : "text-gray-600 cursor-not-allowed opacity-50"
@@ -102,7 +102,7 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
           <button
             onClick={goToNext}
             disabled={!canGoRight}
-            className={`absolute right-3 md:right-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/80 backdrop-blur-md border-2 border-white/30 hover:bg-black/90 transition-all shadow-lg ${
+            className={`hidden md:block absolute right-3 md:right-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/80 backdrop-blur-md border-2 border-white/30 hover:bg-black/90 transition-all shadow-lg ${
               canGoRight
                 ? "text-white hover:text-neon-cyan hover:border-neon-cyan cursor-pointer hover:scale-110"
                 : "text-gray-600 cursor-not-allowed opacity-50"
@@ -114,7 +114,7 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
         </>
       )}
 
-      <div className="relative px-10 md:px-14">
+      <div className="relative px-0 md:px-14">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPost.slug}

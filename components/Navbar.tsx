@@ -349,10 +349,10 @@ export function Navbar() {
             opacity: isOpen ? 1 : 0,
           }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="lg:hidden overflow-hidden w-full"
+          className="lg:hidden overflow-y-auto max-h-[85vh] w-full"
         >
           <motion.div
-            className="mt-2 glass-nav rounded-2xl shadow-2xl border border-white/20 overflow-hidden"
+            className="mt-2 glass-nav bg-sysmex-900/95 rounded-2xl shadow-2xl border border-white/20 overflow-hidden"
             initial={{ y: -20 }}
             animate={{ y: isOpen ? 0 : -20 }}
             transition={{ duration: 0.3 }}

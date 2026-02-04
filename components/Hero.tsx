@@ -34,7 +34,7 @@ export function Hero({ upcomingEvent }: HeroProps) {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 bg-slate-100 text-sysmex-900 text-xs font-bold uppercase tracking-wider w-fit">
               SYSMEX & FRIENDS
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-sysmex-900 leading-tight">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight text-sysmex-900 leading-tight">
               Kvízový tým, který píše historii
             </h1>
             <p className="text-lg md:text-xl text-slate-600 max-w-xl">
