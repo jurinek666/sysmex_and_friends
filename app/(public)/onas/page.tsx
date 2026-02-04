@@ -8,11 +8,8 @@ import {
   registerables,
 } from "chart.js";
 import { Sparkles } from "lucide-react";
-import { generateQuestionAction, generateStrategyAction } from "./actions";
 
 Chart.register(...registerables);
-
-const plotlyPromise = import("plotly.js-dist-min");
 
 type ChartRef = React.MutableRefObject<HTMLCanvasElement | null>;
 
@@ -173,7 +170,7 @@ export default function AboutPage() {
     let mounted = true;
 
     (async () => {
-      const plotly = await plotlyPromise;
+      const plotly = await import("plotly.js-dist-min");
       if (!mounted) return;
 
       const traces = [

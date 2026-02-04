@@ -33,6 +33,7 @@ function mapResultToMemberIds(r: Result): Result {
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
     .map((row) => row.Member?.id ?? row.member_id)
     .filter(Boolean);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { ResultMember: _, ...rest } = r;
   return { ...rest, memberIds };
 }

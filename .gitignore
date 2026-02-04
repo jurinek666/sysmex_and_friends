@@ -49,3 +49,4 @@ temp/
 
 # prisma studio
 # prisma.config.ts
+server.log
