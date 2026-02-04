@@ -214,7 +214,8 @@ export default function AboutPage() {
       setAiQuestion(result);
     } catch (e) {
       console.error(e);
-      setAiQuestion("Chyba při komunikaci s AI.");
+      const msg = e instanceof Error ? e.message : "Chyba při komunikaci s AI.";
+      setAiQuestion(`Chyba při komunikaci s AI. ${msg}`);
     } finally {
       setLoadingQuestion(false);
     }
@@ -227,7 +228,8 @@ export default function AboutPage() {
       setAiStrategy(result);
     } catch (e) {
       console.error(e);
-      setAiStrategy("Chyba při komunikaci s AI.");
+      const msg = e instanceof Error ? e.message : "Chyba při komunikaci s AI.";
+      setAiStrategy(`Chyba při komunikaci s AI. ${msg}`);
     } finally {
       setLoadingStrategy(false);
     }
@@ -330,10 +332,22 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="relative grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-6 text-gray-200 min-h-[150px]">
+            <div
+              className={`rounded-2xl border p-6 min-h-[150px] ${
+                aiQuestion.includes("AI nemá") || aiQuestion.startsWith("Chyba")
+                  ? "border-amber-500/50 bg-amber-950/20 text-amber-200"
+                  : "border-white/10 bg-black/30 text-gray-200"
+              }`}
+            >
               {aiQuestion}
             </div>
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-6 text-gray-200 min-h-[150px]">
+            <div
+              className={`rounded-2xl border p-6 min-h-[150px] ${
+                aiStrategy.includes("AI nemá") || aiStrategy.startsWith("Chyba")
+                  ? "border-amber-500/50 bg-amber-950/20 text-amber-200"
+                  : "border-white/10 bg-black/30 text-gray-200"
+              }`}
+            >
               {aiStrategy}
             </div>
           </div>

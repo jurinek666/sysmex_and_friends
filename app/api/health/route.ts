@@ -6,7 +6,7 @@ export async function GET() {
     const supabase = await createClient();
     
     // Zkusíme jednoduchý dotaz, třeba počet záznamů v tabulce Season (nebo jen check spojení)
-    const { error } = await supabase.from("Season").select("count", { count: "exact", head: true });
+    const { error } = await supabase.from("Season").select("*", { count: "exact", head: true });
 
     if (error) throw error;
 
