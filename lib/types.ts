@@ -81,3 +81,41 @@ export interface Playlist {
   createdAt?: string;
   updatedAt?: string;
 }
+
+// --- NEW TEAM TYPES ---
+
+export interface Profile {
+  id: string;
+  email: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  role: 'member' | 'admin' | 'moderator';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Comment {
+  id: string;
+  post_slug: string;
+  user_id: string;
+  content: string;
+  parent_id: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined profile
+  profile?: Profile;
+}
+
+export type EventStatus = 'going' | 'maybe' | 'not_going';
+
+export interface EventParticipant {
+  id: string;
+  event_id: string;
+  user_id: string;
+  status: EventStatus;
+  note: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined profile
+  profile?: Profile;
+}
