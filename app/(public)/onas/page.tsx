@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import {
   Chart,
   ChartConfiguration,
   ChartTypeRegistry,
   registerables,
 } from "chart.js";
-import { Users, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { generateQuestionAction, generateStrategyAction } from "./actions";
 
 Chart.register(...registerables);
 
@@ -209,34 +209,30 @@ export default function AboutPage() {
     };
   }, []);
 
-  const fakeQuestionResponses = [
-    "1) Kdo je vítězkou třetí řady reality show 'Love Is Brno'? 2) Jak se jmenuje duet, který nazpívali Ben Cristovao a Dara Rolins v roce 2024? 3) Kolik followerů má influencerka @BrnenskaVajicka?",
-    "Popkulturní kvíz: 1) Jak se jmenuje nová Marvel fáze odstartovaná 2025? 2) Která kapela z Brna vyhrála Českého slavíka v kategorii Objev roku 2024? 3) Kdo moderuje ČT pořad 'InfoKultura'?",
-    "Tvůj feed volá! 1) Ve kterém roce vydal Ektór své comeback album 'Konečně v klidu'? 2) Jak se jmenuje finalista MasterChefa 2025 z Brna? 3) Který český seriál uvedl Netflix na jaře 2026?",
-  ];
-
-  const fakeStrategyResponses = [
-    "Základní taktika: 1) Limituj pivo na 5 kusů do kola č.4. 2) Přibrzdi v 'Popkultuře' – předehra v podobě dvou TikTok kvízů den předem. 3) Vsadit na biologické otázky – dvojitá sázka na otřes mozku (ale jen metaforicky).",
-    "Chce to fokus: 1) Základ je tichá příprava 20 minut před startem. 2) Pokračuj ve sbírání 'inside info' z barového polosvěta. 3) Pivo? Jen jeden vychlazený na kolo. Mozek musí zůstat ostrý.",
-    "Nová meta: Začni brainstormingem na cestě do Sborovny. Alespoň jeden TikTok trend denně, sleduj hlavně popkulturu. Pivo? Střídavě nealko a nefiltrované. Po vítězství dejte panáka na bar – je to v pravidlech.",
-  ];
-
-  const generateAIQuestion = () => {
+  const generateAIQuestion = async () => {
     setLoadingQuestion(true);
-    setTimeout(() => {
-      const random = Math.floor(Math.random() * fakeQuestionResponses.length);
-      setAiQuestion(fakeQuestionResponses[random]);
+    try {
+      const result = await generateQuestionAction();
+      setAiQuestion(result);
+    } catch (e) {
+      console.error(e);
+      setAiQuestion("Chyba při komunikaci s AI.");
+    } finally {
       setLoadingQuestion(false);
-    }, 800);
+    }
   };
 
-  const generateStrategy = () => {
+  const generateStrategy = async () => {
     setLoadingStrategy(true);
-    setTimeout(() => {
-      const random = Math.floor(Math.random() * fakeStrategyResponses.length);
-      setAiStrategy(fakeStrategyResponses[random]);
+    try {
+      const result = await generateStrategyAction();
+      setAiStrategy(result);
+    } catch (e) {
+      console.error(e);
+      setAiStrategy("Chyba při komunikaci s AI.");
+    } finally {
       setLoadingStrategy(false);
-    }, 800);
+    }
   };
 
   return (
@@ -315,7 +311,7 @@ export default function AboutPage() {
             Vyzkoušej generátor záludných otázek a nech si doporučit taktiku na příští kolo.
           </p>
           <p className="text-sm text-gray-500">
-            Výstupy jsou statické ukázky – reálné napojení na Gemini přidáme, jakmile tým uvolní API klíče.
+            Výstupy jsou nyní poháněny Google Gemini AI.
           </p>
         </div>
             <div className="flex flex-wrap gap-3">
@@ -430,7 +426,7 @@ export default function AboutPage() {
                 icon: "🎉",
                 text: "Finálová otázka, výpočty v hlavě a u baru doladíme plán na další týden.",
               },
-            ].map((item, idx) => (
+            ].map((item) => (
               <div
                 key={item.title}
                 className={`relative flex items-center mb-12 ${item.side === "left" ? "justify-end" : "justify-start"} gap-6`}

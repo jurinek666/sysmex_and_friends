@@ -12,6 +12,7 @@
     "check": "npm run lint && npm run clean:next && tsc --noEmit && npm run build"
   },
   "dependencies": {
+    "@google/generative-ai": "0.24.1",
     "@supabase/ssr": "0.8.0",
     "@supabase/supabase-js": "2.89.0",
     "@tailwindcss/postcss": "4.1.18",
