@@ -44,19 +44,22 @@ export async function proxy(request: NextRequest) {
   }
 
   // Ochrana členské sekce (app/(members))
-  // Poznámka: Next.js Route Groups jako (members) se v URL neobjevují,
-  // takže chráníme cesty, které v ní jsou (např. /tym/dashboard)
-  // Zde předpokládáme, že členská sekce bude začínat prefixem /tym (mimo veřejný /tym - pozor na kolize!)
-  // Dle zadání "app/(members)/dashboard" bude na URL "/dashboard" nebo "/tym/dashboard".
-  // PRO JEDNODUCHOST: Pokud cesta obsahuje 'dashboard' nebo 'profil', vyžadujeme auth.
-
-  if (!user && (pathname.startsWith('/tym/dashboard') || pathname.startsWith('/tym/profil'))) {
-      return NextResponse.redirect(new URL('/login', request.url));
+  // Cesty členské sekce: /tym/dashboard, /tym/profil, /dashboard, /profile, /schedule
+  const membersPaths = [
+    '/tym/dashboard',
+    '/tym/profil',
+    '/dashboard',
+    '/profile',
+    '/schedule',
+  ];
+  const isMembersPath = membersPaths.some((p) => pathname.startsWith(p));
+  if (!user && isMembersPath) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   // Pokud je uživatel přihlášen a jde na login, pošleme ho na dashboard
   if (user && pathname === '/login') {
-      return NextResponse.redirect(new URL('/tym/dashboard', request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   return supabaseResponse

@@ -10,7 +10,7 @@ export async function login(formData: FormData) {
   const email = String(formData.get("email"));
   const password = String(formData.get("password"));
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data: authData, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -19,6 +19,14 @@ export async function login(formData: FormData) {
     return redirect("/login?error=InvalidCredentials");
   }
 
+  const userId = authData.user?.id;
+  const { data: profile } = userId
+    ? await supabase.from("profiles").select("role").eq("id", userId).single()
+    : { data: null };
+
   revalidatePath("/", "layout");
-  redirect("/admin");
+  if (profile?.role === "admin") {
+    redirect("/admin");
+  }
+  redirect("/dashboard");
 }
