@@ -1,44 +1,106 @@
-import { login } from "./actions";
-import { PendingButton } from "@/components/ui/PendingButton";
-import { PasswordFieldWrapper } from "@/components/login/PasswordFieldWrapper";
-import { LoginHydrationDebug } from "@/components/login/LoginHydrationDebug";
+"use client";
+
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const supabase = createClient();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      router.push("/tym/dashboard");
+      router.refresh();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError(err.message || "Došlo k chybě při přihlášení.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div data-login-page className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-900 px-4">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Admin Přihlášení</h1>
-          <p className="mt-2 text-sm text-gray-600">Sysmex & Friends</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
+      <div className="max-w-md w-full bg-gray-900 rounded-2xl shadow-xl p-8 border border-gray-800">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Členská sekce</h1>
+          <p className="text-gray-400">Přihlaste se pro přístup k týmovým funkcím.</p>
         </div>
-        
-        <form className="mt-8 space-y-6">
-          <div className="space-y-4">
-            <div suppressHydrationWarning>
-              <label htmlFor="email" className="sr-only">Email</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="w-full px-3 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
-                placeholder="Emailová adresa"
-                suppressHydrationWarning
-              />
-            </div>
-            <PasswordFieldWrapper />
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-900/20 border border-red-900/50 rounded-lg text-red-200 text-sm">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:border-transparent transition-all"
+              required
+            />
           </div>
 
-          <PendingButton
-            formAction={login}
-            className="w-full py-3 px-4 border border-transparent rounded-xl text-white bg-blue-600 hover:bg-blue-700 font-medium transition-colors"
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1">
+              Heslo
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:border-transparent transition-all"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 px-4 bg-neon-cyan hover:bg-cyan-400 text-black font-bold rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Přihlásit se
-          </PendingButton>
-          {process.env.NODE_ENV === "development" ? (
-            <LoginHydrationDebug />
-          ) : null}
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                Přihlašování...
+              </>
+            ) : (
+              "Přihlásit se"
+            )}
+          </button>
         </form>
+
+        <div className="mt-8 text-center border-t border-gray-800 pt-6">
+          <p className="text-gray-500 text-sm">
+            Nemáte účet? <Link href="/onas" className="text-neon-cyan hover:underline">Kontaktujte nás</Link>
+          </p>
+        </div>
       </div>
     </div>
   );

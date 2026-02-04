@@ -5,6 +5,11 @@ import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import ReactMarkdown from "react-markdown";
 import { getPostBySlug } from "@/lib/queries/posts";
+import { getCommentsByPostSlug } from "@/lib/queries/team";
+import CommentSection from "@/components/team/CommentSection";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { env } from "@/lib/env";
 
 export const revalidate = 60;
 
@@ -17,6 +22,21 @@ export default async function PostDetailPage({
   const post = await getPostBySlug(slug);
 
   if (!post) return notFound();
+
+  // Setup Supabase Client for Server Component
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+      env.NEXT_PUBLIC_SUPABASE_URL,
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+          cookies: { getAll() { return cookieStore.getAll() } }
+      }
+  );
+
+  // Load comments using the server client
+  const comments = await getCommentsByPostSlug(supabase, slug);
+
+  const { data: { user } } = await supabase.auth.getUser();
 
   return (
     <main className="min-h-screen pt-32 pb-20 px-4 md:px-8">
@@ -73,7 +93,7 @@ export default async function PostDetailPage({
         </header>
 
         {/* OBSAH (MARKDOWN) */}
-        <article className="bento-card p-8 md:p-12 bg-sysmex-900/20">
+        <article className="bento-card p-8 md:p-12 bg-sysmex-900/20 mb-12">
           <div className="prose prose-lg prose-invert max-w-none 
             prose-headings:text-white prose-headings:font-bold 
             prose-a:text-neon-cyan prose-a:no-underline hover:prose-a:underline
@@ -84,6 +104,13 @@ export default async function PostDetailPage({
             <ReactMarkdown>{post.content}</ReactMarkdown>
           </div>
         </article>
+
+        {/* KOMENTÁŘE (NOVÉ) */}
+        <CommentSection
+            postSlug={slug}
+            initialComments={comments}
+            isLoggedIn={!!user}
+        />
 
         {/* PATIČKA ČLÁNKU */}
         <div className="mt-12 pt-8 border-t border-white/5 flex justify-center">

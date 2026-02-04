@@ -41,14 +41,11 @@ Cíl: dodávat změny rychle, ale bezpečně – bez rozbíjení buildů a bez h
   - redirect URI, cookies, CORS, CSRF, session handling
   - zda se netisknou tokeny do logů
 
-## Databáze (Prisma / Postgres)
+## Databáze (Supabase)
 
-- Před změnou schématu: zkontroluj existující migrace a modely.
-- Preferuj nedestruktivní migrace (add column → backfill → switch usage → případně až potom drop).
-- U každé změny DB napiš:
-  - co migrace dělá
-  - jak ji spustit
-  - jak udělat rollback / recovery (pokud relevantní)
+- Projekt používá **Supabase** (PostgreSQL) a `@supabase/ssr` pro autentizaci.
+- Middleware logika (refresh session, ochrana routes) je umístěna v souboru `proxy.ts`. **Nepoužívej `middleware.ts`**, protože projekt využívá novější/alternativní konvenci (viz Next.js dokumentace k Proxy).
+- Při změnách schématu dbej na zpětnou kompatibilitu.
 
 ## Práce s TODO a bugy
 
