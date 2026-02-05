@@ -9,6 +9,7 @@ import type { ProfileRow } from "./page";
 
 interface UserListProps {
   users: ProfileRow[];
+  linkedMembers?: Record<string, string>;
 }
 
 const ROLE_LABELS: Record<string, string> = {
@@ -21,7 +22,7 @@ function roleLabel(role: string | null): string {
   return (role && ROLE_LABELS[role]) || "Uživatel";
 }
 
-export function UserList({ users }: UserListProps) {
+export function UserList({ users, linkedMembers = {} }: UserListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const editingUser = editingId ? users.find((u) => u.id === editingId) : null;
 
@@ -46,9 +47,16 @@ export function UserList({ users }: UserListProps) {
               {u.display_name || u.email}
             </div>
             <div className="text-sm text-gray-500 truncate">{u.email}</div>
-            <span className="inline-block mt-2 text-xs font-medium px-2 py-1 rounded bg-gray-200 text-gray-700">
-              {roleLabel(u.role)}
-            </span>
+            <div className="flex flex-wrap gap-2 mt-2">
+              <span className="inline-block text-xs font-medium px-2 py-1 rounded bg-gray-200 text-gray-700">
+                {roleLabel(u.role)}
+              </span>
+              {linkedMembers[u.id] && (
+                <span className="inline-block text-xs font-medium px-2 py-1 rounded bg-cyan-100 text-cyan-800 border border-cyan-200">
+                  Soupiska: {linkedMembers[u.id]}
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button

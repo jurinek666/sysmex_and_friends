@@ -38,6 +38,8 @@ export interface Member {
   bio: string | null;
   avatarUrl: string | null;
   isActive: boolean;
+  profileId?: string | null;
+  avatarUrl?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -97,7 +99,8 @@ export interface Profile {
 
 export interface Comment {
   id: string;
-  post_slug: string;
+  entity_id: string;
+  entity_type: 'post' | 'event' | 'album';
   user_id: string;
   content: string;
   parent_id: string | null;

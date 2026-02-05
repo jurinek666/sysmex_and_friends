@@ -3,14 +3,15 @@
 import { ActionForm } from "@/components/admin/ActionForm";
 import { adminCreateMember, adminUpdateMember } from "../_actions";
 import { X } from "lucide-react";
-import type { Member } from "@/lib/types";
+import type { Member, Profile } from "@/lib/types";
 
 interface MemberFormProps {
   member?: Member;
+  profiles?: Profile[];
   onCancel?: () => void;
 }
 
-export function MemberForm({ member, onCancel }: MemberFormProps) {
+export function MemberForm({ member, profiles = [], onCancel }: MemberFormProps) {
   const isEdit = !!member;
 
   return (
@@ -33,6 +34,30 @@ export function MemberForm({ member, onCancel }: MemberFormProps) {
             Upravujete člena: <strong>{member.displayName}</strong>
           </div>
         )}
+
+        <div className="md:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Propojení s uživatelem</label>
+          <p className="text-xs text-gray-500 mb-2">Pokud vyberete uživatele, jméno a avatar se automaticky přepíší podle profilu.</p>
+          <select
+            name="profile_id"
+            defaultValue={member?.profileId || ""}
+            className="w-full p-2 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+          >
+            <option value="">-- Žádné propojení --</option>
+            {profiles.map(p => (
+              <option key={p.id} value={p.id}>
+                {p.email} ({p.display_name || "Bez jména"})
+              </option>
+            ))}
+          </select>
+          {member?.avatarUrl && (
+             <div className="mt-2 text-xs text-gray-500">
+               Člen má nastavený externí avatar z profilu.
+             </div>
+          )}
+          <input type="hidden" name="avatarUrl" value={member?.avatarUrl || ""} />
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Jméno (Display Name)</label>
           <input name="displayName" placeholder="Jan Novák" required defaultValue={member?.displayName} className="w-full p-2 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" />
