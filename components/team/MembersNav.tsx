@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, LayoutDashboard, User, Calendar } from "lucide-react";
+import { LogOut, LayoutDashboard, User, Calendar, Bell } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function MembersNav() {
@@ -37,6 +37,13 @@ export default function MembersNav() {
       >
         <Calendar size={18} />
         Kalendář
+      </Link>
+      <Link
+        href="/notifications"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+      >
+        <Bell size={18} />
+        Oznámení
       </Link>
       <button
         type="button"

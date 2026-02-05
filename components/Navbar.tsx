@@ -5,13 +5,12 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useScrollPosition } from "@/lib/hooks/useScrollPosition";
 import { DesktopNavLink } from "./DesktopNavLink";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
   const [currentHash, setCurrentHash] = useState("");
   const pathname = usePathname();
   // Removed unused mousePosition
@@ -70,20 +69,16 @@ export function Navbar() {
   // Removed unused scrollBlur
   const isScrolled = scrollPosition > 50;
 
-  // Handle click outside and Escape key to close menu (mobile + login dropdown)
+  // Handle click outside and Escape key to close mobile menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (!navRef.current?.contains(event.target as Node)) {
-        if (isOpen) setIsOpen(false);
-        if (isLoginMenuOpen) setIsLoginMenuOpen(false);
+      if (!navRef.current?.contains(event.target as Node) && isOpen) {
+        setIsOpen(false);
       }
     };
 
     const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        if (isLoginMenuOpen) setIsLoginMenuOpen(false);
-        else if (isOpen) setIsOpen(false);
-      }
+      if (event.key === "Escape" && isOpen) setIsOpen(false);
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -93,7 +88,7 @@ export function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscKey);
     };
-  }, [isOpen, isLoginMenuOpen]);
+  }, [isOpen]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex flex-col items-center px-4 md:px-8 pt-6 md:pt-8 overflow-visible">
@@ -265,60 +260,17 @@ export function Navbar() {
               ))}
             </div>
 
-            {/* DESKTOP: LOGIN tlačítko + dropdown */}
-            <div className="hidden lg:block relative ml-2">
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center justify-center px-5 py-2.5 rounded-xl text-gray-200 hover:text-white font-bold uppercase tracking-tight text-sm transition-colors hover:bg-white/10 border border-white/20"
-                onClick={() => setIsLoginMenuOpen((prev) => !prev)}
-                aria-label="Otevřít přihlášení"
-                aria-expanded={isLoginMenuOpen}
-                aria-haspopup="true"
-              >
-                LOGIN
-              </motion.button>
-
-              <AnimatePresence>
-                {isLoginMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -8 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -8 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-white/20 shadow-2xl overflow-hidden z-50"
-                    style={{
-                      background: "linear-gradient(135deg, rgba(11,30,75,0.98) 0%, rgba(30,78,168,0.95) 100%)",
-                      backdropFilter: "blur(12px)",
-                    }}
-                  >
-                    <div className="px-4 pt-3 pb-2">
-                      <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">LOGIN</p>
-                      <div className="flex flex-col gap-1">
-                        <motion.div initial={{ opacity: 0, x: 4 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.03 }}>
-                          <Link
-                            href="/login"
-                            className="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-tight text-gray-200 hover:text-white hover:bg-white/10 transition-colors"
-                            onClick={() => setIsLoginMenuOpen(false)}
-                          >
-                            ČLEN TÝMU
-                          </Link>
-                        </motion.div>
-                        <motion.div initial={{ opacity: 0, x: 4 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.06 }}>
-                          <Link
-                            href="/admin-login"
-                            className="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-tight text-gray-200 hover:text-white hover:bg-white/10 transition-colors"
-                            onClick={() => setIsLoginMenuOpen(false)}
-                          >
-                            ADMIN
-                          </Link>
-                        </motion.div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+            {/* DESKTOP: LOGIN tlačítko – odkaz na přihlášení */}
+            <div className="hidden lg:block ml-2">
+              <Link href="/login" aria-label="Přihlásit se">
+                <motion.span
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-gray-200 hover:text-white font-bold uppercase tracking-tight text-sm transition-colors hover:bg-white/10 border border-white/20"
+                >
+                  LOGIN
+                </motion.span>
+              </Link>
             </div>
 
             {/* MOBILE MENU TOGGLE */}
@@ -423,25 +375,21 @@ export function Navbar() {
                 })}
               </div>
 
-              {/* LOGIN section at bottom of mobile menu */}
+              {/* LOGIN – odkaz na přihlášení */}
               <div className="mt-4 pt-4 border-t border-white/20">
-                <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2 px-5">LOGIN</p>
-                <div className="flex flex-col space-y-2">
-                  <Link
-                    href="/login"
-                    className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-sysmex-800/80 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
-                    onClick={() => setIsOpen(false)}
+                <Link
+                  href="/login"
+                  className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-white/15 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/20 transition-all"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="relative overflow-hidden rounded-lg bg-white/15 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/20"
                   >
-                    ČLEN TÝMU
-                  </Link>
-                  <Link
-                    href="/admin-login"
-                    className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-sysmex-800/80 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    ADMIN
-                  </Link>
-                </div>
+                    <span className="relative z-10 block px-5 py-3.5">LOGIN</span>
+                  </motion.div>
+                </Link>
               </div>
             </div>
           </motion.div>

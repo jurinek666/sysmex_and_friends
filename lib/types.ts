@@ -119,3 +119,13 @@ export interface EventParticipant {
   // Joined profile
   profile?: Profile;
 }
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  type: string;
+  event_id: string | null;
+  event_title: string | null;
+  read_at: string | null;
+  created_at: string;
+}

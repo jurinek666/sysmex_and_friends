@@ -4,6 +4,10 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { env } from '@/lib/env'
 import { revalidatePath } from 'next/cache';
+import { getParticipantsByEventId } from '@/lib/queries/team';
+import { getGoingOrderedByCreatedAt, MAX_EVENT_PARTICIPANTS } from '@/lib/events';
+import { getEventTitleById } from '@/lib/queries/events';
+import { notifyPromotedToParticipant } from '@/lib/notifications';
 
 export async function addComment(formData: FormData) {
     const content = formData.get("content") as string;
@@ -117,6 +121,13 @@ export async function setEventParticipation(
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Musíte být přihlášen" };
 
+    // Před upsertem: první osmička "going" podle created_at
+    const participantsBefore = await getParticipantsByEventId(supabase, eventId);
+    const goingBefore = getGoingOrderedByCreatedAt(participantsBefore);
+    const oldParticipantIds = goingBefore
+        .slice(0, MAX_EVENT_PARTICIPANTS)
+        .map((p) => p.user_id);
+
     const now = new Date().toISOString();
     const { error } = await supabase
         .from("event_participants")
@@ -136,7 +147,45 @@ export async function setEventParticipation(
         return { success: false, error: "Nepodařilo se uložit účast." };
     }
 
+    // Po upsertu: nová první osmička; kdo je nově v osmičce = přeřazení z náhradníků
+    const participantsAfter = await getParticipantsByEventId(supabase, eventId);
+    const goingAfter = getGoingOrderedByCreatedAt(participantsAfter);
+    const newParticipantIds = goingAfter
+        .slice(0, MAX_EVENT_PARTICIPANTS)
+        .map((p) => p.user_id);
+    const promotedIds = newParticipantIds.filter(
+        (id) => !oldParticipantIds.includes(id)
+    );
+
+    if (promotedIds.length > 0) {
+        const eventTitle = await getEventTitleById(supabase, eventId) ?? "";
+        for (const userId of promotedIds) {
+            await notifyPromotedToParticipant(supabase, userId, eventId, eventTitle);
+        }
+    }
+
     revalidatePath("/schedule");
     revalidatePath("/", "layout");
+    return { success: true };
+}
+
+export async function markNotificationRead(notificationId: string): Promise<{ success: boolean; error?: string }> {
+    const supabase = await getMembersSupabase();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Musíte být přihlášen" };
+
+    const { error } = await supabase
+        .from("notifications")
+        .update({ read_at: new Date().toISOString() })
+        .eq("id", notificationId)
+        .eq("user_id", user.id);
+
+    if (error) {
+        console.error("Error marking notification read:", error);
+        return { success: false, error: "Nepodařilo se označit jako přečtené." };
+    }
+
+    revalidatePath("/notifications");
+    revalidatePath("/schedule");
     return { success: true };
 }

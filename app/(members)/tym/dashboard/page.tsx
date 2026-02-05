@@ -2,15 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { User as UserIcon } from "lucide-react";
 import { getCurrentUserProfile } from "@/lib/queries/team";
 import { Profile } from "@/lib/types";
 
 export default function MemberDashboard() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
@@ -31,12 +29,6 @@ export default function MemberDashboard() {
     loadProfile();
   }, [supabase]);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center text-white">
@@ -48,7 +40,7 @@ export default function MemberDashboard() {
   return (
     <div className="min-h-screen bg-gray-950 text-white p-6 md:p-12">
       <div className="max-w-4xl mx-auto">
-        <header className="flex justify-between items-center mb-12 pb-6 border-b border-gray-800">
+        <header className="mb-12 pb-6 border-b border-gray-800">
           <div>
             <h1 className="text-3xl font-bold mb-2">Vítej v týmu!</h1>
             {profile ? (
@@ -57,13 +49,6 @@ export default function MemberDashboard() {
                 <p className="text-gray-400">Profil se připravuje...</p>
             )}
           </div>
-          <button
-            onClick={handleSignOut}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-900/20 text-red-400 hover:bg-red-900/40 transition-colors"
-          >
-            <LogOut size={18} />
-            Odhlásit
-          </button>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

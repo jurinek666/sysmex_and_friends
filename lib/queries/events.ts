@@ -1,5 +1,20 @@
+import { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { withRetry, logSupabaseError } from "./utils";
+
+/** Vrátí název události podle id (pro notifikace). */
+export async function getEventTitleById(
+  supabase: SupabaseClient,
+  eventId: string
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("Event")
+    .select("title")
+    .eq("id", eventId)
+    .maybeSingle();
+  if (error || !data) return null;
+  return (data as { title: string }).title ?? null;
+}
 
 export async function getUpcomingEvents(limit = 5) {
   const supabase = await createClient();
