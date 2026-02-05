@@ -53,8 +53,8 @@ export async function getCurrentUserProfile(supabase: SupabaseClient): Promise<P
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-    if (error) return null;
+    if (error || !data) return null;
     return (data as unknown) as Profile;
 }

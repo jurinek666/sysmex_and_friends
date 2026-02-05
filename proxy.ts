@@ -38,9 +38,11 @@ export async function proxy(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Ochrana admin sekce - redirect na login pokud není přihlášen
-  if (!user && pathname.startsWith('/admin')) {
-    return NextResponse.redirect(new URL('/login', request.url))
+  // Ochrana admin sekce - redirect na admin login pokud není přihlášen
+  // /admin-login je veřejná přihlašovací stránka, ne součást /admin
+  const isAdminArea = pathname === '/admin' || pathname.startsWith('/admin/');
+  if (!user && isAdminArea) {
+    return NextResponse.redirect(new URL('/admin-login', request.url));
   }
 
   // Ochrana členské sekce (app/(members))

@@ -773,3 +773,62 @@ export async function adminDeleteEvent(_prevState: unknown, formData: FormData):
     revalidatePath("/");
   });
 }
+
+// ==========================================
+// REGISTROVANÍ UŽIVATELÉ (PROFILES)
+// ==========================================
+
+export async function adminUpdateProfile(_prevState: unknown, formData: FormData): Promise<ActionResult> {
+  return handleAction(async () => {
+    const { supabase } = await requireAuth();
+    const id = String(formData.get("id"));
+    const displayName = (formData.get("display_name") as string)?.trim() || null;
+    const role = (formData.get("role") as string)?.trim() || null;
+    if (role && !["member", "admin", "moderator"].includes(role)) {
+      return { success: false, error: "Neplatná role. Povolené: member, admin, moderator." };
+    }
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        display_name: displayName,
+        role: role || undefined,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id);
+
+    if (error) {
+      const dbError = new Error(error.message || "Chyba databáze") as SupabaseError;
+      dbError.code = error.code;
+      dbError.details = error.details;
+      dbError.hint = error.hint;
+      throw dbError;
+    }
+
+    revalidatePath("/admin/users");
+    revalidatePath("/", "layout");
+  });
+}
+
+export async function adminDeleteUser(_prevState: unknown, formData: FormData): Promise<ActionResult> {
+  return handleAction(async () => {
+    await requireAuth();
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const adminClient = createAdminClient();
+    if (!adminClient) {
+      return { success: false, error: "Smazání uživatele vyžaduje nastavení SUPABASE_SERVICE_ROLE_KEY v .env." };
+    }
+
+    const id = String(formData.get("id"));
+    const { error } = await adminClient.auth.admin.deleteUser(id);
+
+    if (error) {
+      const dbError = new Error(error.message || "Chyba při mazání") as SupabaseError;
+      dbError.code = error.code;
+      throw dbError;
+    }
+
+    revalidatePath("/admin/users");
+    revalidatePath("/", "layout");
+  });
+}

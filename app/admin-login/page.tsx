@@ -2,16 +2,14 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
   const supabase = createClient();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -29,8 +27,8 @@ export default function LoginPage() {
         throw error;
       }
 
-      router.push("/tym/dashboard");
-      router.refresh();
+      // Plné přesměrování, aby server (proxy + layout) viděl session cookies
+      window.location.href = "/admin";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message || "Došlo k chybě při přihlášení.");
@@ -51,8 +49,8 @@ export default function LoginPage() {
           </Link>
         </div>
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Členská sekce</h1>
-          <p className="text-gray-400">Přihlaste se pro přístup k týmovým funkcím.</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Přihlášení administrátora</h1>
+          <p className="text-gray-400">Přihlaste se pro přístup do administrace.</p>
         </div>
 
         {error && (
@@ -103,12 +101,6 @@ export default function LoginPage() {
             )}
           </button>
         </form>
-
-        <div className="mt-8 text-center border-t border-gray-800 pt-6">
-          <p className="text-gray-500 text-sm">
-            Nemáte účet? <Link href="/onas" className="text-neon-cyan hover:underline">Kontaktujte nás</Link>
-          </p>
-        </div>
       </div>
     </div>
   );

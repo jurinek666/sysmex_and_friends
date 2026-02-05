@@ -69,6 +69,12 @@ export default async function AdminDashboard() {
             color="hover:border-cyan-400 group-hover:text-cyan-600"
           />
           <AdminCard 
+            href="/admin/users" 
+            title="👤 Uživatelé" 
+            desc="Registrovaní uživatelé, role (správce / uživatel)." 
+            color="hover:border-indigo-400 group-hover:text-indigo-600"
+          />
+          <AdminCard 
             href="/admin/calendar" 
             title="📅 Kalendář" 
             desc="Správa termínů kvízů a akcí." 

@@ -21,7 +21,7 @@ export async function login(formData: FormData) {
 
   const userId = authData.user?.id;
   const { data: profile } = userId
-    ? await supabase.from("profiles").select("role").eq("id", userId).single()
+    ? await supabase.from("profiles").select("role").eq("id", userId).maybeSingle()
     : { data: null };
 
   revalidatePath("/", "layout");

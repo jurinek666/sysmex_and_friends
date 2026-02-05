@@ -9,6 +9,8 @@ const envSchema = z.object({
   // Supabase (povinné)
   NEXT_PUBLIC_SUPABASE_URL: z.string().min(1, "Supabase URL is required"),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, "Supabase Anon Key is required"),
+  // Service role – volitelné; nutné pro mazání uživatelů v admin sekci
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
 
   // Cloudinary (volitelné – použiješ až při napojení galerie / uploadů)
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().min(1).optional(),

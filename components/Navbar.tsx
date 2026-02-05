@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
-import { Menu, X, MoreVertical } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useScrollPosition } from "@/lib/hooks/useScrollPosition";
 import { DesktopNavLink } from "./DesktopNavLink";
@@ -265,24 +265,19 @@ export function Navbar() {
               ))}
             </div>
 
-            {/* DESKTOP: Login menu (three dots) + dropdown */}
+            {/* DESKTOP: LOGIN tlačítko + dropdown */}
             <div className="hidden lg:block relative ml-2">
               <motion.button
                 type="button"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center justify-center w-10 h-10 rounded-xl text-gray-300 hover:text-neon-cyan transition-colors hover:bg-white/10"
+                className="flex items-center justify-center px-5 py-2.5 rounded-xl text-gray-200 hover:text-white font-bold uppercase tracking-tight text-sm transition-colors hover:bg-white/10 border border-white/20"
                 onClick={() => setIsLoginMenuOpen((prev) => !prev)}
                 aria-label="Otevřít přihlášení"
                 aria-expanded={isLoginMenuOpen}
                 aria-haspopup="true"
               >
-                <motion.div
-                  animate={{ opacity: [0.7, 1, 0.7] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <MoreVertical size={22} />
-                </motion.div>
+                LOGIN
               </motion.button>
 
               <AnimatePresence>
@@ -312,7 +307,7 @@ export function Navbar() {
                         </motion.div>
                         <motion.div initial={{ opacity: 0, x: 4 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.06 }}>
                           <Link
-                            href="/login"
+                            href="/admin-login"
                             className="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-tight text-gray-200 hover:text-white hover:bg-white/10 transition-colors"
                             onClick={() => setIsLoginMenuOpen(false)}
                           >
@@ -440,7 +435,7 @@ export function Navbar() {
                     ČLEN TÝMU
                   </Link>
                   <Link
-                    href="/login"
+                    href="/admin-login"
                     className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-sysmex-800/80 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
                     onClick={() => setIsOpen(false)}
                   >
