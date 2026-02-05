@@ -12,7 +12,7 @@ interface Season {
   name: string;
 }
 
-type ResultMemberRow = { member_id: string; sort_order?: number; members?: { id: string; displayName: string } };
+type ResultMemberRow = { member_id: string; sort_order?: number; Member?: { id: string; displayName: string } };
 
 interface Result {
   id: string;
@@ -24,18 +24,18 @@ interface Result {
   note: string | null;
   season: Season;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  result_members?: any[];
+  ResultMember?: any[];
   memberIds?: string[];
 }
 
 function mapResultToMemberIds(r: Result): Result {
-  const rows = (r.result_members ?? []) as ResultMemberRow[];
+  const rows = (r.ResultMember ?? []) as ResultMemberRow[];
   const memberIds = [...rows]
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-    .map((row) => row.members?.id ?? row.member_id)
+    .map((row) => row.Member?.id ?? row.member_id)
     .filter(Boolean);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { result_members: _, ...rest } = r;
+  const { ResultMember: _, ...rest } = r;
   return { ...rest, memberIds };
 }
 
@@ -43,23 +43,23 @@ export default async function AdminResultsPage() {
   const supabase = await createClient();
 
   const { data: resultsRaw } = await supabase
-    .from("results")
+    .from("Result")
     .select(`
       id,
       date,
       venue,
-      teamName:team_name,
+      teamName,
       placement,
       score,
       note,
-      seasonId:season_id,
-      season:seasons(id, code, name),
-      result_members(
+      seasonId,
+      season:Season(id, code, name),
+      ResultMember(
         member_id,
         sort_order,
-        members(
+        Member(
           id,
-          displayName:display_name
+          displayName
         )
       )
     `)
@@ -67,7 +67,7 @@ export default async function AdminResultsPage() {
     .limit(50);
 
   const [{ data: seasons }, members] = await Promise.all([
-    supabase.from("seasons").select("id, code, name, startDate:start_date, endDate:end_date").order("start_date", { ascending: false }),
+    supabase.from("Season").select("id, code, name, startDate, endDate").order("startDate", { ascending: false }),
     getActiveMembers(),
   ]);
 

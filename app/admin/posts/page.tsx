@@ -13,20 +13,20 @@ export default async function AdminPostsPage() {
   // Nahrazeno prisma.post.findMany(...)
   const result = await withRetry(async () => {
     return await supabase
-      .from("posts")
+      .from("Post")
       .select(`
         id,
         slug,
         title,
         excerpt,
         content,
-        coverImageUrl:cover_image_url,
-        isFeatured:is_featured,
-        publishedAt:published_at,
-        createdAt:created_at,
-        updatedAt:updated_at
+        coverImageUrl,
+        isFeatured,
+        publishedAt,
+        createdAt,
+        updatedAt
       `)
-      .order("created_at", { ascending: false });
+      .order("createdAt", { ascending: false });
   });
 
   // Převedeme na náš typ a zajistíme, že to není null

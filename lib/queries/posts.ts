@@ -8,22 +8,22 @@ export async function getFeaturedPost(): Promise<Post | null> {
   // Hledáme jeden zvýrazněný post
   const result = await withRetry(async () => {
     return await supabase
-      .from("posts")
+      .from("Post")
       .select(`
         id,
         slug,
         title,
         excerpt,
         content,
-        coverImageUrl:cover_image_url,
-        isFeatured:is_featured,
-        publishedAt:published_at,
-        createdAt:created_at,
-        updatedAt:updated_at
+        coverImageUrl,
+        isFeatured,
+        publishedAt,
+        createdAt,
+        updatedAt
       `)
-      .eq("is_featured", true)
-      .not("published_at", "is", null)
-      .order("published_at", { ascending: false })
+      .eq("isFeatured", true)
+      .not("publishedAt", "is", null)
+      .order("publishedAt", { ascending: false })
       .limit(1)
       .maybeSingle();
   });
@@ -40,20 +40,20 @@ export async function getRecentPosts(limit = 20): Promise<PostSummary[]> {
   
   const result = await withRetry(async () => {
     return await supabase
-      .from("posts")
+      .from("Post")
       .select(`
         id,
         slug,
         title,
         excerpt,
-        coverImageUrl:cover_image_url,
-        isFeatured:is_featured,
-        publishedAt:published_at,
-        createdAt:created_at,
-        updatedAt:updated_at
+        coverImageUrl,
+        isFeatured,
+        publishedAt,
+        createdAt,
+        updatedAt
       `)
-      .not("published_at", "is", null)
-      .order("published_at", { ascending: false })
+      .not("publishedAt", "is", null)
+      .order("publishedAt", { ascending: false })
       .limit(limit);
   });
 
@@ -69,18 +69,18 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   
   const result = await withRetry(async () => {
     return await supabase
-      .from("posts")
+      .from("Post")
       .select(`
         id,
         slug,
         title,
         excerpt,
         content,
-        coverImageUrl:cover_image_url,
-        isFeatured:is_featured,
-        publishedAt:published_at,
-        createdAt:created_at,
-        updatedAt:updated_at
+        coverImageUrl,
+        isFeatured,
+        publishedAt,
+        createdAt,
+        updatedAt
       `)
       .eq("slug", slug)
       .single();

@@ -79,19 +79,21 @@ export async function withRetry<T>(
 }
 
 /**
- * Zlepšené logování chyb s více informacemi
+ * Zlepšené logování chyb s více informacemi.
+ * Normalizuje error na plain object, aby se v konzoli (RSC) nezobrazoval jako {}.
  */
 export function logSupabaseError(context: string, error: SupabaseError) {
+  const msg = error?.message ?? (typeof error === 'object' && error !== null ? String(error) : 'Unknown error');
+  const code = error?.code ?? 'NO_CODE';
   const errorInfo = {
     context,
-    message: error?.message || 'Unknown error',
-    code: error?.code || 'NO_CODE',
-    details: error?.details || null,
-    hint: error?.hint || null,
+    message: msg,
+    code,
+    details: error?.details ?? null,
+    hint: error?.hint ?? null,
     timestamp: new Date().toISOString(),
   };
-  
-  console.error(`Error in ${context}:`, errorInfo);
+  console.error(`Error in ${context}:`, JSON.stringify(errorInfo));
   
   // Pokud je to timeout, logujeme jako warning místo error
   if (error?.message?.includes('timeout') || error?.code === 'UND_ERR_CONNECT_TIMEOUT') {

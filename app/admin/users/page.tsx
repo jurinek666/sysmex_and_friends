@@ -24,18 +24,8 @@ export default async function AdminUsersPage() {
     .select("id, email, display_name, avatar_url, role, created_at, updated_at")
     .order("created_at", { ascending: false });
 
-  // Fetch linked members
-  const { data: members } = await supabase
-    .from("members")
-    .select("id, displayName:display_name, profile_id")
-    .not("profile_id", "is", null);
-
-  const linkedMembers = (members || []).reduce((acc, m) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const member = m as any;
-    if (member.profile_id) acc[member.profile_id] = member.displayName;
-    return acc;
-  }, {} as Record<string, string>);
+  // Propojení členů s profily: tabulka Member nemá sloupec profile_id (lze doplnit migrací).
+  const linkedMembers: Record<string, string> = {};
 
   const list = (profiles || []) as ProfileRow[];
 

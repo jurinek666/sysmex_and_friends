@@ -108,17 +108,17 @@ export async function adminCreatePost(_prevState: unknown, formData: FormData): 
 
     const id = randomUUID();
     const now = new Date().toISOString();
-    const { error } = await supabase.from("posts").insert({
+    const { error } = await supabase.from("Post").insert({
       id,
       title: validated.title,
       slug: validated.slug,
       excerpt: validated.excerpt,
       content: validated.content,
-      cover_image_url: validated.coverImageUrl,
-      is_featured: validated.isFeatured,
-      published_at: now,
-      created_at: now,
-      updated_at: now,
+      coverImageUrl: validated.coverImageUrl,
+      isFeatured: validated.isFeatured,
+      publishedAt: now,
+      createdAt: now,
+      updatedAt: now,
     });
 
     if (error) {
@@ -153,15 +153,15 @@ export async function adminUpdatePost(_prevState: unknown, formData: FormData): 
     const validated = postSchema.parse(rawData);
 
     const { error } = await supabase
-      .from("posts")
+      .from("Post")
       .update({
         title: validated.title,
         slug: validated.slug,
         excerpt: validated.excerpt,
         content: validated.content,
-        cover_image_url: validated.coverImageUrl,
-        is_featured: validated.isFeatured,
-        updated_at: new Date().toISOString(),
+        coverImageUrl: validated.coverImageUrl,
+        isFeatured: validated.isFeatured,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -184,7 +184,7 @@ export async function adminDeletePost(_prevState: unknown, formData: FormData): 
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
 
-    const { error } = await supabase.from("posts").delete().eq("id", id);
+    const { error } = await supabase.from("Post").delete().eq("id", id);
 
     if (error) {
       const dbError = new Error(error.message || 'Database error') as SupabaseError;
@@ -222,7 +222,7 @@ export async function adminCreateResult(_prevState: unknown, formData: FormData)
     const validated = resultSchema.parse(rawData);
 
     const { data: season, error: seasonError } = await supabase
-      .from("seasons")
+      .from("Season")
       .select("id")
       .eq("code", validated.seasonCode)
       .single();
@@ -234,17 +234,17 @@ export async function adminCreateResult(_prevState: unknown, formData: FormData)
     const id = randomUUID();
     const now = new Date().toISOString();
 
-    const { error } = await supabase.from("results").insert({
+    const { error } = await supabase.from("Result").insert({
       id,
       date: new Date(validated.date).toISOString(),
       venue: validated.venue,
-      team_name: validated.teamName,
+      teamName: validated.teamName,
       placement: validated.placement,
       score: validated.score,
       note: validated.note,
-      season_id: season.id,
-      created_at: now,
-      updated_at: now,
+      seasonId: season.id,
+      createdAt: now,
+      updatedAt: now,
     });
 
     if (error) {
@@ -256,7 +256,7 @@ export async function adminCreateResult(_prevState: unknown, formData: FormData)
     }
 
     if (validated.memberIds.length > 0) {
-      const { error: rmError } = await supabase.from("result_members").insert(
+      const { error: rmError } = await supabase.from("ResultMember").insert(
         validated.memberIds.map((memberId, index) => ({
           result_id: id,
           member_id: memberId,
@@ -297,7 +297,7 @@ export async function adminUpdateResult(_prevState: unknown, formData: FormData)
     const validated = resultSchema.parse(rawData);
 
     const { data: season, error: seasonError } = await supabase
-      .from("seasons")
+      .from("Season")
       .select("id")
       .eq("code", validated.seasonCode)
       .single();
@@ -307,16 +307,16 @@ export async function adminUpdateResult(_prevState: unknown, formData: FormData)
     }
 
     const { error } = await supabase
-      .from("results")
+      .from("Result")
       .update({
         date: new Date(validated.date).toISOString(),
         venue: validated.venue,
-        team_name: validated.teamName,
+        teamName: validated.teamName,
         placement: validated.placement,
         score: validated.score,
         note: validated.note,
-        season_id: season.id,
-        updated_at: new Date().toISOString(),
+        seasonId: season.id,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -328,7 +328,7 @@ export async function adminUpdateResult(_prevState: unknown, formData: FormData)
       throw dbError;
     }
 
-    const { error: deleteRmError } = await supabase.from("result_members").delete().eq("result_id", id);
+    const { error: deleteRmError } = await supabase.from("ResultMember").delete().eq("result_id", id);
     if (deleteRmError) {
       const dbError = new Error(deleteRmError.message || 'ResultMember delete error') as SupabaseError;
       dbError.code = deleteRmError.code;
@@ -338,7 +338,7 @@ export async function adminUpdateResult(_prevState: unknown, formData: FormData)
     }
 
     if (validated.memberIds.length > 0) {
-      const { error: rmError } = await supabase.from("result_members").insert(
+      const { error: rmError } = await supabase.from("ResultMember").insert(
         validated.memberIds.map((memberId, index) => ({
           result_id: id,
           member_id: memberId,
@@ -365,7 +365,7 @@ export async function adminDeleteResult(_prevState: unknown, formData: FormData)
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
 
-    const { error } = await supabase.from("results").delete().eq("id", id);
+    const { error } = await supabase.from("Result").delete().eq("id", id);
 
     if (error) {
       const dbError = new Error(error.message || 'Database error') as SupabaseError;
@@ -414,17 +414,16 @@ export async function adminCreateMember(_prevState: unknown, formData: FormData)
 
     const id = randomUUID();
     const now = new Date().toISOString();
-    const { error } = await supabase.from("members").insert({
+    const { error } = await supabase.from("Member").insert({
       id,
-      display_name: validated.displayName,
+      displayName: validated.displayName,
       nickname: validated.nickname,
       role: validated.role,
       gender: validated.gender,
       bio: validated.bio,
-      profile_id: validated.profile_id,
-      avatar_url: validated.avatarUrl,
-      created_at: now,
-      updated_at: now,
+      avatarUrl: validated.avatarUrl,
+      createdAt: now,
+      updatedAt: now,
     });
 
     if (error) {
@@ -469,16 +468,15 @@ export async function adminUpdateMember(_prevState: unknown, formData: FormData)
     const validated = memberSchema.parse(rawData);
 
     const { error } = await supabase
-      .from("members")
+      .from("Member")
       .update({
-        display_name: validated.displayName,
+        displayName: validated.displayName,
         nickname: validated.nickname,
         role: validated.role,
         gender: validated.gender,
         bio: validated.bio,
-        profile_id: validated.profile_id,
-        avatar_url: validated.avatarUrl,
-        updated_at: new Date().toISOString(),
+        avatarUrl: validated.avatarUrl,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -501,7 +499,7 @@ export async function adminDeleteMember(_prevState: unknown, formData: FormData)
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
 
-    const { error } = await supabase.from("members").delete().eq("id", id);
+    const { error } = await supabase.from("Member").delete().eq("id", id);
 
     if (error) {
       const dbError = new Error(error.message || 'Database error') as SupabaseError;
@@ -536,14 +534,14 @@ export async function adminCreatePlaylist(_prevState: unknown, formData: FormDat
 
     const id = randomUUID();
     const now = new Date().toISOString();
-    const { error } = await supabase.from("playlists").insert({
+    const { error } = await supabase.from("Playlist").insert({
       id,
       title: validated.title,
-      spotify_url: validated.spotifyUrl,
+      spotifyUrl: validated.spotifyUrl,
       description: validated.description,
-      is_active: validated.isActive,
-      created_at: now,
-      updated_at: now,
+      isActive: validated.isActive,
+      createdAt: now,
+      updatedAt: now,
     });
 
     if (error) {
@@ -574,13 +572,13 @@ export async function adminUpdatePlaylist(_prevState: unknown, formData: FormDat
     const validated = playlistSchema.parse(rawData);
 
     const { error } = await supabase
-      .from("playlists")
+      .from("Playlist")
       .update({
         title: validated.title,
-        spotify_url: validated.spotifyUrl,
+        spotifyUrl: validated.spotifyUrl,
         description: validated.description,
-        is_active: validated.isActive,
-        updated_at: new Date().toISOString(),
+        isActive: validated.isActive,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -602,7 +600,7 @@ export async function adminDeletePlaylist(_prevState: unknown, formData: FormDat
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
 
-    const { error } = await supabase.from("playlists").delete().eq("id", id);
+    const { error } = await supabase.from("Playlist").delete().eq("id", id);
 
     if (error) {
       const dbError = new Error(error.message || 'Database error') as SupabaseError;
@@ -637,15 +635,15 @@ export async function adminCreateAlbum(_prevState: unknown, formData: FormData):
 
     const id = randomUUID();
     const now = new Date().toISOString();
-    const { error } = await supabase.from("albums").insert({
+    const { error } = await supabase.from("Album").insert({
       id,
       title: validated.title,
-      date_taken: new Date(validated.dateTaken).toISOString(),
-      cloudinary_folder: validated.cloudinaryFolder,
+      dateTaken: new Date(validated.dateTaken).toISOString(),
+      cloudinaryFolder: validated.cloudinaryFolder,
       description: validated.description,
-      cover_public_id: validated.coverPublicId,
-      created_at: now,
-      updated_at: now,
+      coverPublicId: validated.coverPublicId,
+      createdAt: now,
+      updatedAt: now,
     });
 
     if (error) {
@@ -679,14 +677,14 @@ export async function adminUpdateAlbum(_prevState: unknown, formData: FormData):
     const validated = albumSchema.parse(rawData);
 
     const { error } = await supabase
-      .from("albums")
+      .from("Album")
       .update({
         title: validated.title,
-        date_taken: new Date(validated.dateTaken).toISOString(),
-        cloudinary_folder: validated.cloudinaryFolder,
+        dateTaken: new Date(validated.dateTaken).toISOString(),
+        cloudinaryFolder: validated.cloudinaryFolder,
         description: validated.description,
-        cover_public_id: validated.coverPublicId,
-        updated_at: new Date().toISOString(),
+        coverPublicId: validated.coverPublicId,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -710,7 +708,7 @@ export async function adminDeleteAlbum(_prevState: unknown, formData: FormData):
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
 
-    const { error } = await supabase.from("albums").delete().eq("id", id);
+    const { error } = await supabase.from("Album").delete().eq("id", id);
 
     if (error) {
       const dbError = new Error(error.message || 'Database error') as SupabaseError;
@@ -750,15 +748,15 @@ export async function adminCreateEvent(_prevState: unknown, formData: FormData):
     // Convert datetime-local to ISO string
     const eventDate = new Date(validated.date).toISOString();
     
-    const { error } = await supabase.from("events").insert({
+    const { error } = await supabase.from("Event").insert({
       id,
       title: validated.title,
       date: eventDate,
       venue: validated.venue,
       description: validated.description,
-      is_upcoming: validated.isUpcoming,
-      created_at: now,
-      updated_at: now,
+      isUpcoming: validated.isUpcoming,
+      createdAt: now,
+      updatedAt: now,
     });
 
     if (error) {
@@ -794,14 +792,14 @@ export async function adminUpdateEvent(_prevState: unknown, formData: FormData):
     const eventDate = new Date(validated.date).toISOString();
 
     const { error } = await supabase
-      .from("events")
+      .from("Event")
       .update({
         title: validated.title,
         date: eventDate,
         venue: validated.venue,
         description: validated.description,
-        is_upcoming: validated.isUpcoming,
-        updated_at: new Date().toISOString(),
+        isUpcoming: validated.isUpcoming,
+        updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
 
@@ -824,7 +822,7 @@ export async function adminDeleteEvent(_prevState: unknown, formData: FormData):
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
 
-    const { error } = await supabase.from("events").delete().eq("id", id);
+    const { error } = await supabase.from("Event").delete().eq("id", id);
 
     if (error) {
       const dbError = new Error(error.message || 'Database error') as SupabaseError;

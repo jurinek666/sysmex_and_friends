@@ -20,16 +20,16 @@ export default async function AdminCalendarPage() {
   const supabase = await createClient();
   
   const { data: events } = await supabase
-    .from("events")
+    .from("Event")
     .select(`
       id,
       title,
       date,
       venue,
       description,
-      isUpcoming:is_upcoming,
-      createdAt:created_at,
-      updatedAt:updated_at
+      isUpcoming,
+      createdAt,
+      updatedAt
     `)
     .order("date", { ascending: true });
 

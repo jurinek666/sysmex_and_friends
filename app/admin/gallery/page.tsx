@@ -13,38 +13,38 @@ export default async function AdminGalleryPage() {
   // Optimized query with snake_case aliases
   // eslint-disable-next-line prefer-const
   let { data: albums, error } = await supabase
-    .from("albums")
+    .from("Album")
     .select(`
       id,
       title,
-      dateTaken:date_taken,
-      createdAt:created_at,
-      updatedAt:updated_at,
-      cloudinaryFolder:cloudinary_folder,
+      dateTaken,
+      createdAt,
+      updatedAt,
+      cloudinaryFolder,
       description,
-      coverPublicId:cover_public_id,
-      photos(count)
+      coverPublicId,
+      Photo(count)
     `)
-    .order("date_taken", { ascending: false });
+    .order("dateTaken", { ascending: false });
 
   if (error) {
     logSupabaseError("AdminGalleryPage (albums)", error);
     // Fallback if relation fails
     const res = await supabase
-      .from("albums")
+      .from("Album")
       .select(`
         id,
         title,
-        dateTaken:date_taken,
-        createdAt:created_at,
-        updatedAt:updated_at,
-        cloudinaryFolder:cloudinary_folder,
+        dateTaken,
+        createdAt,
+        updatedAt,
+        cloudinaryFolder,
         description,
-        coverPublicId:cover_public_id
+        coverPublicId
       `)
-      .order("date_taken", { ascending: false });
+      .order("dateTaken", { ascending: false });
 
-    albums = res.error ? [] : (res.data || []).map((a) => ({ ...a, photos: [{ count: 0 }] }));
+    albums = res.error ? [] : (res.data || []).map((a) => ({ ...a, Photo: [{ count: 0 }] }));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,7 +58,7 @@ export default async function AdminGalleryPage() {
 
   const albumsWithCounts = safeAlbums.map((album) => ({
     ...album,
-    photos: [{ count: countById.get(album.id) ?? album.photos?.[0]?.count ?? 0 }],
+    photos: [{ count: countById.get(album.id) ?? (album as { Photo?: { count: number }[] }).Photo?.[0]?.count ?? 0 }],
   }));
 
   return (

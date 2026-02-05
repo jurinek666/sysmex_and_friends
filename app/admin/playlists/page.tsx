@@ -10,17 +10,17 @@ export default async function AdminPlaylistsPage() {
   
   // Nahrazeno prisma.playlist.findMany(...)
   const { data: playlists } = await supabase
-    .from("playlists")
+    .from("Playlist")
     .select(`
       id,
       title,
       description,
-      spotifyUrl:spotify_url,
-      isActive:is_active,
-      createdAt:created_at,
-      updatedAt:updated_at
+      spotifyUrl,
+      isActive,
+      createdAt,
+      updatedAt
     `)
-    .order("created_at", { ascending: false });
+    .order("createdAt", { ascending: false });
 
   // Fallback, kdyby data byla null (např. chyba sítě)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -14,12 +14,12 @@ interface AlbumRow {
   cloudinaryFolder: string | null;
   description: string | null;
   coverPublicId: string | null;
-  photos?: { count: number }[];
+  Photo?: { count: number }[];
 }
 
 interface AlbumDetailRow extends AlbumRow {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  photos: any[];
+  Photo: any[];
 }
 
 export async function getAlbums(): Promise<Album[]> {
@@ -28,19 +28,19 @@ export async function getAlbums(): Promise<Album[]> {
   // Optimized query with snake_case mapping via aliases
   const { data, error } = await withRetry(async () => {
     return await supabase
-      .from("albums")
+      .from("Album")
       .select(`
         id,
         title,
-        dateTaken:date_taken,
-        createdAt:created_at,
-        updatedAt:updated_at,
-        cloudinaryFolder:cloudinary_folder,
+        dateTaken,
+        createdAt,
+        updatedAt,
+        cloudinaryFolder,
         description,
-        coverPublicId:cover_public_id,
-        photos:photos(count)
+        coverPublicId,
+        Photo(count)
       `)
-      .order("date_taken", { ascending: false });
+      .order("dateTaken", { ascending: false });
   });
 
   if (error) {
@@ -60,7 +60,7 @@ export async function getAlbums(): Promise<Album[]> {
     description: row.description,
     coverPublicId: row.coverPublicId,
     _count: {
-      photos: row.photos?.[0]?.count ?? 0,
+      photos: (row as { Photo?: { count: number }[] }).Photo?.[0]?.count ?? 0,
     },
   }));
 
@@ -114,7 +114,7 @@ export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4): Promise<A
 }
 
 async function applyPhotosAndCloudinary(data: AlbumDetailRow): Promise<AlbumDetail> {
-  const rawPhotos = Array.isArray(data.photos) ? data.photos : [];
+  const rawPhotos = Array.isArray(data.Photo) ? data.Photo : [];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let photos: AlbumPhoto[] = rawPhotos.map((p: any, i: number) => ({
@@ -159,21 +159,21 @@ export async function getAlbum(id: string): Promise<AlbumDetail | null> {
 
   const { data, error } = await withRetry(async () => {
     return await supabase
-      .from("albums")
+      .from("Album")
       .select(`
         id,
         title,
-        dateTaken:date_taken,
-        createdAt:created_at,
-        updatedAt:updated_at,
-        cloudinaryFolder:cloudinary_folder,
+        dateTaken,
+        createdAt,
+        updatedAt,
+        cloudinaryFolder,
         description,
-        coverPublicId:cover_public_id,
-        photos:photos(
+        coverPublicId,
+        Photo(
           id,
-          cloudinaryPublicId:cloudinary_public_id,
+          cloudinaryPublicId,
           caption,
-          sortOrder:sort_order
+          sortOrder
         )
       `)
       .eq("id", id)
