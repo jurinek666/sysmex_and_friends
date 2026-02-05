@@ -1,17 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { withRetry, logSupabaseError } from "./utils";
-
-export interface Member {
-  id: string;
-  displayName: string;
-  nickname: string | null;
-  role: string | null;
-  gender?: string;
-  bio: string | null;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
+import { Member } from "@/lib/types";
 
 export async function getActiveMembers(): Promise<Member[]> {
   const supabase = await createClient();
@@ -19,7 +8,7 @@ export async function getActiveMembers(): Promise<Member[]> {
   const { data, error } = await withRetry(async () => {
     return await supabase
       .from("Member")
-      .select("id, displayName, nickname, role, bio")
+      .select("id, displayName, nickname, role, bio, avatarUrl")
       .eq("isActive", true)
       .order("displayName", { ascending: true });
   });
@@ -29,5 +18,5 @@ export async function getActiveMembers(): Promise<Member[]> {
     return [];
   }
   
-  return data ?? [];
+  return (data as unknown) as Member[] || [];
 }

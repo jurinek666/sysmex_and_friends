@@ -2,19 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { MemberForm } from "./MemberForm";
 import { MemberList } from "./MemberList";
+import { Member } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
-
-// Definujeme typ pro člena, aby TypeScript nekřičel
-interface Member {
-  id: string;
-  displayName: string;
-  nickname: string | null;
-  role: string | null;
-  gender: string;
-  bio: string | null;
-  isActive: boolean;
-}
 
 export default async function AdminMembersPage() {
   const supabase = await createClient();

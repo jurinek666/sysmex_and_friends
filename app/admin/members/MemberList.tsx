@@ -5,16 +5,7 @@ import { adminDeleteMember } from "../_actions";
 import { MemberForm } from "./MemberForm";
 import { useState } from "react";
 import { Edit2 } from "lucide-react";
-
-interface Member {
-  id: string;
-  displayName: string;
-  nickname: string | null;
-  role: string | null;
-  gender: string;
-  bio: string | null;
-  isActive: boolean;
-}
+import { Member } from "@/lib/types";
 
 interface MemberListProps {
   members: Member[];
