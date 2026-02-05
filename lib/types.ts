@@ -39,7 +39,6 @@ export interface Member {
   avatarUrl: string | null;
   isActive: boolean;
   profileId?: string | null;
-  avatarUrl?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
