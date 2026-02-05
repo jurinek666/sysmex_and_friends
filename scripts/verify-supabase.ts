@@ -15,7 +15,7 @@ async function verify() {
   try {
     // Zkusíme jednoduchý dotaz na tabulku 'Post'.
     // Používáme head: true, abychom nestahovali data, jen ověřili přístup a počet.
-    const { data, error, count } = await supabase
+    const { error, count } = await supabase
       .from('Post')
       .select('*', { count: 'exact', head: true });
 
