@@ -6,6 +6,11 @@ import { cs } from "date-fns/locale";
 import { getAlbum } from "@/lib/queries/albums";
 import { AlbumGallery } from "@/components/galerie/AlbumGallery";
 import { Images } from "lucide-react";
+import { getComments } from "@/lib/queries/team";
+import CommentSection from "@/components/team/CommentSection";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { env } from "@/lib/env";
 
 export const revalidate = 300;
 
@@ -45,6 +50,18 @@ export default async function AlbumDetailPage(props: PageProps) {
 
   const album = rawAlbum as unknown as Album;
   const coverId = (album.coverPublicId || "").trim();
+
+  // Load comments
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+      env.NEXT_PUBLIC_SUPABASE_URL,
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+          cookies: { getAll() { return cookieStore.getAll() } }
+      }
+  );
+  const comments = await getComments(supabase, id, "album");
+  const { data: { user } } = await supabase.auth.getUser();
 
   return (
     <main className="relative min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
@@ -115,6 +132,16 @@ export default async function AlbumDetailPage(props: PageProps) {
           albumTitle={album.title}
         />
       )}
+
+      {/* KOMENTÁŘE */}
+      <div className="mt-20 border-t border-white/10 pt-10">
+        <CommentSection
+          entityId={id}
+          entityType="album"
+          initialComments={comments}
+          isLoggedIn={!!user}
+        />
+      </div>
     </main>
   );
 }

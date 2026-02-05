@@ -5,22 +5,14 @@ import { adminDeleteMember } from "../_actions";
 import { MemberForm } from "./MemberForm";
 import { useState } from "react";
 import { Edit2 } from "lucide-react";
-
-interface Member {
-  id: string;
-  displayName: string;
-  nickname: string | null;
-  role: string | null;
-  gender: string;
-  bio: string | null;
-  isActive: boolean;
-}
+import type { Member, Profile } from "@/lib/types";
 
 interface MemberListProps {
   members: Member[];
+  profiles: Profile[];
 }
 
-export function MemberList({ members }: MemberListProps) {
+export function MemberList({ members, profiles }: MemberListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const editingMember = editingId ? members.find(m => m.id === editingId) : null;
 
@@ -28,7 +20,7 @@ export function MemberList({ members }: MemberListProps) {
     return (
       <div className="bg-white p-6 rounded-2xl border shadow-sm mb-12">
         <h2 className="text-xl font-bold mb-4">Upravit člena</h2>
-        <MemberForm member={editingMember} onCancel={() => setEditingId(null)} />
+        <MemberForm member={editingMember} profiles={profiles} onCancel={() => setEditingId(null)} />
       </div>
     );
   }

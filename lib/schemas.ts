@@ -26,6 +26,8 @@ export const memberSchema = z.object({
   role: z.string().optional().nullable(),
   gender: z.enum(["M", "F", "Other"]).or(z.string().min(1)),
   bio: z.string().optional().nullable(),
+  profile_id: z.string().uuid().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
 });
 
 export const playlistSchema = z.object({

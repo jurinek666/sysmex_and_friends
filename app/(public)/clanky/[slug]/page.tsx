@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import ReactMarkdown from "react-markdown";
 import { getPostBySlug } from "@/lib/queries/posts";
-import { getCommentsByPostSlug } from "@/lib/queries/team";
+import { getComments } from "@/lib/queries/team";
 import CommentSection from "@/components/team/CommentSection";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
@@ -34,7 +34,7 @@ export default async function PostDetailPage({
   );
 
   // Load comments using the server client
-  const comments = await getCommentsByPostSlug(supabase, slug);
+  const comments = await getComments(supabase, slug, "post");
 
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -107,7 +107,8 @@ export default async function PostDetailPage({
 
         {/* KOMENTÁŘE (NOVÉ) */}
         <CommentSection
-            postSlug={slug}
+            entityId={slug}
+            entityType="post"
             initialComments={comments}
             isLoggedIn={!!user}
         />

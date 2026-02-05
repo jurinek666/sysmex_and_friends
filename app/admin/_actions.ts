@@ -378,13 +378,26 @@ export async function adminCreateMember(_prevState: unknown, formData: FormData)
   return handleAction(async () => {
     const { supabase } = await requireAuth();
 
+    const profileId = formData.get("profile_id")?.toString() || null;
+
     const rawData = {
       displayName: formData.get("displayName")?.toString() || "",
       nickname: formData.get("nickname")?.toString() || null,
       role: formData.get("role")?.toString() || null,
       gender: formData.get("gender")?.toString() || "",
       bio: formData.get("bio")?.toString() || null,
+      profile_id: profileId,
+      avatarUrl: formData.get("avatarUrl")?.toString() || null,
     };
+
+    // If linked to profile, force sync data from profile
+    if (profileId) {
+       const { data: profile } = await supabase.from("profiles").select("display_name, avatar_url").eq("id", profileId).single();
+       if (profile) {
+         if (profile.display_name) rawData.displayName = profile.display_name;
+         if (profile.avatar_url) rawData.avatarUrl = profile.avatar_url;
+       }
+    }
 
     const validated = memberSchema.parse(rawData);
 
@@ -415,6 +428,7 @@ export async function adminUpdateMember(_prevState: unknown, formData: FormData)
   return handleAction(async () => {
     const { supabase } = await requireAuth();
     const id = String(formData.get("id"));
+    const profileId = formData.get("profile_id")?.toString() || null;
 
     const rawData = {
       displayName: formData.get("displayName")?.toString() || "",
@@ -422,7 +436,18 @@ export async function adminUpdateMember(_prevState: unknown, formData: FormData)
       role: formData.get("role")?.toString() || null,
       gender: formData.get("gender")?.toString() || "",
       bio: formData.get("bio")?.toString() || null,
+      profile_id: profileId,
+      avatarUrl: formData.get("avatarUrl")?.toString() || null,
     };
+
+    // If linked to profile, force sync data from profile
+    if (profileId) {
+       const { data: profile } = await supabase.from("profiles").select("display_name, avatar_url").eq("id", profileId).single();
+       if (profile) {
+         if (profile.display_name) rawData.displayName = profile.display_name;
+         if (profile.avatar_url) rawData.avatarUrl = profile.avatar_url;
+       }
+    }
 
     const validated = memberSchema.parse(rawData);
 
