@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { MemberForm } from "./MemberForm";
 import { MemberList } from "./MemberList";
-import { Member } from "@/lib/types";
+import { Member, Profile } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 

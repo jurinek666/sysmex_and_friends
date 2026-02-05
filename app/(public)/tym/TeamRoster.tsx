@@ -5,6 +5,7 @@ import { motion, LayoutGroup } from "framer-motion";
 import { Member } from "@/lib/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import Image from "next/image";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -104,7 +105,13 @@ function ActiveMemberCard({ member }: { member: Member }) {
         <div className="absolute inset-0 bg-neon-magenta blur-[40px] opacity-20" />
         <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-sysmex-950 border-4 border-neon-magenta flex items-center justify-center overflow-hidden shadow-[0_0_30px_-10px_rgba(255,79,216,0.5)]">
            {member.avatarUrl ? (
-                <img src={member.avatarUrl} alt={member.displayName} className="w-full h-full object-cover" />
+                <Image
+                  src={member.avatarUrl}
+                  alt={member.displayName}
+                  fill
+                  sizes="(max-width: 640px) 160px, 192px"
+                  className="object-cover"
+                />
            ) : (
                <span className="text-5xl sm:text-6xl font-black text-white">{initials}</span>
            )}
@@ -159,9 +166,15 @@ function SmallMemberCard({ member }: { member: Member }) {
       exit={{ opacity: 0 }}
       className="h-full flex flex-col items-center justify-center text-center p-6"
     >
-      <div className="w-20 h-20 rounded-full bg-sysmex-950 border-2 border-sysmex-700 group-hover:border-neon-magenta flex items-center justify-center text-xl font-bold text-gray-400 group-hover:text-white transition-all mb-4 overflow-hidden">
+      <div className="relative w-20 h-20 rounded-full bg-sysmex-950 border-2 border-sysmex-700 group-hover:border-neon-magenta flex items-center justify-center text-xl font-bold text-gray-400 group-hover:text-white transition-all mb-4 overflow-hidden">
         {member.avatarUrl ? (
-             <img src={member.avatarUrl} alt={member.displayName} className="w-full h-full object-cover" />
+             <Image
+               src={member.avatarUrl}
+               alt={member.displayName}
+               fill
+               sizes="80px"
+               className="object-cover"
+             />
         ) : (
             <span>{initials}</span>
         )}
