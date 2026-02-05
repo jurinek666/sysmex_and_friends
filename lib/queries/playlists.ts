@@ -8,10 +8,18 @@ export async function getActivePlaylist(): Promise<Playlist | null> {
   // Načteme aktivní playlist (nejnovější)
   const { data, error } = await withRetry(async () => {
     return await supabase
-      .from("Playlist")
-      .select("*")
-      .eq("isActive", true)
-      .order("createdAt", { ascending: false })
+      .from("playlists")
+      .select(`
+        id,
+        title,
+        description,
+        spotifyUrl:spotify_url,
+        isActive:is_active,
+        createdAt:created_at,
+        updatedAt:updated_at
+      `)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
   });
@@ -30,9 +38,15 @@ export async function getAllPlaylists(): Promise<Playlist[]> {
   // Načteme všechny playlisty
   const { data, error } = await withRetry(async () => {
     return await supabase
-      .from("Playlist")
-      .select("id, title, description, spotifyUrl, isActive")
-      .order("createdAt", { ascending: false });
+      .from("playlists")
+      .select(`
+        id,
+        title,
+        description,
+        spotifyUrl:spotify_url,
+        isActive:is_active
+      `)
+      .order("created_at", { ascending: false });
   });
 
   if (error) {

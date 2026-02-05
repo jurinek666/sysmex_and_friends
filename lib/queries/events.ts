@@ -24,9 +24,16 @@ export async function getUpcomingEvents(limit = 5) {
   
   const { data, error } = await withRetry(async () => {
     return await supabase
-      .from("Event")
-      .select("id, title, date, venue, description, isUpcoming")
-      .eq("isUpcoming", true)
+      .from("events")
+      .select(`
+        id,
+        title,
+        date,
+        venue,
+        description,
+        isUpcoming:is_upcoming
+      `)
+      .eq("is_upcoming", true)
       .gte("date", now)
       .order("date", { ascending: true })
       .limit(limit);
@@ -47,8 +54,15 @@ export async function getEventsForCalendar(limit = 100): Promise<Event[]> {
 
   const { data, error } = await withRetry(async () => {
     return await supabase
-      .from("Event")
-      .select("id, title, date, venue, description, isUpcoming")
+      .from("events")
+      .select(`
+        id,
+        title,
+        date,
+        venue,
+        description,
+        isUpcoming:is_upcoming
+      `)
       .gte("date", now)
       .order("date", { ascending: true })
       .limit(limit);

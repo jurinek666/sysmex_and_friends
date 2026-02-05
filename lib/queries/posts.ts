@@ -8,17 +8,27 @@ export async function getFeaturedPost(): Promise<Post | null> {
   // Hledáme jeden zvýrazněný post
   const result = await withRetry(async () => {
     return await supabase
-      .from("Post")
-      .select("*")
-      .eq("isFeatured", true)
-      .not("publishedAt", "is", null)
-      .order("publishedAt", { ascending: false })
+      .from("posts")
+      .select(`
+        id,
+        slug,
+        title,
+        excerpt,
+        content,
+        coverImageUrl:cover_image_url,
+        isFeatured:is_featured,
+        publishedAt:published_at,
+        createdAt:created_at,
+        updatedAt:updated_at
+      `)
+      .eq("is_featured", true)
+      .not("published_at", "is", null)
+      .order("published_at", { ascending: false })
       .limit(1)
-      .maybeSingle(); // .maybeSingle() nehodí chybu, když nic nenajde, vrátí null
+      .maybeSingle();
   });
 
   if (result.error) {
-    // V případě chyby vrátíme null, aplikace poběží dál bez featured postu
     return null;
   }
   
@@ -30,10 +40,20 @@ export async function getRecentPosts(limit = 20): Promise<PostSummary[]> {
   
   const result = await withRetry(async () => {
     return await supabase
-      .from("Post")
-      .select("id, slug, title, excerpt, coverImageUrl, isFeatured, publishedAt, createdAt, updatedAt")
-      .not("publishedAt", "is", null)
-      .order("publishedAt", { ascending: false })
+      .from("posts")
+      .select(`
+        id,
+        slug,
+        title,
+        excerpt,
+        coverImageUrl:cover_image_url,
+        isFeatured:is_featured,
+        publishedAt:published_at,
+        createdAt:created_at,
+        updatedAt:updated_at
+      `)
+      .not("published_at", "is", null)
+      .order("published_at", { ascending: false })
       .limit(limit);
   });
 
@@ -49,8 +69,19 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   
   const result = await withRetry(async () => {
     return await supabase
-      .from("Post")
-      .select("*")
+      .from("posts")
+      .select(`
+        id,
+        slug,
+        title,
+        excerpt,
+        content,
+        coverImageUrl:cover_image_url,
+        isFeatured:is_featured,
+        publishedAt:published_at,
+        createdAt:created_at,
+        updatedAt:updated_at
+      `)
       .eq("slug", slug)
       .single();
   });

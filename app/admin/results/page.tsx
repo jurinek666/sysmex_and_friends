@@ -12,7 +12,7 @@ interface Season {
   name: string;
 }
 
-type ResultMemberRow = { member_id: string; sort_order?: number; Member?: { id: string; displayName: string } };
+type ResultMemberRow = { member_id: string; sort_order?: number; members?: { id: string; displayName: string } };
 
 interface Result {
   id: string;
@@ -23,18 +23,19 @@ interface Result {
   score: number;
   note: string | null;
   season: Season;
-  ResultMember?: ResultMemberRow[] | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  result_members?: any[];
   memberIds?: string[];
 }
 
 function mapResultToMemberIds(r: Result): Result {
-  const rows = (r.ResultMember ?? []) as ResultMemberRow[];
+  const rows = (r.result_members ?? []) as ResultMemberRow[];
   const memberIds = [...rows]
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-    .map((row) => row.Member?.id ?? row.member_id)
+    .map((row) => row.members?.id ?? row.member_id)
     .filter(Boolean);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { ResultMember: _, ...rest } = r;
+  const { result_members: _, ...rest } = r;
   return { ...rest, memberIds };
 }
 
@@ -42,18 +43,36 @@ export default async function AdminResultsPage() {
   const supabase = await createClient();
 
   const { data: resultsRaw } = await supabase
-    .from("Result")
-    .select("*, season:Season(*), ResultMember(member_id, sort_order, Member(id, displayName))")
+    .from("results")
+    .select(`
+      id,
+      date,
+      venue,
+      teamName:team_name,
+      placement,
+      score,
+      note,
+      seasonId:season_id,
+      season:seasons(id, code, name),
+      result_members(
+        member_id,
+        sort_order,
+        members(
+          id,
+          displayName:display_name
+        )
+      )
+    `)
     .order("date", { ascending: false })
     .limit(50);
 
   const [{ data: seasons }, members] = await Promise.all([
-    supabase.from("Season").select("*").order("startDate", { ascending: false }),
+    supabase.from("seasons").select("id, code, name, startDate:start_date, endDate:end_date").order("start_date", { ascending: false }),
     getActiveMembers(),
   ]);
 
-  const safeResults = ((resultsRaw || []) as Result[]).map(mapResultToMemberIds);
-  const safeSeasons = (seasons || []) as Season[];
+  const safeResults = ((resultsRaw || []) as unknown as Result[]).map(mapResultToMemberIds);
+  const safeSeasons = (seasons || []) as unknown as Season[];
 
   return (
     <AdminLayout title="Admin • Výsledky">
