@@ -31,6 +31,7 @@ export function PostList({ posts }: PostListProps) {
           <div>
             <div className="font-bold text-lg mb-1">{post.title}</div>
             <div className="text-xs text-gray-500 font-mono bg-gray-100 inline-block px-2 py-1 rounded">/{post.slug}</div>
+            {!post.isPublished && <span className="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full font-bold">Nepublikováno</span>}
             {post.isFeatured && <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold">★ Featured</span>}
           </div>
           <div className="flex items-center gap-2">

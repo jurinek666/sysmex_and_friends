@@ -22,6 +22,7 @@ export default async function AdminPostsPage() {
         content,
         coverImageUrl,
         isFeatured,
+        isPublished,
         publishedAt,
         createdAt,
         updatedAt

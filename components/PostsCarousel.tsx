@@ -170,8 +170,10 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
                   src={currentPost.coverImageUrl}
                   alt={currentPost.title}
                   fill
-                  className="object-cover"
                   sizes="(max-width: 768px) 100vw, 40vw"
+                  className="object-cover"
+                  priority
+                  loading="eager"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-5xl">

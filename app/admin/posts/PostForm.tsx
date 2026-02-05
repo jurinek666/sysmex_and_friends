@@ -161,6 +161,16 @@ export function PostForm({ post, onCancel }: PostFormProps) {
         <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
           <input 
             type="checkbox" 
+            name="isPublished" 
+            defaultChecked={post?.isPublished ?? true}
+            className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" 
+          />
+          <span className="font-medium">Publikovat (zobrazit na veřejných stránkách)</span>
+        </label>
+
+        <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
+          <input 
+            type="checkbox" 
             name="isFeatured" 
             defaultChecked={post?.isFeatured}
             className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" 

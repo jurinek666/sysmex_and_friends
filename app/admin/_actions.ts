@@ -102,6 +102,7 @@ export async function adminCreatePost(_prevState: unknown, formData: FormData): 
       content: formData.get("content")?.toString() || "",
       coverImageUrl: formData.get("coverImageUrl")?.toString() || null,
       isFeatured: formData.get("isFeatured") === "on",
+      isPublished: formData.get("isPublished") === "on",
     };
 
     const validated = postSchema.parse(rawData);
@@ -116,6 +117,7 @@ export async function adminCreatePost(_prevState: unknown, formData: FormData): 
       content: validated.content,
       coverImageUrl: validated.coverImageUrl,
       isFeatured: validated.isFeatured,
+      isPublished: validated.isPublished,
       publishedAt: now,
       createdAt: now,
       updatedAt: now,
@@ -131,6 +133,7 @@ export async function adminCreatePost(_prevState: unknown, formData: FormData): 
 
     revalidatePath("/admin/posts");
     revalidatePath("/clanky");
+    revalidatePath("/aktuality");
     revalidatePath("/");
   });
 }
@@ -148,6 +151,7 @@ export async function adminUpdatePost(_prevState: unknown, formData: FormData): 
       content: formData.get("content")?.toString() || "",
       coverImageUrl: formData.get("coverImageUrl")?.toString() || null,
       isFeatured: formData.get("isFeatured") === "on",
+      isPublished: formData.get("isPublished") === "on",
     };
 
     const validated = postSchema.parse(rawData);
@@ -161,6 +165,7 @@ export async function adminUpdatePost(_prevState: unknown, formData: FormData): 
         content: validated.content,
         coverImageUrl: validated.coverImageUrl,
         isFeatured: validated.isFeatured,
+        isPublished: validated.isPublished,
         updatedAt: new Date().toISOString(),
       })
       .eq("id", id);
@@ -175,6 +180,7 @@ export async function adminUpdatePost(_prevState: unknown, formData: FormData): 
 
     revalidatePath("/admin/posts");
     revalidatePath("/clanky");
+    revalidatePath("/aktuality");
     revalidatePath("/");
   });
 }
@@ -196,6 +202,7 @@ export async function adminDeletePost(_prevState: unknown, formData: FormData): 
 
     revalidatePath("/admin/posts");
     revalidatePath("/clanky");
+    revalidatePath("/aktuality");
     revalidatePath("/");
   });
 }

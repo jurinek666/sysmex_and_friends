@@ -106,6 +106,7 @@ export function Hero({ upcomingEvent }: HeroProps) {
                 className="object-cover"
                 sizes="(max-width: 1024px) 92vw, 620px"
                 priority
+                loading="eager"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-sysmex-950/80 via-transparent to-transparent" />
             </div>

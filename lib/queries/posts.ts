@@ -17,12 +17,13 @@ export async function getFeaturedPost(): Promise<Post | null> {
         content,
         coverImageUrl,
         isFeatured,
+        isPublished,
         publishedAt,
         createdAt,
         updatedAt
       `)
       .eq("isFeatured", true)
-      .not("publishedAt", "is", null)
+      .eq("isPublished", true)
       .order("publishedAt", { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -48,11 +49,12 @@ export async function getRecentPosts(limit = 20): Promise<PostSummary[]> {
         excerpt,
         coverImageUrl,
         isFeatured,
+        isPublished,
         publishedAt,
         createdAt,
         updatedAt
       `)
-      .not("publishedAt", "is", null)
+      .eq("isPublished", true)
       .order("publishedAt", { ascending: false })
       .limit(limit);
   });
@@ -78,11 +80,13 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         content,
         coverImageUrl,
         isFeatured,
+        isPublished,
         publishedAt,
         createdAt,
         updatedAt
       `)
       .eq("slug", slug)
+      .eq("isPublished", true)
       .single();
   });
 

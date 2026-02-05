@@ -7,6 +7,7 @@ export const postSchema = z.object({
   content: z.string().min(1, "Obsah je povinný"),
   coverImageUrl: z.string().optional().nullable(),
   isFeatured: z.boolean().default(false),
+  isPublished: z.boolean().default(true),
 });
 
 export const resultSchema = z.object({

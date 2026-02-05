@@ -25,6 +25,9 @@ pnpm-debug.log*
 
 # Cursor debug logs
 .cursor/debug.log
+
+# Cursor MCP config (obsahuje API klíče – používá se mcp.example.json jako šablona)
+.cursor/mcp.json
 debug*.log
 debug*.js
 

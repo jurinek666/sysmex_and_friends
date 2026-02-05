@@ -6,6 +6,7 @@ export interface Post {
   content: string;
   coverImageUrl: string | null;
   isFeatured: boolean;
+  isPublished: boolean;
   publishedAt: string;
   createdAt: string;
   updatedAt: string;

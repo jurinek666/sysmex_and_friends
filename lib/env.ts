@@ -26,6 +26,9 @@ const envSchema = z.object({
   // Google Gemini API – pro AI na stránce O nás (volitelné)
   GOOGLE_API_KEY: z.string().min(1).optional(),
 
+  // Google Analytics (gtag) – měřicí ID (volitelné)
+  NEXT_PUBLIC_GA_ID: z.string().min(1).optional(),
+
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 

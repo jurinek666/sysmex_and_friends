@@ -2,20 +2,17 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { Comment, EventParticipant, Profile } from "@/lib/types";
 
 // --- COMMENTS ---
-// DB tabulka comments má pouze post_slug (ne entity_id/entity_type). Pro komentáře u akcí/alb je potřeba migrace.
+// DB tabulka comments má entity_id, entity_type (migrace add_comments_entity_id_entity_type).
 
 export async function getComments(supabase: SupabaseClient, entityId: string, entityType: 'post' | 'event' | 'album' = 'post'): Promise<Comment[]> {
-  if (entityType !== 'post') {
-    // Komentáře k akcím/albům vyžadují v DB sloupce entity_id, entity_type – zatím vracíme prázdné pole
-    return [];
-  }
   const { data, error } = await supabase
     .from("comments")
     .select(`
       *,
       profile:profiles(*)
     `)
-    .eq("post_slug", entityId)
+    .eq("entity_id", entityId)
+    .eq("entity_type", entityType)
     .order("created_at", { ascending: true });
 
   if (error) {

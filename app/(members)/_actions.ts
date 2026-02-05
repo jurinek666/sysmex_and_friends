@@ -46,13 +46,10 @@ export async function addComment(formData: FormData) {
         return { error: "Musíte být přihlášen" };
     }
 
-    // Tabulka comments má pouze post_slug; pro event/album je potřeba migrace (entity_id, entity_type).
-    if (entityType !== "post") {
-        return { error: "Komentáře k akcím a albům budou dostupné po aktualizaci databáze." };
-    }
-
     const { error } = await supabase.from("comments").insert({
-        post_slug: entityId,
+        entity_id: entityId,
+        entity_type: entityType,
+        post_slug: entityId, // zpětná kompatibilita (sloupec NOT NULL)
         user_id: user.id,
         content: content
     });

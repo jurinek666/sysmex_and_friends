@@ -37,7 +37,7 @@ export function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: "Aktuality", href: "/#aktuality" },
+    { name: "Aktuality", href: "/aktuality" },
     { name: "Výsledky", href: "/vysledky" },
     { name: "Týmová soupiska", href: "/tym" },
     { name: "Galerie", href: "/galerie" },
@@ -237,6 +237,7 @@ export function Navbar() {
                   src="https://res.cloudinary.com/gear-gaming/image/upload/v1770237212/logo_white_kqsrkb.png"
                   alt="SYSMEX & Friends Logo"
                   fill
+                  sizes="(max-width: 768px) 96px, 128px"
                   className="object-cover"
                   priority
                 />
@@ -289,7 +290,7 @@ export function Navbar() {
                       whileTap={{ scale: 0.95 }}
                       className="px-5 py-2.5 rounded-xl text-gray-200 hover:text-white font-bold uppercase tracking-tight text-sm transition-colors hover:bg-white/10 border border-white/20"
                     >
-                      DASHBOARD
+                      LOGIN
                     </motion.button>
                   </Link>
                   {isAdmin && (
@@ -475,7 +476,7 @@ export function Navbar() {
                         className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-sysmex-800/80 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
                         onClick={() => setIsOpen(false)}
                       >
-                        DASHBOARD
+                        LOGIN
                       </Link>
                       {isAdmin && (
                         <Link
