@@ -29,6 +29,17 @@ export interface Album {
   randomCoverPublicId?: string | null;
 }
 
+export interface AlbumPhoto {
+  id: string;
+  cloudinaryPublicId: string;
+  caption: string | null;
+  sortOrder: number;
+}
+
+export interface AlbumDetail extends Album {
+  photos: AlbumPhoto[];
+}
+
 export interface Member {
   id: string;
   displayName: string;
@@ -72,6 +83,15 @@ export interface Result {
   memberIds?: string[];
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface ResultParticipant {
+  id: string;
+  displayName: string;
+}
+
+export interface ResultWithParticipants extends Result {
+  participants: ResultParticipant[];
 }
 
 export interface Playlist {

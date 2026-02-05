@@ -23,32 +23,15 @@ function getCloudinaryUrl(publicId: string, width = 800) {
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_${width}/${publicId}`;
 }
 
-interface Photo {
-  id: string;
-  cloudinaryPublicId: string;
-  caption: string | null;
-}
-
-interface Album {
-  id: string;
-  title: string;
-  dateTaken: string;
-  description: string | null;
-  coverPublicId: string | null;
-  photos: Photo[];
-}
-
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 export default async function AlbumDetailPage(props: PageProps) {
   const { id } = await props.params;
-  const rawAlbum = await getAlbum(id);
+  const album = await getAlbum(id);
 
-  if (!rawAlbum) return notFound();
-
-  const album = rawAlbum as unknown as Album;
+  if (!album) return notFound();
   const coverId = (album.coverPublicId || "").trim();
 
   // Load comments

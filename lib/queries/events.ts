@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { withRetry, logSupabaseError } from "./utils";
+import { Event } from "@/lib/types";
 
-export async function getUpcomingEvents(limit = 5) {
+export async function getUpcomingEvents(limit = 5): Promise<Event[]> {
   const supabase = await createClient();
   
   const now = new Date().toISOString();
@@ -9,7 +10,7 @@ export async function getUpcomingEvents(limit = 5) {
   const { data, error } = await withRetry(async () => {
     return await supabase
       .from("Event")
-      .select("id, title, date, venue, description")
+      .select("id, title, date, venue, description, isUpcoming")
       .eq("isUpcoming", true)
       .gte("date", now)
       .order("date", { ascending: true })
@@ -21,18 +22,18 @@ export async function getUpcomingEvents(limit = 5) {
     return [];
   }
   
-  return data || [];
+  return (data || []) as Event[];
 }
 
 /** Všechny nadcházející akce pro stránku kalendáře (bez filtru isUpcoming, vyšší limit). */
-export async function getEventsForCalendar(limit = 100) {
+export async function getEventsForCalendar(limit = 100): Promise<Event[]> {
   const supabase = await createClient();
   const now = new Date().toISOString();
 
   const { data, error } = await withRetry(async () => {
     return await supabase
       .from("Event")
-      .select("id, title, date, venue, description")
+      .select("id, title, date, venue, description, isUpcoming")
       .gte("date", now)
       .order("date", { ascending: true })
       .limit(limit);
@@ -43,5 +44,5 @@ export async function getEventsForCalendar(limit = 100) {
     return [];
   }
 
-  return data || [];
+  return (data || []) as Event[];
 }
