@@ -81,6 +81,12 @@ export function MemberForm({ member, profiles = [], onCancel }: MemberFormProps)
         </div>
 
         <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Avatar URL</label>
+          <input name="avatarUrl" placeholder="https://..." defaultValue={member?.avatarUrl || undefined} className="w-full p-2 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" />
+          <p className="text-xs text-gray-500 mt-1">URL adresa profilové fotky (např. z Cloudinary).</p>
+        </div>
+
+        <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">O členovi (Bio)</label>
           <textarea name="bio" rows={3} defaultValue={member?.bio || undefined} className="w-full p-2 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" />
         </div>

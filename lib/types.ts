@@ -36,6 +36,7 @@ export interface Member {
   role: string | null;
   gender: string;
   bio: string | null;
+  avatarUrl: string | null;
   isActive: boolean;
   profileId?: string | null;
   avatarUrl?: string | null;
