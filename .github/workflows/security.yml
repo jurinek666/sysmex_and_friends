@@ -1,6 +1,9 @@
 # Scheduled security audit workflow
 name: Security Audit
 
+permissions:
+  contents: read
+
 on:
   schedule:
     - cron: '0 8 * * 1'

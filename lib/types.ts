@@ -29,6 +29,17 @@ export interface Album {
   randomCoverPublicId?: string | null;
 }
 
+export interface AlbumPhoto {
+  id: string;
+  cloudinaryPublicId: string;
+  caption: string | null;
+  sortOrder: number;
+}
+
+export interface AlbumDetail extends Album {
+  photos: AlbumPhoto[];
+}
+
 export interface Member {
   id: string;
   displayName: string;
@@ -36,7 +47,9 @@ export interface Member {
   role: string | null;
   gender: string;
   bio: string | null;
+  avatarUrl: string | null;
   isActive: boolean;
+  profileId?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -72,6 +85,15 @@ export interface Result {
   updatedAt?: string;
 }
 
+export interface ResultParticipant {
+  id: string;
+  displayName: string;
+}
+
+export interface ResultWithParticipants extends Result {
+  participants: ResultParticipant[];
+}
+
 export interface Playlist {
   id: string;
   title: string;
@@ -96,7 +118,8 @@ export interface Profile {
 
 export interface Comment {
   id: string;
-  post_slug: string;
+  entity_id: string;
+  entity_type: 'post' | 'event' | 'album';
   user_id: string;
   content: string;
   parent_id: string | null;

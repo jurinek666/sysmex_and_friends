@@ -1,9 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { withRetry } from "./utils";
+import { ResultWithParticipants, ResultParticipant, Season } from "@/lib/types";
 
 const RESULT_SELECT = "*, season:Season(*), ResultMember(member_id, sort_order, Member(id, displayName))";
-
-export type ResultParticipant = { id: string; displayName: string };
 
 function mapResultToParticipants<T extends Record<string, unknown>>(row: T): T & { participants: ResultParticipant[] } {
   const rm = row.ResultMember as Array<{ member_id: string; sort_order?: number; Member?: { id: string; displayName: string } } | null> | undefined;
@@ -19,7 +18,7 @@ function mapResultToParticipants<T extends Record<string, unknown>>(row: T): T &
   return { ...rest, participants } as T & { participants: ResultParticipant[] };
 }
 
-export async function getLatestResults(limit = 5) {
+export async function getLatestResults(limit = 5): Promise<ResultWithParticipants[]> {
   const supabase = await createClient();
 
   const result = await withRetry(async () => {
@@ -34,10 +33,11 @@ export async function getLatestResults(limit = 5) {
     return [];
   }
 
-  return (result.data || []).map(mapResultToParticipants);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (result.data || []).map(mapResultToParticipants) as any as ResultWithParticipants[];
 }
 
-export async function getResultsBySeasonCode(code?: string) {
+export async function getResultsBySeasonCode(code?: string): Promise<ResultWithParticipants[]> {
   const supabase = await createClient();
 
   const result = await withRetry(async () => {
@@ -59,10 +59,11 @@ export async function getResultsBySeasonCode(code?: string) {
     return [];
   }
 
-  return (result.data || []).map(mapResultToParticipants);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (result.data || []).map(mapResultToParticipants) as any as ResultWithParticipants[];
 }
 
-export async function getSeasons() {
+export async function getSeasons(): Promise<Season[]> {
   const supabase = await createClient();
   
   const result = await withRetry(async () => {
@@ -76,5 +77,5 @@ export async function getSeasons() {
     return [];
   }
   
-  return result.data || [];
+  return (result.data || []) as Season[];
 }

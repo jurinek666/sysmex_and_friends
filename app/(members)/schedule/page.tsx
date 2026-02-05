@@ -2,9 +2,10 @@ import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { Calendar } from "lucide-react";
 import { getEventsForCalendar } from "@/lib/queries/events";
-import { getParticipantsByEventId } from "@/lib/queries/team";
+import { getParticipantsByEventId, getComments } from "@/lib/queries/team";
 import { createClient } from "@/lib/supabase/server";
 import EventParticipation from "@/components/team/EventParticipation";
+import CommentSection from "@/components/team/CommentSection";
 
 export const revalidate = 60;
 
@@ -86,16 +87,26 @@ async function ScheduleEventRSVP({
   badgeClass: string;
 }) {
   const participants = await getParticipantsByEventId(supabase, eventId);
+  const comments = await getComments(supabase, eventId, "event");
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   return (
-    <div className={`shrink-0 rounded-lg p-4 ${badgeClass}`}>
-      <EventParticipation
-        eventId={eventId}
-        initialParticipants={participants}
+    <div className="flex flex-col gap-2 shrink-0 sm:w-72">
+      <div className={`rounded-lg p-4 ${badgeClass}`}>
+        <EventParticipation
+          eventId={eventId}
+          initialParticipants={participants}
+          isLoggedIn={!!user}
+        />
+      </div>
+      <CommentSection
+        entityId={eventId}
+        entityType="event"
+        initialComments={comments}
         isLoggedIn={!!user}
+        compact={true}
       />
     </div>
   );

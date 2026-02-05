@@ -4,8 +4,7 @@ import { ActionForm } from "@/components/admin/ActionForm";
 import { adminCreateResult, adminUpdateResult } from "../_actions";
 import { X } from "lucide-react";
 import { useState } from "react";
-import type { Member } from "@/lib/queries/members";
-import type { Result, Season } from "@/lib/types";
+import type { Member, Result, Season } from "@/lib/types";
 
 interface ResultFormProps {
   seasons: Season[];

@@ -101,7 +101,7 @@ export default async function Home() {
         {/* 5. TEAM LIST CARD — Varianta A (Neon roster) */}
         <div
           id="tym"
-          className="col-span-2 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-sysmex-900 to-sysmex-950 p-5 md:p-8 group hover:border-neon-magenta/50 hover:shadow-[0_0_20px_-8px_rgba(255,79,216,0.3)] transition-all duration-300"
+          className="col-span-1 md:col-span-2 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-sysmex-900 to-sysmex-950 p-5 md:p-8 group hover:border-neon-magenta/50 hover:shadow-[0_0_20px_-8px_rgba(255,79,216,0.3)] transition-all duration-300"
         >
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-neon-cyan via-neon-magenta to-transparent" />
           <div className="flex items-center justify-between mb-6">
@@ -137,7 +137,7 @@ export default async function Home() {
         </div>
 
         {/* 6. GALLERY CARD */}
-        <div id="galerie" className="col-span-2 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-sysmex-900 to-sysmex-950 p-5 md:p-8 group hover:border-neon-cyan/50 hover:shadow-[0_0_20px_-8px_rgba(70,214,255,0.25)] transition-all duration-300">
+        <div id="galerie" className="col-span-1 md:col-span-2 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-sysmex-900 to-sysmex-950 p-5 md:p-8 group hover:border-neon-cyan/50 hover:shadow-[0_0_20px_-8px_rgba(70,214,255,0.25)] transition-all duration-300">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Galerie</h2>

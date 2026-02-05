@@ -2,32 +2,45 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchImageIdsByFolder } from "@/lib/cloudinary";
 import { unstable_cache } from "next/cache";
 import { withRetry, logSupabaseError } from "./utils";
+import { Album, AlbumDetail, AlbumPhoto } from "@/lib/types";
 
-type AlbumRecord = Record<string, unknown> & {
-  photos?: { sortOrder?: number }[];
-  Photo?: { sortOrder?: number }[];
-  cloudinaryFolder?: string;
+// Helper for Supabase rows
+interface AlbumRow {
+  id: string;
+  title: string;
+  dateTaken: string;
+  createdAt: string;
+  updatedAt: string;
+  cloudinaryFolder: string | null;
+  description: string | null;
+  coverPublicId: string | null;
+  photos?: { count: number }[];
+  Photo?: { count: number }[];
+}
+
+interface AlbumDetailRow extends Omit<AlbumRow, 'photos' | 'Photo'> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  photos?: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Photo?: any[];
   cloudinary_folder?: string;
-};
+}
 
-export async function getAlbums() {
+export async function getAlbums(): Promise<Album[]> {
   const supabase = await createClient();
 
-  // Načteme alba a počet fotek.
-  // 'photos(count)' vrátí pole objektů [{ count: N }]
   let { data, error } = await withRetry(async () => {
     return await supabase
       .from("Album")
-      .select("id, title, dateTaken, createdAt, cloudinaryFolder, photos(count)")
+      .select("id, title, dateTaken, createdAt, updatedAt, cloudinaryFolder, description, coverPublicId, photos(count)")
       .order("dateTaken", { ascending: false });
   });
 
-  // Test alternative relationship name if first attempt fails
-  if (error && error?.hint?.includes("Photo")) {
+  if (error && error.hint?.includes("Photo")) {
     const result2 = await withRetry(async () => {
       return await supabase
         .from("Album")
-        .select("id, title, dateTaken, createdAt, cloudinaryFolder, Photo(count)")
+        .select("id, title, dateTaken, createdAt, updatedAt, cloudinaryFolder, description, coverPublicId, Photo(count)")
         .order("dateTaken", { ascending: false });
     });
     if (!result2.error) {
@@ -42,13 +55,19 @@ export async function getAlbums() {
     return [];
   }
 
-  // Transformujeme data do formátu, který očekává komponenta (styl Prisma)
-  // Prisma vrací: _count: { photos: number }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const albums = (data || []).map((album: any) => ({
-    ...album,
+  const rows = (data || []) as unknown as AlbumRow[];
+
+  const albums: Album[] = rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    dateTaken: row.dateTaken,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    cloudinaryFolder: row.cloudinaryFolder,
+    description: row.description,
+    coverPublicId: row.coverPublicId,
     _count: {
-      photos: album.photos?.[0]?.count ?? album.Photo?.[0]?.count ?? 0,
+      photos: row.photos?.[0]?.count ?? row.Photo?.[0]?.count ?? 0,
     },
   }));
 
@@ -65,7 +84,7 @@ export async function getAlbums() {
   const withCloudCounts = await Promise.all(
     albums.map(async (album) => {
       const folder = String(album.cloudinaryFolder || "").trim();
-      if (album._count.photos === 0 && folder) {
+      if ((album._count?.photos ?? 0) === 0 && folder) {
         const count = await getCloudinaryCountCached(folder);
         if (count > 0) {
           return {
@@ -84,17 +103,16 @@ export async function getAlbums() {
   return withCloudCounts;
 }
 
-/** Alba s náhodnou fotkou pro náhled (např. karty na homepage). Prvních maxToEnrich alb má randomCoverPublicId. */
-export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4) {
+export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4): Promise<Album[]> {
   const albums = await getAlbums();
   const toEnrich = albums.slice(0, maxToEnrich);
   const enriched = await Promise.all(
     toEnrich.map(async (album) => {
       const folder = String(album.cloudinaryFolder || "").trim();
       const count = album._count?.photos ?? 0;
-      if (!folder || count === 0) return { ...album, randomCoverPublicId: null as string | null };
+      if (!folder || count === 0) return { ...album, randomCoverPublicId: null };
       const list = await fetchImageIdsByFolder(folder);
-      if (list.length === 0) return { ...album, randomCoverPublicId: null as string | null };
+      if (list.length === 0) return { ...album, randomCoverPublicId: null };
       const random = list[Math.floor(Math.random() * list.length)];
       return { ...album, randomCoverPublicId: random.public_id };
     })
@@ -102,22 +120,23 @@ export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4) {
   return [...enriched, ...albums.slice(maxToEnrich)];
 }
 
-async function applyPhotosAndCloudinary(data: AlbumRecord): Promise<AlbumRecord> {
-  const raw = data as { photos?: unknown[]; Photo?: unknown[] };
-  data.photos = (Array.isArray(raw.photos)
-    ? raw.photos
-    : Array.isArray(raw.Photo)
-    ? raw.Photo
-    : []) as { sortOrder?: number }[];
+async function applyPhotosAndCloudinary(data: AlbumDetailRow): Promise<AlbumDetail> {
+  const rawPhotos = Array.isArray(data.photos) ? data.photos : Array.isArray(data.Photo) ? data.Photo : [];
 
-  const folder = (
-    data.cloudinaryFolder ?? data.cloudinary_folder ?? ""
-  ).trim();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let photos: AlbumPhoto[] = rawPhotos.map((p: any, i: number) => ({
+    id: p.id || `local-${i}`,
+    cloudinaryPublicId: p.cloudinaryPublicId || p.public_id || "",
+    caption: p.caption || null,
+    sortOrder: p.sortOrder ?? i
+  }));
+
+  const folder = (data.cloudinaryFolder ?? data.cloudinary_folder ?? "").trim();
 
   if (folder) {
     const fromCloud = await fetchImageIdsByFolder(folder);
     if (fromCloud.length > 0) {
-      data.photos = fromCloud.map((r, i) => ({
+      photos = fromCloud.map((r, i) => ({
         id: r.public_id,
         cloudinaryPublicId: r.public_id,
         caption: null,
@@ -126,18 +145,27 @@ async function applyPhotosAndCloudinary(data: AlbumRecord): Promise<AlbumRecord>
     }
   }
 
-  data.photos.sort(
-    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)
-  );
+  photos.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 
-  return data;
+  return {
+    id: data.id,
+    title: data.title,
+    dateTaken: data.dateTaken,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+    cloudinaryFolder: data.cloudinaryFolder ?? null,
+    description: data.description,
+    coverPublicId: data.coverPublicId,
+    photos,
+    _count: { photos: photos.length }
+  };
 }
 
-export async function getAlbum(id: string) {
+export async function getAlbum(id: string): Promise<AlbumDetail | null> {
   const supabase = await createClient();
 
   const fetchWithRelation = async (relation: "Photo" | "photos") =>
-    withRetry<AlbumRecord>(async () => {
+    withRetry(async () => {
       return await supabase
         .from("Album")
         .select(`*, ${relation}(*)`)
@@ -160,11 +188,12 @@ export async function getAlbum(id: string) {
   }
 
   if (error) {
-    const result3 = await withRetry<AlbumRecord>(async () => {
+    const result3 = await withRetry(async () => {
       return await supabase.from("Album").select("*").eq("id", id).single();
     });
     if (!result3.error) {
-      data = result3.data as AlbumRecord;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data = result3.data as any;
       error = null;
     } else {
       error = result3.error;
@@ -178,5 +207,5 @@ export async function getAlbum(id: string) {
     return null;
   }
 
-  return await applyPhotosAndCloudinary(data as AlbumRecord);
+  return await applyPhotosAndCloudinary(data as unknown as AlbumDetailRow);
 }

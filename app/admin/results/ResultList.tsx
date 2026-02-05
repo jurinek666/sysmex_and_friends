@@ -5,8 +5,7 @@ import { adminDeleteResult } from "../_actions";
 import { ResultForm } from "./ResultForm";
 import { useState } from "react";
 import { Edit2 } from "lucide-react";
-import type { Member } from "@/lib/queries/members";
-import type { Result, Season } from "@/lib/types";
+import type { Member, Result, Season } from "@/lib/types";
 
 interface ResultListProps {
   results: Result[];

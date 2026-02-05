@@ -11,10 +11,13 @@ import { notifyPromotedToParticipant } from '@/lib/notifications';
 
 export async function addComment(formData: FormData) {
     const content = formData.get("content") as string;
+    // Backwards compatibility for postSlug
     const postSlug = formData.get("postSlug") as string;
+    const entityId = (formData.get("entityId") as string) || postSlug;
+    const entityType = (formData.get("entityType") as string) || "post";
 
-    if (!content || !postSlug) {
-        return { error: "Chybí obsah nebo ID příspěvku" };
+    if (!content || !entityId) {
+        return { error: "Chybí obsah nebo ID entity" };
     }
 
     const cookieStore = await cookies();
@@ -44,7 +47,8 @@ export async function addComment(formData: FormData) {
     }
 
     const { error } = await supabase.from("comments").insert({
-        post_slug: postSlug,
+        entity_id: entityId,
+        entity_type: entityType,
         user_id: user.id,
         content: content
     });
@@ -54,7 +58,15 @@ export async function addComment(formData: FormData) {
         return { error: "Nepodařilo se uložit komentář." };
     }
 
-    revalidatePath(`/clanky/${postSlug}`);
+    if (entityType === "post") {
+        revalidatePath(`/clanky/${entityId}`);
+    } else if (entityType === "album") {
+        revalidatePath(`/galerie/${entityId}`);
+    } else if (entityType === "event") {
+        revalidatePath(`/kalendar`);
+        revalidatePath(`/schedule`);
+    }
+
     return { success: true };
 }
 

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, PanInfo } from "framer-motion";
 
 interface PostItem {
   id?: string;
@@ -71,6 +71,21 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
     });
   };
 
+  const onDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const swipeThreshold = 50;
+    const { offset, velocity } = info;
+
+    if (offset.x > swipeThreshold || velocity.x > 500) {
+      if (canGoLeft) {
+        goToPrevious();
+      }
+    } else if (offset.x < -swipeThreshold || velocity.x < -500) {
+      if (canGoRight) {
+        goToNext();
+      }
+    }
+  };
+
   return (
     <div className="bento-card px-5 py-6 md:px-12 md:py-8 flex flex-col gap-6 relative overflow-hidden group hover:border-neon-cyan/50">
       <div className="flex items-center justify-between gap-4">
@@ -122,7 +137,11 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -24 }}
             transition={{ duration: 0.35 }}
-            className="grid grid-cols-1 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-6 items-center"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={onDragEnd}
+            className="grid grid-cols-1 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-6 items-center cursor-grab active:cursor-grabbing"
           >
             <div className="space-y-4">
               <h3 className="text-2xl md:text-3xl font-bold text-white">
