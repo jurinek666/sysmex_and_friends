@@ -41,7 +41,7 @@ async function main() {
     const email = `test${i}@example.com`;
     const fullName = `Test User ${i}`;
 
-    const { data, error } = await supabase.auth.admin.createUser({
+    const { error } = await supabase.auth.admin.createUser({
       email,
       password: PASSWORD,
       email_confirm: true,

@@ -71,7 +71,7 @@ export default function EventParticipation({
               Účastníci (1–8)
             </p>
             <ul className="list-decimal list-inside text-gray-300 space-y-0.5">
-              {participants.map((p, i) => (
+              {participants.map((p) => (
                 <li key={p.id}>{displayName(p)}</li>
               ))}
             </ul>

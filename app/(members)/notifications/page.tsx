@@ -1,5 +1,4 @@
 import { Bell } from "lucide-react";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getNotificationsForUser } from "@/lib/queries/notifications";
 import NotificationItem from "./NotificationItem";

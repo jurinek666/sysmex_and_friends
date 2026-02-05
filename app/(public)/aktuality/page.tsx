@@ -143,7 +143,7 @@ export default async function AktualityPage({
         </div>
 
         <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 overflow-y-auto overscroll-contain max-w-sm mx-auto lg:max-w-none lg:mx-0">
-          {recentPosts.map((post, index) => {
+          {recentPosts.map((post) => {
             const isSelected = post.slug === selectedSlug;
             const isOld =
               differenceInMonths(new Date(), new Date(post.publishedAt)) >= 1;

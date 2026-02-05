@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,6 +30,7 @@ export default function RootLayout({
       <head>
         <script
           type="text/javascript"
+          async
           data-cmp-ab="1"
           src="https://cdn.consentmanager.net/delivery/autoblocking/e24eb5da1274d.js"
           data-cmp-host="b.delivery.consentmanager.net"
@@ -40,7 +42,9 @@ export default function RootLayout({
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
         />
-        <script
+        <Script
+          id="gtag-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
