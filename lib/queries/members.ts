@@ -7,10 +7,17 @@ export async function getActiveMembers(): Promise<Member[]> {
   
   const { data, error } = await withRetry(async () => {
     return await supabase
-      .from("Member")
-      .select("id, displayName, nickname, role, bio, avatarUrl")
-      .eq("isActive", true)
-      .order("displayName", { ascending: true });
+      .from("members")
+      .select(`
+        id,
+        displayName:display_name,
+        nickname,
+        role,
+        bio,
+        avatarUrl:avatar_url
+      `)
+      .eq("is_active", true)
+      .order("display_name", { ascending: true });
   });
 
   if (error) {

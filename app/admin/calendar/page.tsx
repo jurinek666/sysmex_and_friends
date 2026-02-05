@@ -20,8 +20,17 @@ export default async function AdminCalendarPage() {
   const supabase = await createClient();
   
   const { data: events } = await supabase
-    .from("Event")
-    .select("*")
+    .from("events")
+    .select(`
+      id,
+      title,
+      date,
+      venue,
+      description,
+      isUpcoming:is_upcoming,
+      createdAt:created_at,
+      updatedAt:updated_at
+    `)
     .order("date", { ascending: true });
 
   const safeEvents = (events || []) as Event[];

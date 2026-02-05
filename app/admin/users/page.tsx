@@ -26,12 +26,14 @@ export default async function AdminUsersPage() {
 
   // Fetch linked members
   const { data: members } = await supabase
-    .from("Member")
-    .select("id, displayName, profile_id")
+    .from("members")
+    .select("id, displayName:display_name, profile_id")
     .not("profile_id", "is", null);
 
   const linkedMembers = (members || []).reduce((acc, m) => {
-    if (m.profile_id) acc[m.profile_id] = m.displayName;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const member = m as any;
+    if (member.profile_id) acc[member.profile_id] = member.displayName;
     return acc;
   }, {} as Record<string, string>);
 

@@ -10,12 +10,21 @@ export default async function AdminPlaylistsPage() {
   
   // Nahrazeno prisma.playlist.findMany(...)
   const { data: playlists } = await supabase
-    .from("Playlist")
-    .select("*")
-    .order("createdAt", { ascending: false });
+    .from("playlists")
+    .select(`
+      id,
+      title,
+      description,
+      spotifyUrl:spotify_url,
+      isActive:is_active,
+      createdAt:created_at,
+      updatedAt:updated_at
+    `)
+    .order("created_at", { ascending: false });
 
   // Fallback, kdyby data byla null (např. chyba sítě)
-  const safePlaylists = playlists || [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const safePlaylists = (playlists || []) as any[];
 
   return (
     <AdminLayout title="Admin • Playlisty">

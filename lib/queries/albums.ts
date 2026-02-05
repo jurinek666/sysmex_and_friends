@@ -15,40 +15,33 @@ interface AlbumRow {
   description: string | null;
   coverPublicId: string | null;
   photos?: { count: number }[];
-  Photo?: { count: number }[];
 }
 
-interface AlbumDetailRow extends Omit<AlbumRow, 'photos' | 'Photo'> {
+interface AlbumDetailRow extends AlbumRow {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  photos?: any[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Photo?: any[];
-  cloudinary_folder?: string;
+  photos: any[];
 }
 
 export async function getAlbums(): Promise<Album[]> {
   const supabase = await createClient();
 
-  let { data, error } = await withRetry(async () => {
+  // Optimized query with snake_case mapping via aliases
+  const { data, error } = await withRetry(async () => {
     return await supabase
-      .from("Album")
-      .select("id, title, dateTaken, createdAt, updatedAt, cloudinaryFolder, description, coverPublicId, photos(count)")
-      .order("dateTaken", { ascending: false });
+      .from("albums")
+      .select(`
+        id,
+        title,
+        dateTaken:date_taken,
+        createdAt:created_at,
+        updatedAt:updated_at,
+        cloudinaryFolder:cloudinary_folder,
+        description,
+        coverPublicId:cover_public_id,
+        photos:photos(count)
+      `)
+      .order("date_taken", { ascending: false });
   });
-
-  if (error && error.hint?.includes("Photo")) {
-    const result2 = await withRetry(async () => {
-      return await supabase
-        .from("Album")
-        .select("id, title, dateTaken, createdAt, updatedAt, cloudinaryFolder, description, coverPublicId, Photo(count)")
-        .order("dateTaken", { ascending: false });
-    });
-    if (!result2.error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data = result2.data as any;
-      error = null;
-    }
-  }
 
   if (error) {
     logSupabaseError("getAlbums", error);
@@ -67,7 +60,7 @@ export async function getAlbums(): Promise<Album[]> {
     description: row.description,
     coverPublicId: row.coverPublicId,
     _count: {
-      photos: row.photos?.[0]?.count ?? row.Photo?.[0]?.count ?? 0,
+      photos: row.photos?.[0]?.count ?? 0,
     },
   }));
 
@@ -121,17 +114,17 @@ export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4): Promise<A
 }
 
 async function applyPhotosAndCloudinary(data: AlbumDetailRow): Promise<AlbumDetail> {
-  const rawPhotos = Array.isArray(data.photos) ? data.photos : Array.isArray(data.Photo) ? data.Photo : [];
+  const rawPhotos = Array.isArray(data.photos) ? data.photos : [];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let photos: AlbumPhoto[] = rawPhotos.map((p: any, i: number) => ({
     id: p.id || `local-${i}`,
-    cloudinaryPublicId: p.cloudinaryPublicId || p.public_id || "",
+    cloudinaryPublicId: p.cloudinaryPublicId || p.cloudinary_public_id || p.public_id || "",
     caption: p.caption || null,
-    sortOrder: p.sortOrder ?? i
+    sortOrder: p.sortOrder ?? p.sort_order ?? i
   }));
 
-  const folder = (data.cloudinaryFolder ?? data.cloudinary_folder ?? "").trim();
+  const folder = (data.cloudinaryFolder ?? "").trim();
 
   if (folder) {
     const fromCloud = await fetchImageIdsByFolder(folder);
@@ -164,41 +157,28 @@ async function applyPhotosAndCloudinary(data: AlbumDetailRow): Promise<AlbumDeta
 export async function getAlbum(id: string): Promise<AlbumDetail | null> {
   const supabase = await createClient();
 
-  const fetchWithRelation = async (relation: "Photo" | "photos") =>
-    withRetry(async () => {
-      return await supabase
-        .from("Album")
-        .select(`*, ${relation}(*)`)
-        .eq("id", id)
-        .single();
-    });
-
-  let { data, error } = await fetchWithRelation("Photo");
-
-  if (error) {
-    const hintOrMessage = `${error.hint ?? ""}${error.message ?? ""}`;
-    if (hintOrMessage.includes("photos") || hintOrMessage.includes("Photo")) {
-      const result2 = await fetchWithRelation("photos");
-      if (!result2.error) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data = result2.data as any;
-        error = null;
-      }
-    }
-  }
-
-  if (error) {
-    const result3 = await withRetry(async () => {
-      return await supabase.from("Album").select("*").eq("id", id).single();
-    });
-    if (!result3.error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data = result3.data as any;
-      error = null;
-    } else {
-      error = result3.error;
-    }
-  }
+  const { data, error } = await withRetry(async () => {
+    return await supabase
+      .from("albums")
+      .select(`
+        id,
+        title,
+        dateTaken:date_taken,
+        createdAt:created_at,
+        updatedAt:updated_at,
+        cloudinaryFolder:cloudinary_folder,
+        description,
+        coverPublicId:cover_public_id,
+        photos:photos(
+          id,
+          cloudinaryPublicId:cloudinary_public_id,
+          caption,
+          sortOrder:sort_order
+        )
+      `)
+      .eq("id", id)
+      .single();
+  });
 
   if (error || !data) {
     if (error && error.code !== "PGRST116") {

@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
 
   // 1. Fetch all records from the 'Post' table where 'published' is true.
   const { data: posts, error } = await supabase
-    .from("Post")
+    .from("posts")
     .select("id, title, content")
-    .not("publishedAt", "is", null);
+    .not("published_at", "is", null);
 
   if (error) {
     console.error("Error fetching posts:", error);

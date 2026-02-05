@@ -10,9 +10,21 @@ export default async function AdminMembersPage() {
   const supabase = await createClient();
 
   const { data: members } = await supabase
-    .from("Member")
-    .select("*")
-    .order("createdAt", { ascending: false });
+    .from("members")
+    .select(`
+      id,
+      displayName:display_name,
+      nickname,
+      role,
+      gender,
+      bio,
+      avatarUrl:avatar_url,
+      isActive:is_active,
+      profileId:profile_id,
+      createdAt:created_at,
+      updatedAt:updated_at
+    `)
+    .order("created_at", { ascending: false });
 
   const { data: profiles } = await supabase
     .from("profiles")

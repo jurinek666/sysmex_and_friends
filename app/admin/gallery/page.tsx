@@ -10,39 +10,52 @@ export const dynamic = "force-dynamic";
 export default async function AdminGalleryPage() {
   const supabase = await createClient();
 
-  // 1) První pokus: photos(count)
+  // Optimized query with snake_case aliases
+  // eslint-disable-next-line prefer-const
   let { data: albums, error } = await supabase
-    .from("Album")
-    .select("*, photos(count)")
-    .order("dateTaken", { ascending: false });
+    .from("albums")
+    .select(`
+      id,
+      title,
+      dateTaken:date_taken,
+      createdAt:created_at,
+      updatedAt:updated_at,
+      cloudinaryFolder:cloudinary_folder,
+      description,
+      coverPublicId:cover_public_id,
+      photos(count)
+    `)
+    .order("date_taken", { ascending: false });
 
-  // 2) Při chybě (typicky špatný název relace) zkusit Photo(count)
-  if (error && error?.hint?.includes?.("Photo")) {
-    const res = await supabase
-      .from("Album")
-      .select("*, Photo(count)")
-      .order("dateTaken", { ascending: false });
-    if (!res.error && res.data) {
-      albums = res.data.map((a: { Photo?: { count: number }[]; photos?: { count: number }[]; [k: string]: unknown }) => ({
-        ...a,
-        photos: a.Photo ?? a.photos,
-      }));
-      error = null;
-    }
-  }
-
-  // 3) Při stále přítomné chybě: pouze sloupce Album, bez vazby
   if (error) {
     logSupabaseError("AdminGalleryPage (albums)", error);
-    const res = await supabase.from("Album").select("*").order("dateTaken", { ascending: false });
+    // Fallback if relation fails
+    const res = await supabase
+      .from("albums")
+      .select(`
+        id,
+        title,
+        dateTaken:date_taken,
+        createdAt:created_at,
+        updatedAt:updated_at,
+        cloudinaryFolder:cloudinary_folder,
+        description,
+        coverPublicId:cover_public_id
+      `)
+      .order("date_taken", { ascending: false });
+
     albums = res.error ? [] : (res.data || []).map((a) => ({ ...a, photos: [{ count: 0 }] }));
   }
 
-  const safeAlbums = albums || [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const safeAlbums = (albums || []) as any[];
+
+  // Merge with Cloudinary counts from getAlbums (which handles caching of external API)
   const albumCounts = await getAlbums();
   const countById = new Map(
     albumCounts.map((album) => [album.id, album._count?.photos ?? 0])
   );
+
   const albumsWithCounts = safeAlbums.map((album) => ({
     ...album,
     photos: [{ count: countById.get(album.id) ?? album.photos?.[0]?.count ?? 0 }],
