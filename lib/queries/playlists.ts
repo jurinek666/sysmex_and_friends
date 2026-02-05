@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { withRetry, logSupabaseError } from "./utils";
+import { Playlist } from "@/lib/types";
 
-export async function getActivePlaylist() {
+export async function getActivePlaylist(): Promise<Playlist | null> {
   const supabase = await createClient();
   
   // Načteme aktivní playlist (nejnovější)
@@ -20,10 +21,10 @@ export async function getActivePlaylist() {
     return null;
   }
   
-  return data;
+  return data as Playlist | null;
 }
 
-export async function getAllPlaylists() {
+export async function getAllPlaylists(): Promise<Playlist[]> {
   const supabase = await createClient();
   
   // Načteme všechny playlisty
@@ -39,5 +40,5 @@ export async function getAllPlaylists() {
     return [];
   }
   
-  return data || [];
+  return (data || []) as Playlist[];
 }
