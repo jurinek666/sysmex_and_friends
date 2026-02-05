@@ -2,40 +2,34 @@ import { createClient } from "@/lib/supabase/server";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { MemberForm } from "./MemberForm";
 import { MemberList } from "./MemberList";
+import type { Member, Profile } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
-
-// Definujeme typ pro člena, aby TypeScript nekřičel
-interface Member {
-  id: string;
-  displayName: string;
-  nickname: string | null;
-  role: string | null;
-  gender: string;
-  bio: string | null;
-  isActive: boolean;
-}
 
 export default async function AdminMembersPage() {
   const supabase = await createClient();
 
-  // Nahrazeno prisma.member.findMany(...)
   const { data: members } = await supabase
     .from("Member")
     .select("*")
     .order("createdAt", { ascending: false });
 
-  // Převedeme na náš typ a zajistíme, že to není null
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("*")
+    .order("email", { ascending: true });
+
   const safeMembers = (members || []) as Member[];
+  const safeProfiles = (profiles || []) as Profile[];
 
   return (
     <AdminLayout title="Admin • Tým">
       <section className="bg-white p-6 rounded-2xl border shadow-sm mb-12">
         <h2 className="text-xl font-bold mb-4">Přidat člena</h2>
-        <MemberForm />
+        <MemberForm profiles={safeProfiles} />
       </section>
 
-      <MemberList members={safeMembers} />
+      <MemberList members={safeMembers} profiles={safeProfiles} />
     </AdminLayout>
   );
 }

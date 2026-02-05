@@ -1,8 +1,11 @@
+import Image from "next/image";
+
 export type MemberCardMember = {
   displayName: string;
   nickname?: string | null;
   role?: string | null;
   bio?: string | null;
+  avatarUrl?: string | null;
 };
 
 type MemberCardProps = {
@@ -20,7 +23,17 @@ export function MemberCard({ member, variant }: MemberCardProps) {
         <div className="relative w-16 h-16 mb-3">
           <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan to-neon-magenta rounded-full blur opacity-20 group-hover/item:opacity-40 transition-opacity" />
           <div className="relative w-full h-full rounded-full bg-sysmex-800 border-2 border-white/10 flex items-center justify-center overflow-hidden ring-2 ring-neon-magenta/30 group-hover/item:ring-neon-magenta/60 group-hover/item:scale-105 transition-all">
-            <span className="text-lg font-black text-white/90">{initials}</span>
+            {member.avatarUrl ? (
+              <Image
+                src={member.avatarUrl}
+                alt={member.displayName}
+                fill
+                className="object-cover"
+                sizes="64px"
+              />
+            ) : (
+              <span className="text-lg font-black text-white/90">{initials}</span>
+            )}
           </div>
         </div>
         <h3 className="text-sm font-bold text-white mb-1 line-clamp-1">
@@ -41,7 +54,17 @@ export function MemberCard({ member, variant }: MemberCardProps) {
       <div className="relative w-32 h-32 mb-6">
         <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan to-neon-magenta rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
         <div className="relative w-full h-full rounded-full bg-sysmex-800 border-2 border-white/10 flex items-center justify-center overflow-hidden ring-2 ring-neon-magenta/30 group-hover:ring-neon-magenta/60 group-hover:scale-105 transition-all duration-300">
-          <span className="text-3xl font-black text-white/90">{initials}</span>
+          {member.avatarUrl ? (
+            <Image
+              src={member.avatarUrl}
+              alt={member.displayName}
+              fill
+              className="object-cover"
+              sizes="128px"
+            />
+          ) : (
+            <span className="text-3xl font-black text-white/90">{initials}</span>
+          )}
         </div>
         {member.role && (
           <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-neon-magenta/15 border border-neon-magenta/50 rounded-full text-[10px] font-bold uppercase tracking-wider text-neon-magenta shadow-lg whitespace-nowrap">

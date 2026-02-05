@@ -3,22 +3,23 @@ import { Comment, EventParticipant, Profile } from "@/lib/types";
 
 // --- COMMENTS ---
 
-export async function getCommentsByPostSlug(supabase: SupabaseClient, slug: string): Promise<Comment[]> {
+export async function getComments(supabase: SupabaseClient, entityId: string, entityType: 'post' | 'event' | 'album' = 'post'): Promise<Comment[]> {
   const { data, error } = await supabase
     .from("comments")
     .select(`
       *,
       profile:profiles(*)
     `)
-    .eq("post_slug", slug)
+    .eq("entity_id", entityId)
+    .eq("entity_type", entityType)
     .order("created_at", { ascending: true });
 
   if (error) {
+    // Fallback for legacy comments (where entity_type might be null or missing, though migration should handle it)
     console.error("Error fetching comments:", error);
     return [];
   }
 
-  // Casting, protože Supabase Types možná ještě nejsou vygenerované
   return (data as unknown) as Comment[];
 }
 

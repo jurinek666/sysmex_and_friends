@@ -8,15 +8,33 @@ import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useScrollPosition } from "@/lib/hooks/useScrollPosition";
 import { DesktopNavLink } from "./DesktopNavLink";
+import { createClient } from "@/lib/supabase/client";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
   const [currentHash, setCurrentHash] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
   // Removed unused mousePosition
   const scrollPosition = useScrollPosition();
   const navRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setIsLoggedIn(true);
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+        if (profile?.role === 'admin') {
+          setIsAdmin(true);
+        }
+      }
+    };
+    checkUser();
+  }, []);
 
   const navLinks = [
     { name: "Aktuality", href: "/#aktuality" },
@@ -265,60 +283,87 @@ export function Navbar() {
               ))}
             </div>
 
-            {/* DESKTOP: LOGIN tlačítko + dropdown */}
-            <div className="hidden lg:block relative ml-2">
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center justify-center px-5 py-2.5 rounded-xl text-gray-200 hover:text-white font-bold uppercase tracking-tight text-sm transition-colors hover:bg-white/10 border border-white/20"
-                onClick={() => setIsLoginMenuOpen((prev) => !prev)}
-                aria-label="Otevřít přihlášení"
-                aria-expanded={isLoginMenuOpen}
-                aria-haspopup="true"
-              >
-                LOGIN
-              </motion.button>
-
-              <AnimatePresence>
-                {isLoginMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -8 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -8 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-white/20 shadow-2xl overflow-hidden z-50"
-                    style={{
-                      background: "linear-gradient(135deg, rgba(11,30,75,0.98) 0%, rgba(30,78,168,0.95) 100%)",
-                      backdropFilter: "blur(12px)",
-                    }}
+            {/* DESKTOP: LOGIN / DASHBOARD / ADMIN */}
+            <div className="hidden lg:flex items-center gap-2 ml-2">
+              {isLoggedIn ? (
+                <>
+                  <Link href="/dashboard">
+                     <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-5 py-2.5 rounded-xl text-gray-200 hover:text-white font-bold uppercase tracking-tight text-sm transition-colors hover:bg-white/10 border border-white/20"
+                    >
+                      DASHBOARD
+                    </motion.button>
+                  </Link>
+                  {isAdmin && (
+                    <Link href="/admin">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-5 py-2.5 rounded-xl text-neon-cyan hover:text-white font-bold uppercase tracking-tight text-sm transition-colors hover:bg-neon-cyan/20 border border-neon-cyan/50"
+                      >
+                        ADMIN
+                      </motion.button>
+                    </Link>
+                  )}
+                </>
+              ) : (
+                <div className="relative">
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center justify-center px-5 py-2.5 rounded-xl text-gray-200 hover:text-white font-bold uppercase tracking-tight text-sm transition-colors hover:bg-white/10 border border-white/20"
+                    onClick={() => setIsLoginMenuOpen((prev) => !prev)}
+                    aria-label="Otevřít přihlášení"
+                    aria-expanded={isLoginMenuOpen}
+                    aria-haspopup="true"
                   >
-                    <div className="px-4 pt-3 pb-2">
-                      <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">LOGIN</p>
-                      <div className="flex flex-col gap-1">
-                        <motion.div initial={{ opacity: 0, x: 4 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.03 }}>
-                          <Link
-                            href="/login"
-                            className="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-tight text-gray-200 hover:text-white hover:bg-white/10 transition-colors"
-                            onClick={() => setIsLoginMenuOpen(false)}
-                          >
-                            ČLEN TÝMU
-                          </Link>
-                        </motion.div>
-                        <motion.div initial={{ opacity: 0, x: 4 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.06 }}>
-                          <Link
-                            href="/admin-login"
-                            className="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-tight text-gray-200 hover:text-white hover:bg-white/10 transition-colors"
-                            onClick={() => setIsLoginMenuOpen(false)}
-                          >
-                            ADMIN
-                          </Link>
-                        </motion.div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    LOGIN
+                  </motion.button>
+
+                  <AnimatePresence>
+                    {isLoginMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute right-0 top-full mt-2 w-48 rounded-2xl border border-white/20 shadow-2xl overflow-hidden z-50"
+                        style={{
+                          background: "linear-gradient(135deg, rgba(11,30,75,0.98) 0%, rgba(30,78,168,0.95) 100%)",
+                          backdropFilter: "blur(12px)",
+                        }}
+                      >
+                        <div className="px-4 pt-3 pb-2">
+                          <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">LOGIN</p>
+                          <div className="flex flex-col gap-1">
+                            <motion.div initial={{ opacity: 0, x: 4 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.03 }}>
+                              <Link
+                                href="/login"
+                                className="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-tight text-gray-200 hover:text-white hover:bg-white/10 transition-colors"
+                                onClick={() => setIsLoginMenuOpen(false)}
+                              >
+                                ČLEN TÝMU
+                              </Link>
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, x: 4 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.06 }}>
+                              <Link
+                                href="/admin-login"
+                                className="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-tight text-gray-200 hover:text-white hover:bg-white/10 transition-colors"
+                                onClick={() => setIsLoginMenuOpen(false)}
+                              >
+                                ADMIN
+                              </Link>
+                            </motion.div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
             </div>
 
             {/* MOBILE MENU TOGGLE */}
@@ -423,24 +468,47 @@ export function Navbar() {
                 })}
               </div>
 
-              {/* LOGIN section at bottom of mobile menu */}
+              {/* LOGIN / DASHBOARD section at bottom of mobile menu */}
               <div className="mt-4 pt-4 border-t border-white/20">
-                <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2 px-5">LOGIN</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2 px-5">{isLoggedIn ? "MŮJ ÚČET" : "LOGIN"}</p>
                 <div className="flex flex-col space-y-2">
-                  <Link
-                    href="/login"
-                    className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-sysmex-800/80 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    ČLEN TÝMU
-                  </Link>
-                  <Link
-                    href="/admin-login"
-                    className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-sysmex-800/80 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    ADMIN
-                  </Link>
+                  {isLoggedIn ? (
+                    <>
+                      <Link
+                        href="/dashboard"
+                        className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-sysmex-800/80 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        DASHBOARD
+                      </Link>
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-neon-cyan hover:text-white bg-sysmex-800/80 border border-neon-cyan/30 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          ADMIN
+                        </Link>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/login"
+                        className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-sysmex-800/80 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        ČLEN TÝMU
+                      </Link>
+                      <Link
+                        href="/admin-login"
+                        className="block px-5 py-3.5 rounded-lg font-black uppercase tracking-tight text-sm text-gray-300 hover:text-white bg-sysmex-800/80 border border-white/15 hover:border-neon-cyan/60 hover:bg-white/15 transition-all"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        ADMIN
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
