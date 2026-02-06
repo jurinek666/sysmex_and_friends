@@ -28,15 +28,6 @@ export default function RootLayout({
   return (
     <html lang="cs" className="h-full">
       <head>
-        <script
-          type="text/javascript"
-          async
-          data-cmp-ab="1"
-          src="https://cdn.consentmanager.net/delivery/autoblocking/e24eb5da1274d.js"
-          data-cmp-host="b.delivery.consentmanager.net"
-          data-cmp-cdn="cdn.consentmanager.net"
-          data-cmp-codesrc="0"
-        />
         {/* Google tag (gtag.js) */}
         <script
           async

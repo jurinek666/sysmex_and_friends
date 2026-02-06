@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { Users } from "lucide-react";
@@ -38,6 +39,15 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen pt-32 md:pt-40 pb-20">
+      <Script
+        id="consentmanager"
+        strategy="beforeInteractive"
+        src="https://cdn.consentmanager.net/delivery/autoblocking/e24eb5da1274d.js"
+        data-cmp-ab="1"
+        data-cmp-host="b.delivery.consentmanager.net"
+        data-cmp-cdn="cdn.consentmanager.net"
+        data-cmp-codesrc="0"
+      />
       <Hero upcomingEvent={upcomingEvent} />
 
       <div className="max-w-7xl mx-auto px-4 md:px-8">
