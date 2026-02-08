@@ -5,6 +5,7 @@ import { cs } from "date-fns/locale";
 import ReactMarkdown from "react-markdown";
 import { ThumbsUp, Share2, Rss, ChevronDown } from "lucide-react";
 import { getPostBySlug, getRecentPosts, getFeaturedPost } from "@/lib/queries/posts";
+import { Post } from "@/lib/types";
 
 export const revalidate = 60;
 
@@ -26,9 +27,17 @@ export default async function AktualityPage({
 
   const targetSlug =
     slug ?? featuredPost?.slug ?? recentPosts[0]?.slug ?? null;
-  const selectedPost = targetSlug
-    ? await getPostBySlug(targetSlug)
-    : null;
+
+  // Optimization: If the target slug matches the featured post (which we already have),
+  // reuse it to avoid an extra database call.
+  let selectedPost: Post | null = null;
+  if (targetSlug) {
+    if (featuredPost && featuredPost.slug === targetSlug) {
+      selectedPost = featuredPost;
+    } else {
+      selectedPost = await getPostBySlug(targetSlug);
+    }
+  }
   const selectedSlug = selectedPost?.slug ?? null;
 
   return (

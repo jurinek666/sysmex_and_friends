@@ -41,6 +41,10 @@
   ],
   "exclude": [
     "node_modules",
-    ".next"
+    ".next",
+    "__tests__",
+    "scripts",
+    "verification",
+    "vitest.config.mts"
   ]
 }
