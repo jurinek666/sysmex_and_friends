@@ -32,4 +32,22 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 
-export const env = envSchema.parse(process.env);
+let parsedEnv: z.infer<typeof envSchema>;
+
+try {
+  parsedEnv = envSchema.parse(process.env);
+} catch (error) {
+  if (error instanceof z.ZodError) {
+    const missing = error.issues.map((issue) => issue.path.join(".")).join(", ");
+    console.error(
+      `❌ Invalid environment variables: ${missing}`
+    );
+    console.error(
+      `If you are deploying to Render, please set these variables in the Environment tab of your service settings.`
+    );
+    throw new Error("Invalid environment variables");
+  }
+  throw error;
+}
+
+export const env = parsedEnv;
