@@ -7,9 +7,7 @@ import ReactMarkdown from "react-markdown";
 import { getPostBySlug } from "@/lib/queries/posts";
 import { getComments } from "@/lib/queries/team";
 import CommentSection from "@/components/team/CommentSection";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import { env } from "@/lib/env";
+import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 60;
 
@@ -24,14 +22,7 @@ export default async function PostDetailPage({
   if (!post) return notFound();
 
   // Setup Supabase Client for Server Component
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-      env.NEXT_PUBLIC_SUPABASE_URL,
-      env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      {
-          cookies: { getAll() { return cookieStore.getAll() } }
-      }
-  );
+  const supabase = await createClient();
 
   // Load comments using the server client
   const comments = await getComments(supabase, slug, "post");

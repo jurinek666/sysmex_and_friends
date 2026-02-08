@@ -5,6 +5,16 @@ import { withRetry, logSupabaseError } from "./utils";
 import { Album, AlbumDetail, AlbumPhoto } from "@/lib/types";
 
 // Helper for Supabase rows
+interface PhotoRow {
+  id: string;
+  cloudinaryPublicId: string;
+  cloudinary_public_id?: string;
+  public_id?: string;
+  caption: string | null;
+  sortOrder: number | null;
+  sort_order?: number | null;
+}
+
 interface AlbumRow {
   id: string;
   title: string;
@@ -17,15 +27,13 @@ interface AlbumRow {
   Photo?: { count: number }[];
 }
 
-interface AlbumDetailRow extends AlbumRow {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Photo: any[];
+interface AlbumDetailRow extends Omit<AlbumRow, 'Photo'> {
+  Photo: PhotoRow[];
 }
 
 export async function getAlbums(): Promise<Album[]> {
   const supabase = await createClient();
 
-  // Optimized query with snake_case mapping via aliases
   const { data, error } = await withRetry(async () => {
     return await supabase
       .from("Album")
@@ -48,6 +56,7 @@ export async function getAlbums(): Promise<Album[]> {
     return [];
   }
 
+  // Cast safely using the defined interface
   const rows = (data || []) as unknown as AlbumRow[];
 
   const albums: Album[] = rows.map((row) => ({
@@ -60,7 +69,7 @@ export async function getAlbums(): Promise<Album[]> {
     description: row.description,
     coverPublicId: row.coverPublicId,
     _count: {
-      photos: (row as { Photo?: { count: number }[] }).Photo?.[0]?.count ?? 0,
+      photos: row.Photo?.[0]?.count ?? 0,
     },
   }));
 
@@ -114,10 +123,9 @@ export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4): Promise<A
 }
 
 async function applyPhotosAndCloudinary(data: AlbumDetailRow): Promise<AlbumDetail> {
-  const rawPhotos = Array.isArray(data.Photo) ? data.Photo : [];
+  const rawPhotos: PhotoRow[] = Array.isArray(data.Photo) ? data.Photo : [];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let photos: AlbumPhoto[] = rawPhotos.map((p: any, i: number) => ({
+  let photos: AlbumPhoto[] = rawPhotos.map((p, i) => ({
     id: p.id || `local-${i}`,
     cloudinaryPublicId: p.cloudinaryPublicId || p.cloudinary_public_id || p.public_id || "",
     caption: p.caption || null,
@@ -187,5 +195,6 @@ export async function getAlbum(id: string): Promise<AlbumDetail | null> {
     return null;
   }
 
+  // Cast safely using the defined interface
   return await applyPhotosAndCloudinary(data as unknown as AlbumDetailRow);
 }

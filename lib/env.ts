@@ -32,4 +32,37 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 
-export const env = envSchema.parse(process.env);
+let parsedEnv: z.infer<typeof envSchema>;
+
+try {
+  parsedEnv = envSchema.parse(process.env);
+} catch (error) {
+  const isSkipValidation = !!process.env.SKIP_ENV_VALIDATION;
+
+  if (isSkipValidation) {
+    console.warn("⚠️  Skipping environment validation due to SKIP_ENV_VALIDATION=true");
+    // Return a dummy object matching the schema to allow build to proceed
+    // Note: This will result in broken runtime behavior if critical vars are missing
+    parsedEnv = {
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || "https://example.supabase.co",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "dummy-key",
+      NODE_ENV: "production", // Default to production for build
+    } as z.infer<typeof envSchema>;
+  } else if (error instanceof z.ZodError) {
+    const missing = error.issues.map((issue) => issue.path.join(".")).join(", ");
+    console.error(
+      `❌ Invalid environment variables: ${missing}`
+    );
+    console.error(
+      `If you are deploying to Render, please set these variables in the Environment tab of your service settings.`
+    );
+    console.error(
+      `To bypass this check during build (e.g. for Docker), set SKIP_ENV_VALIDATION=true`
+    );
+    throw new Error("Invalid environment variables");
+  } else {
+    throw error;
+  }
+}
+
+export const env = parsedEnv;
