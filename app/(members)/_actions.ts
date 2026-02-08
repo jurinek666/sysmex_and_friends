@@ -1,8 +1,6 @@
 "use server";
 
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-import { env } from '@/lib/env'
+import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache';
 import { getParticipantsByEventId } from '@/lib/queries/team';
 import { getGoingOrderedByCreatedAt, MAX_EVENT_PARTICIPANTS } from '@/lib/events';
@@ -20,25 +18,7 @@ export async function addComment(formData: FormData) {
         return { error: "Chybí obsah nebo ID entity" };
     }
 
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-        env.NEXT_PUBLIC_SUPABASE_URL,
-        env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-        {
-          cookies: {
-            getAll() { return cookieStore.getAll() },
-            setAll(cookiesToSet) {
-                 // Server Action context
-                 try {
-                    cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
-                 } catch (err) {
-                     // ignore
-                     console.error(err)
-                 }
-            },
-          },
-        }
-    );
+    const supabase = await createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -49,7 +29,9 @@ export async function addComment(formData: FormData) {
     const { error } = await supabase.from("comments").insert({
         entity_id: entityId,
         entity_type: entityType,
-        post_slug: entityId, // zpětná kompatibilita (sloupec NOT NULL)
+        // zpětná kompatibilita (sloupec NOT NULL).
+        // Pro non-post entity (Event/Album) zde ukládáme entityId (UUID), abychom splnili constraint.
+        post_slug: entityId,
         user_id: user.id,
         content: content
     });
@@ -71,32 +53,10 @@ export async function addComment(formData: FormData) {
     return { success: true };
 }
 
-function getMembersSupabase() {
-    return (async () => {
-        const cookieStore = await cookies();
-        return createServerClient(
-            env.NEXT_PUBLIC_SUPABASE_URL,
-            env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-            {
-                cookies: {
-                    getAll() { return cookieStore.getAll() },
-                    setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
-                        try {
-                            cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
-                        } catch (err) {
-                            console.error(err)
-                        }
-                    },
-                },
-            }
-        );
-    })();
-}
-
 export type UpdateProfileResult = { success: true } | { success: false; error: string };
 
 export async function updateProfile(formData: FormData): Promise<UpdateProfileResult> {
-    const supabase = await getMembersSupabase();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Musíte být přihlášen" };
 
@@ -130,7 +90,7 @@ export async function setEventParticipation(
     status: "going" | "maybe" | "not_going",
     note?: string | null
 ): Promise<SetEventParticipationResult> {
-    const supabase = await getMembersSupabase();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Musíte být přihlášen" };
 
@@ -183,7 +143,7 @@ export async function setEventParticipation(
 }
 
 export async function markNotificationRead(notificationId: string): Promise<{ success: boolean; error?: string }> {
-    const supabase = await getMembersSupabase();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Musíte být přihlášen" };
 
