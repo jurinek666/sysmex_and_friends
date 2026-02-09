@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "clean:next": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
-    "check": "npm run lint && npm run clean:next && tsc --noEmit && npm run build",
+    "check": "pnpm run lint && pnpm run clean:next && tsc --noEmit && pnpm run build",
     "seed:users": "ts-node scripts/create-test-users.ts"
   },
   "dependencies": {
@@ -33,7 +33,6 @@
     "next-cloudinary": "6.17.5",
     "playwright": "1.58.1",
     "plotly.js-dist-min": "3.3.1",
-    "pnpm": "10.28.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-markdown": "10.1.0",
