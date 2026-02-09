@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
   const { data: posts, error } = await supabase
     .from("Post")
     .select("id, title, content")
+    .eq("isPublished", true)
     .not("publishedAt", "is", null);
 
   if (error) {

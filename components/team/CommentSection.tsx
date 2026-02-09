@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { addComment } from "@/app/(members)/_actions";
 import { Comment } from "@/lib/types";
 import { format } from "date-fns";
@@ -19,8 +20,10 @@ interface CommentSectionProps {
 }
 
 export default function CommentSection({ postSlug, entityId, entityType = 'post', initialComments, isLoggedIn, compact = false }: CommentSectionProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [comments, setComments] = useState<Comment[]>(initialComments);
+  const router = useRouter();
+  // Používáme přímo props, aby se projevilo revalidování z rodiče (router.refresh)
+  const comments = initialComments;
+
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [isExpanded, setIsExpanded] = useState(!compact);
@@ -40,9 +43,8 @@ export default function CommentSection({ postSlug, entityId, entityType = 'post'
 
       if (result.success) {
           setContent("");
-          // V reálné app bychom buď revalidovali path nebo fetchli nové komentáře
-          // Tady spoléháme na server action revalidatePath, ale musíme refreshnout router nebo reloadnout
-          window.location.reload();
+          // Refreshneme router, což přenačte data v Server Componentě a pošle nové props
+          router.refresh();
       } else {
           alert(result.error);
       }
