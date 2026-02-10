@@ -428,6 +428,7 @@ export async function adminCreateMember(_prevState: unknown, formData: FormData)
       role: validated.role,
       gender: validated.gender,
       bio: validated.bio,
+      profile_id: validated.profile_id,
       avatarUrl: validated.avatarUrl,
       createdAt: now,
       updatedAt: now,
@@ -482,6 +483,7 @@ export async function adminUpdateMember(_prevState: unknown, formData: FormData)
         role: validated.role,
         gender: validated.gender,
         bio: validated.bio,
+        profile_id: validated.profile_id,
         avatarUrl: validated.avatarUrl,
         updatedAt: new Date().toISOString(),
       })
