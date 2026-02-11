@@ -8,7 +8,9 @@ import { AlbumGallery } from "@/components/galerie/AlbumGallery";
 import { Images } from "lucide-react";
 import { getComments } from "@/lib/queries/team";
 import CommentSection from "@/components/team/CommentSection";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { env } from "@/lib/env";
 
 export const revalidate = 300;
 
@@ -33,7 +35,14 @@ export default async function AlbumDetailPage(props: PageProps) {
   const coverId = (album.coverPublicId || "").trim();
 
   // Load comments
-  const supabase = await createClient();
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+      env.NEXT_PUBLIC_SUPABASE_URL,
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+          cookies: { getAll() { return cookieStore.getAll() } }
+      }
+  );
   const comments = await getComments(supabase, id, "album");
   const { data: { user } } = await supabase.auth.getUser();
 
