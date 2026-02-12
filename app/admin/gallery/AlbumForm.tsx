@@ -4,15 +4,7 @@ import { ActionForm } from "@/components/admin/ActionForm";
 import { adminCreateAlbum, adminUpdateAlbum } from "../_actions";
 import { Folder } from "lucide-react";
 import { X } from "lucide-react";
-
-interface Album {
-  id: string;
-  title: string;
-  dateTaken: string;
-  cloudinaryFolder: string;
-  description: string | null;
-  coverPublicId: string | null;
-}
+import { Album } from "@/lib/types";
 
 interface AlbumFormProps {
   album?: Album;
@@ -27,7 +19,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
   return (
     <ActionForm
       action={async (prevState, formData) => {
-        if (isEdit) {
+        if (isEdit && album) {
           formData.append("id", album.id);
           return await adminUpdateAlbum(prevState, formData);
         }
@@ -39,7 +31,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
       onSuccess={onCancel}
     >
       <div className="space-y-4">
-        {isEdit && (
+        {isEdit && album && (
           <div className="bg-purple-50 border border-purple-200 text-purple-800 px-4 py-2 rounded-xl text-sm">
             Upravujete album: <strong>{album.title}</strong>
           </div>
@@ -77,7 +69,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
               name="cloudinaryFolder" 
               placeholder="01_leden nebo galerie/01_leden" 
               required 
-              defaultValue={album?.cloudinaryFolder}
+              defaultValue={album?.cloudinaryFolder || ""}
               className="w-full p-3 pl-10 border rounded-xl font-mono text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
             />
           </div>
