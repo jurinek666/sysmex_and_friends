@@ -35,7 +35,6 @@
     "**/*.tsx",
     "**/*.mts",
     "next.config.mjs",
-    "middleware.ts.bak",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
