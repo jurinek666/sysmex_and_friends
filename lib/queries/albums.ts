@@ -5,7 +5,7 @@ import { withRetry, logSupabaseError } from "./utils";
 import { Album, AlbumDetail, AlbumPhoto } from "@/lib/types";
 
 // Helper for Supabase rows
-interface AlbumRow {
+interface BaseAlbumRow {
   id: string;
   title: string;
   dateTaken: string;
@@ -14,12 +14,25 @@ interface AlbumRow {
   cloudinaryFolder: string | null;
   description: string | null;
   coverPublicId: string | null;
+}
+
+interface AlbumListRow extends BaseAlbumRow {
   Photo?: { count: number }[];
 }
 
-interface AlbumDetailRow extends AlbumRow {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Photo: any[];
+interface PhotoRow {
+  id: string;
+  cloudinaryPublicId?: string;
+  caption: string | null;
+  sortOrder?: number;
+  // Fallbacks for potential schema variations, though query specifies camelCase
+  cloudinary_public_id?: string;
+  public_id?: string;
+  sort_order?: number;
+}
+
+interface AlbumDetailRow extends BaseAlbumRow {
+  Photo: PhotoRow[];
 }
 
 export async function getAlbums(): Promise<Album[]> {
@@ -48,7 +61,7 @@ export async function getAlbums(): Promise<Album[]> {
     return [];
   }
 
-  const rows = (data || []) as unknown as AlbumRow[];
+  const rows = (data || []) as unknown as AlbumListRow[];
 
   const albums: Album[] = rows.map((row) => ({
     id: row.id,
@@ -60,7 +73,7 @@ export async function getAlbums(): Promise<Album[]> {
     description: row.description,
     coverPublicId: row.coverPublicId,
     _count: {
-      photos: (row as { Photo?: { count: number }[] }).Photo?.[0]?.count ?? 0,
+      photos: row.Photo?.[0]?.count ?? 0,
     },
   }));
 
@@ -116,8 +129,7 @@ export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4): Promise<A
 async function applyPhotosAndCloudinary(data: AlbumDetailRow): Promise<AlbumDetail> {
   const rawPhotos = Array.isArray(data.Photo) ? data.Photo : [];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let photos: AlbumPhoto[] = rawPhotos.map((p: any, i: number) => ({
+  let photos: AlbumPhoto[] = rawPhotos.map((p, i) => ({
     id: p.id || `local-${i}`,
     cloudinaryPublicId: p.cloudinaryPublicId || p.cloudinary_public_id || p.public_id || "",
     caption: p.caption || null,
