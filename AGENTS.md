@@ -44,7 +44,7 @@ Cíl: dodávat změny rychle, ale bezpečně – bez rozbíjení buildů a bez h
 ## Databáze (Supabase)
 
 - Projekt používá **Supabase** (PostgreSQL) a `@supabase/ssr` pro autentizaci.
-- Middleware logika (refresh session, ochrana routes) je umístěna v souboru `middleware.ts`.
+- Middleware logika (refresh session, ochrana routes) je umístěna v souboru `middleware.ts`. Pozn.: Ačkoliv Next.js 16.1.6 varuje před deprecation ve prospěch `proxy.ts`, `proxy.ts` v tomto setupu negeneruje manifest a nefunguje. Používáme proto `middleware.ts`, dokud nebude issue vyřešeno.
 - Při změnách schématu dbej na zpětnou kompatibilitu.
 
 ## Práce s TODO a bugy
