@@ -16,7 +16,7 @@ export default function DashboardPage() {
     async function loadProfile() {
       try {
         const userProfile = await getCurrentUserProfile(supabase);
-        setProfile((userProfile as unknown) as Profile);
+        setProfile(userProfile);
       } catch (error) {
         console.error("Failed to load profile", error);
       } finally {
