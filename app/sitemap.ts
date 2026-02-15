@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch data for dynamic routes
   // Fetching a large number of posts to approximate "all" posts as requested
   const posts = await getRecentPosts(1000)
-  const albums = await getAlbums()
+  const albums = await getAlbums({ enriched: false })
 
   // Define static routes
   const staticRoutes: MetadataRoute.Sitemap = [

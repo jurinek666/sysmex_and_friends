@@ -4,6 +4,17 @@ import { NextRequest, NextResponse } from "next/server";
 export const maxDuration = 300; // Allow 5 minutes for many links
 export const dynamic = 'force-dynamic';
 
+interface PostReference {
+  title: string;
+  id: string;
+}
+
+interface BrokenLink {
+  url: string;
+  posts: PostReference[];
+  status: number | string;
+}
+
 export async function GET(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret) {
@@ -37,7 +48,7 @@ export async function GET(request: NextRequest) {
 
   // 2. Parse the 'content' field to extract all external hyperlinks.
   // Map unique URLs to the posts that contain them.
-  const urlMap = new Map<string, { title: string; id: string }[]>();
+  const urlMap = new Map<string, PostReference[]>();
   // Regex to match [text](url) where url starts with http/https
   const regex = /\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
 
@@ -59,7 +70,7 @@ export async function GET(request: NextRequest) {
   }
 
   const uniqueUrls = Array.from(urlMap.keys());
-  const brokenLinks: { url: string; posts: { title: string; id: string }[]; status: number | string }[] = [];
+  const brokenLinks: BrokenLink[] = [];
 
   // 3. Check each unique URL.
   // We process in batches to be polite and efficient.
@@ -67,8 +78,8 @@ export async function GET(request: NextRequest) {
   for (let i = 0; i < uniqueUrls.length; i += BATCH_SIZE) {
     const batch = uniqueUrls.slice(i, i + BATCH_SIZE);
 
-    await Promise.all(
-      batch.map(async (url) => {
+    const batchResults = await Promise.all(
+      batch.map(async (url): Promise<BrokenLink | null> => {
         try {
           // 3. Lightweight HTTP HEAD request with 5s timeout
           // using AbortSignal.timeout() (Node.js 18+ / Next.js 16)
@@ -84,11 +95,11 @@ export async function GET(request: NextRequest) {
           // Note: Some servers might return 405 Method Not Allowed for HEAD.
           // We flag 404 and 5xx.
           if (response.status === 404 || response.status >= 500) {
-             brokenLinks.push({
+             return {
                url,
                posts: urlMap.get(url)!,
                status: response.status,
-             });
+             };
           }
         } catch (err: unknown) {
           // Handle timeouts and network errors
@@ -97,14 +108,18 @@ export async function GET(request: NextRequest) {
             errorMessage = err.name === 'TimeoutError' || err.name === 'AbortError' ? 'Timeout' : err.message;
           }
 
-          brokenLinks.push({
+          return {
             url,
             posts: urlMap.get(url)!,
             status: errorMessage,
-          });
+          };
         }
+        return null;
       })
     );
+
+    const validResults = batchResults.filter((r): r is BrokenLink => r !== null);
+    brokenLinks.push(...validResults);
   }
 
   // 5. If broken links are found, send a summary notification to Discord.

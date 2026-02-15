@@ -22,12 +22,12 @@ interface AlbumDetailRow extends AlbumRow {
   Photo: any[];
 }
 
-export async function getAlbums(): Promise<Album[]> {
+export async function getAlbums({ limit, enriched = true }: { limit?: number; enriched?: boolean } = {}): Promise<Album[]> {
   const supabase = await createClient();
 
   // Optimized query with snake_case mapping via aliases
   const { data, error } = await withRetry(async () => {
-    return await supabase
+    let query = supabase
       .from("Album")
       .select(`
         id,
@@ -41,6 +41,12 @@ export async function getAlbums(): Promise<Album[]> {
         Photo(count)
       `)
       .order("dateTaken", { ascending: false });
+
+    if (limit) {
+      query = query.limit(limit);
+    }
+
+    return await query;
   });
 
   if (error) {
@@ -63,6 +69,10 @@ export async function getAlbums(): Promise<Album[]> {
       photos: (row as { Photo?: { count: number }[] }).Photo?.[0]?.count ?? 0,
     },
   }));
+
+  if (!enriched) {
+    return albums;
+  }
 
   const getCloudinaryCountCached = (folder: string) =>
     unstable_cache(
@@ -96,8 +106,8 @@ export async function getAlbums(): Promise<Album[]> {
   return withCloudCounts;
 }
 
-export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4): Promise<Album[]> {
-  const albums = await getAlbums();
+export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4, limit?: number): Promise<Album[]> {
+  const albums = await getAlbums({ limit });
   const toEnrich = albums.slice(0, maxToEnrich);
   const enriched = await Promise.all(
     toEnrich.map(async (album) => {
