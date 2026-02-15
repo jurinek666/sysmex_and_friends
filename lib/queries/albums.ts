@@ -22,12 +22,12 @@ interface AlbumDetailRow extends AlbumRow {
   Photo: any[];
 }
 
-export async function getAlbums(limit?: number): Promise<Album[]> {
+export async function getAlbums(): Promise<Album[]> {
   const supabase = await createClient();
 
   // Optimized query with snake_case mapping via aliases
   const { data, error } = await withRetry(async () => {
-    let query = supabase
+    return await supabase
       .from("Album")
       .select(`
         id,
@@ -41,12 +41,6 @@ export async function getAlbums(limit?: number): Promise<Album[]> {
         Photo(count)
       `)
       .order("dateTaken", { ascending: false });
-
-    if (limit) {
-      query = query.limit(limit);
-    }
-
-    return await query;
   });
 
   if (error) {
@@ -102,8 +96,8 @@ export async function getAlbums(limit?: number): Promise<Album[]> {
   return withCloudCounts;
 }
 
-export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4, fetchLimit?: number): Promise<Album[]> {
-  const albums = await getAlbums(fetchLimit);
+export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4): Promise<Album[]> {
+  const albums = await getAlbums();
   const toEnrich = albums.slice(0, maxToEnrich);
   const enriched = await Promise.all(
     toEnrich.map(async (album) => {

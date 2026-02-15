@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Optimalizace pro Docker a CI/CD (Render)
+  output: "standalone",
+  typescript: {
+    // TypeScript chyby kontrolujeme v CI pipeline (npm run check),
+    // takže zde můžeme ignorovat chyby při buildu pro robustnější deploy.
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       {
