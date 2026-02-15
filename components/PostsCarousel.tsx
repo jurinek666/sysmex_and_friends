@@ -25,13 +25,6 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
 
   const safePosts = useMemo(() => posts ?? [], [posts]);
 
-  // Reset index if out of bounds when posts change
-  useEffect(() => {
-    if (currentIndex >= safePosts.length && safePosts.length > 0) {
-      setCurrentIndex(0);
-    }
-  }, [safePosts.length, currentIndex]);
-
   useEffect(() => {
     if (safePosts.length <= 1) {
       return;
@@ -57,10 +50,6 @@ export function PostsCarousel({ posts }: PostsCarouselProps) {
   }
 
   const currentPost = safePosts[currentIndex];
-
-  // Safety check to prevent crashes during re-renders or data inconsistencies
-  if (!currentPost && safePosts.length > 0) return null;
-
   const canGoLeft = currentIndex > 0;
   const canGoRight = currentIndex < safePosts.length - 1;
 

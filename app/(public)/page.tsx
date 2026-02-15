@@ -31,7 +31,7 @@ export default async function Home() {
     getLatestResults(5),
     getAllPlaylists(),
     getActiveMembers(),
-    getAlbumsWithRandomCoverPhotos(4, 4),
+    getAlbumsWithRandomCoverPhotos(4),
     getUpcomingEvents(5),
   ]);
 
