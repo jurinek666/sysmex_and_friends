@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   const { data: posts, error } = await supabase
     .from("Post")
     .select("id, title, content")
-    .not("publishedAt", "is", null);
+    .eq("isPublished", true);
 
   if (error) {
     console.error("Error fetching posts:", error);
