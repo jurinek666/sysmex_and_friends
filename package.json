@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "clean:next": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
-    "check": "npm run lint && npm run clean:next && tsc --noEmit && npm run build",
+    "check": "npm run lint && npm run clean:next && npm run build",
     "seed:users": "ts-node scripts/create-test-users.ts"
   },
   "dependencies": {

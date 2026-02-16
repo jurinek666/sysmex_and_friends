@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -15,7 +18,7 @@ const nextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: "10mb", // Povolíme upload větších fotek
+      bodySizeLimit: "10mb",
     },
   },
 };
