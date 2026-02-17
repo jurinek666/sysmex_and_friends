@@ -6,7 +6,16 @@ import { AlbumForm } from "./AlbumForm";
 import { Folder, Calendar } from "lucide-react";
 import { useState } from "react";
 import { Edit2 } from "lucide-react";
-import { Album } from "@/lib/types";
+
+interface Album {
+  id: string;
+  title: string;
+  dateTaken: string;
+  cloudinaryFolder: string;
+  description: string | null;
+  coverPublicId: string | null;
+  photos?: Array<{ count: number }>;
+}
 
 interface AlbumListProps {
   albums: Album[];
@@ -41,7 +50,7 @@ export function AlbumList({ albums }: AlbumListProps) {
                 <span className="font-mono text-xs">{album.cloudinaryFolder}</span>
               </span>
               <span>
-                {album._count?.photos ?? 0} fotek
+                {album.photos?.[0]?.count ?? 0} fotek
               </span>
             </div>
           </div>

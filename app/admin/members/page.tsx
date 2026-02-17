@@ -20,7 +20,6 @@ export default async function AdminMembersPage() {
       bio,
       avatarUrl,
       isActive,
-      profileId:profile_id,
       createdAt,
       updatedAt
     `)
