@@ -27,15 +27,16 @@ export default function RootLayout({
 
   return (
     <html lang="cs" className="h-full">
-      <head>
-        {/* Google tag (gtag.js) */}
-        <script
-          async
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900 flex flex-col min-h-full`}
+      >
+        <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+          strategy="afterInteractive"
         />
         <Script
           id="gtag-init"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -45,10 +46,6 @@ export default function RootLayout({
             `,
           }}
         />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900 flex flex-col min-h-full`}
-      >
         {children}
       </body>
     </html>
