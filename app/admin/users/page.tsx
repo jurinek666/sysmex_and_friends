@@ -1,5 +1,5 @@
+import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/admin/auth";
-import { getAllProfiles } from "@/lib/queries/users";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { UserList } from "./UserList";
 
@@ -17,13 +17,17 @@ export interface ProfileRow {
 
 export default async function AdminUsersPage() {
   await requireAuth();
+  const supabase = await createClient();
 
-  const profiles = await getAllProfiles();
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, email, display_name, avatar_url, role, created_at, updated_at")
+    .order("created_at", { ascending: false });
 
   // Propojení členů s profily: tabulka Member nemá sloupec profile_id (lze doplnit migrací).
   const linkedMembers: Record<string, string> = {};
 
-  const list = (profiles || []) as unknown as ProfileRow[];
+  const list = (profiles || []) as ProfileRow[];
 
   return (
     <AdminLayout title="Admin • Uživatelé">

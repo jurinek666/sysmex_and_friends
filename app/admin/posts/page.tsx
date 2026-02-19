@@ -1,12 +1,37 @@
-import { getAllPosts } from "@/lib/queries/posts";
+import { createClient } from "@/lib/supabase/server";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { PostForm } from "./PostForm";
 import { PostList } from "./PostList";
+import { Post } from "@/lib/types";
+import { withRetry } from "@/lib/queries/utils";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPostsPage() {
-  const posts = await getAllPosts();
+  const supabase = await createClient();
+
+  // Nahrazeno prisma.post.findMany(...)
+  const result = await withRetry(async () => {
+    return await supabase
+      .from("Post")
+      .select(`
+        id,
+        slug,
+        title,
+        excerpt,
+        content,
+        coverImageUrl,
+        isFeatured,
+        isPublished,
+        publishedAt,
+        createdAt,
+        updatedAt
+      `)
+      .order("createdAt", { ascending: false });
+  });
+
+  // Převedeme na náš typ a zajistíme, že to není null
+  const safePosts = (result.data || []) as Post[];
 
   return (
     <AdminLayout title="Admin • Články">
@@ -15,7 +40,7 @@ export default async function AdminPostsPage() {
         <PostForm />
       </section>
 
-      <PostList posts={posts} />
+      <PostList posts={safePosts} />
     </AdminLayout>
   );
 }

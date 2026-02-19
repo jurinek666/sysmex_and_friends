@@ -96,32 +96,3 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   
   return result.data as Post;
 }
-
-export async function getAllPosts(): Promise<Post[]> {
-  const supabase = await createClient();
-
-  const result = await withRetry(async () => {
-    return await supabase
-      .from("Post")
-      .select(`
-        id,
-        slug,
-        title,
-        excerpt,
-        content,
-        coverImageUrl,
-        isFeatured,
-        isPublished,
-        publishedAt,
-        createdAt,
-        updatedAt
-      `)
-      .order("createdAt", { ascending: false });
-  });
-
-  if (result.error) {
-    return [];
-  }
-
-  return (result.data || []) as Post[];
-}

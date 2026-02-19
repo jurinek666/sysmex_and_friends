@@ -1,21 +1,36 @@
 import { createClient } from "@/lib/supabase/server";
-import { getAllMembers } from "@/lib/queries/members";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { MemberForm } from "./MemberForm";
 import { MemberList } from "./MemberList";
-import { Profile } from "@/lib/types";
+import { Member, Profile } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminMembersPage() {
   const supabase = await createClient();
-  const members = await getAllMembers();
+
+  const { data: members } = await supabase
+    .from("Member")
+    .select(`
+      id,
+      displayName,
+      nickname,
+      role,
+      gender,
+      bio,
+      avatarUrl,
+      isActive,
+      createdAt,
+      updatedAt
+    `)
+    .order("createdAt", { ascending: false });
 
   const { data: profiles } = await supabase
     .from("profiles")
     .select("*")
     .order("email", { ascending: true });
 
+  const safeMembers = (members || []) as Member[];
   const safeProfiles = (profiles || []) as Profile[];
 
   return (
@@ -25,7 +40,7 @@ export default async function AdminMembersPage() {
         <MemberForm profiles={safeProfiles} />
       </section>
 
-      <MemberList members={members} profiles={safeProfiles} />
+      <MemberList members={safeMembers} profiles={safeProfiles} />
     </AdminLayout>
   );
 }
