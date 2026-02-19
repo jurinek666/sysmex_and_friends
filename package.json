@@ -25,18 +25,19 @@
     "@types/node": "22.19.8",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
-    "@typescript-eslint/eslint-plugin": "7.18.0",
-    "@typescript-eslint/parser": "7.18.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "autoprefixer": "10.4.23",
     "chart.js": "4.5.1",
     "cloudinary": "2.9.0",
     "clsx": "2.1.1",
     "csv-parse": "6.1.0",
     "date-fns": "4.1.0",
-    "eslint": "8.57.0",
-    "eslint-config-next": "14.2.3",
+    "eslint": "^9.20.1",
+    "eslint-config-next": "^15.1.7",
     "framer-motion": "12.23.26",
     "lucide-react": "0.562.0",
+    "minimatch": "^10.2.1",
     "next": "16.1.6",
     "next-cloudinary": "6.17.5",
     "playwright": "1.58.1",
@@ -48,7 +49,7 @@
     "react-markdown": "10.1.0",
     "rehype-raw": "7.0.0",
     "sharp": "0.34.5",
-    "supabase": "2.75.5",
+    "supabase": "2.76.10",
     "tailwind-merge": "3.4.0",
     "tailwindcss": "4.1.18",
     "typescript": "5.7.2",
@@ -64,6 +65,11 @@
     "vitest": "4.0.18"
   },
   "overrides": {
-    "glob": "^10.4.5"
+    "glob": "^10.4.5",
+    "minimatch": "^10.2.1",
+    "eslint": "^9.20.1",
+    "eslint-config-next": "^15.1.7",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0"
   }
 }
