@@ -1,6 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
 import { getAlbums } from "@/lib/queries/albums";
-import { logSupabaseError } from "@/lib/queries/utils";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AlbumForm } from "./AlbumForm";
 import { AlbumList } from "./AlbumList";
@@ -8,57 +6,15 @@ import { AlbumList } from "./AlbumList";
 export const dynamic = "force-dynamic";
 
 export default async function AdminGalleryPage() {
-  const supabase = await createClient();
+  // Use centralized query which handles Cloudinary counts and caching
+  const albums = await getAlbums();
 
-  // Optimized query with snake_case aliases
-  // eslint-disable-next-line prefer-const
-  let { data: albums, error } = await supabase
-    .from("Album")
-    .select(`
-      id,
-      title,
-      dateTaken,
-      createdAt,
-      updatedAt,
-      cloudinaryFolder,
-      description,
-      coverPublicId,
-      Photo(count)
-    `)
-    .order("dateTaken", { ascending: false });
-
-  if (error) {
-    logSupabaseError("AdminGalleryPage (albums)", error);
-    // Fallback if relation fails
-    const res = await supabase
-      .from("Album")
-      .select(`
-        id,
-        title,
-        dateTaken,
-        createdAt,
-        updatedAt,
-        cloudinaryFolder,
-        description,
-        coverPublicId
-      `)
-      .order("dateTaken", { ascending: false });
-
-    albums = res.error ? [] : (res.data || []).map((a) => ({ ...a, Photo: [{ count: 0 }] }));
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const safeAlbums = (albums || []) as any[];
-
-  // Merge with Cloudinary counts from getAlbums (which handles caching of external API)
-  const albumCounts = await getAlbums();
-  const countById = new Map(
-    albumCounts.map((album) => [album.id, album._count?.photos ?? 0])
-  );
-
-  const albumsWithCounts = safeAlbums.map((album) => ({
+  // Map to AlbumList format (it expects photos array with count object)
+  // getAlbums returns _count.photos
+  const albumsForList = albums.map((album) => ({
     ...album,
-    photos: [{ count: countById.get(album.id) ?? (album as { Photo?: { count: number }[] }).Photo?.[0]?.count ?? 0 }],
+    cloudinaryFolder: album.cloudinaryFolder || "",
+    photos: [{ count: album._count?.photos ?? 0 }],
   }));
 
   return (
@@ -68,7 +24,7 @@ export default async function AdminGalleryPage() {
         <AlbumForm />
       </section>
 
-      <AlbumList albums={albumsWithCounts} />
+      <AlbumList albums={albumsForList} />
     </AdminLayout>
   );
 }

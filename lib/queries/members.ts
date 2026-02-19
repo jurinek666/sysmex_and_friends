@@ -27,3 +27,33 @@ export async function getActiveMembers(): Promise<Member[]> {
   
   return (data as unknown) as Member[] || [];
 }
+
+export async function getAllMembers(): Promise<Member[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await withRetry(async () => {
+    return await supabase
+      .from("Member")
+      .select(`
+        id,
+        displayName,
+        nickname,
+        role,
+        gender,
+        bio,
+        avatarUrl,
+        isActive,
+        createdAt,
+        updatedAt,
+        profileId:profile_id
+      `)
+      .order("createdAt", { ascending: false });
+  });
+
+  if (error) {
+    logSupabaseError("getAllMembers", error);
+    return [];
+  }
+
+  return (data as unknown) as Member[] || [];
+}
