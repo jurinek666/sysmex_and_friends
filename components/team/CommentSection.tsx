@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { User } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface CommentSectionProps {
   entityId?: string;
@@ -128,9 +129,9 @@ export default function CommentSection({ postSlug, entityId, entityType = 'post'
       ) : (
         <div className="bg-gray-900/30 p-4 rounded-xl border border-gray-800 text-center">
             <p className="text-gray-400 mb-2 text-sm">Pro přidání komentáře se musíš přihlásit.</p>
-            <a href="/login" className="inline-block px-4 py-1.5 border border-white/20 hover:bg-white/10 rounded-full transition-colors text-xs font-bold uppercase">
+            <Link href="/login" className="inline-block px-4 py-1.5 border border-white/20 hover:bg-white/10 rounded-full transition-colors text-xs font-bold uppercase">
                 Přihlásit se
-            </a>
+            </Link>
         </div>
       )}
     </div>
