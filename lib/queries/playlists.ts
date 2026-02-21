@@ -44,7 +44,9 @@ export async function getAllPlaylists(): Promise<Playlist[]> {
         title,
         description,
         spotifyUrl,
-        isActive
+        isActive,
+        createdAt,
+        updatedAt
       `)
       .order("createdAt", { ascending: false });
   });

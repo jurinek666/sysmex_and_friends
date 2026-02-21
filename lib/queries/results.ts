@@ -115,3 +115,27 @@ export async function getSeasons(): Promise<Season[]> {
   
   return (result.data || []) as Season[];
 }
+
+export async function getAllResults(limit?: number): Promise<ResultWithParticipants[]> {
+  const supabase = await createClient();
+
+  const result = await withRetry(async () => {
+    let query = supabase
+      .from("Result")
+      .select(RESULT_SELECT)
+      .order("date", { ascending: false });
+
+    if (limit) {
+      query = query.limit(limit);
+    }
+
+    return await query;
+  });
+
+  if (result.error) {
+    return [];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (result.data || []).map(mapResultToParticipants) as any as ResultWithParticipants[];
+}

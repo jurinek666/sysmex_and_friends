@@ -7,17 +7,7 @@ import { useState } from "react";
 import { Edit2 } from "lucide-react";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
-
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  venue: string;
-  description: string | null;
-  isUpcoming: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Event } from "@/lib/types";
 
 interface EventListProps {
   events: Event[];

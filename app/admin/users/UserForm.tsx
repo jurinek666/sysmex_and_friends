@@ -3,10 +3,10 @@
 import { ActionForm } from "@/components/admin/ActionForm";
 import { adminUpdateProfile } from "../_actions";
 import { X } from "lucide-react";
-import type { ProfileRow } from "./page";
+import { Profile } from "@/lib/types";
 
 interface UserFormProps {
-  user: ProfileRow;
+  user: Profile;
   onCancel: () => void;
 }
 

@@ -29,6 +29,10 @@ const envSchema = z.object({
   // Google Analytics (gtag) – měřicí ID (volitelné)
   NEXT_PUBLIC_GA_ID: z.string().min(1).optional(),
 
+  // Cron jobs and monitoring (volitelné)
+  CRON_SECRET: z.string().min(1).optional(),
+  DISCORD_WEBHOOK_URL: z.string().min(1).optional(),
+
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 

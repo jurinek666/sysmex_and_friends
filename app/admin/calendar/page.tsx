@@ -1,39 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAllEvents } from "@/lib/queries/events";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { EventForm } from "./EventForm";
 import { EventList } from "./EventList";
 
 export const dynamic = "force-dynamic";
 
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  venue: string;
-  description: string | null;
-  isUpcoming: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export default async function AdminCalendarPage() {
-  const supabase = await createClient();
-  
-  const { data: events } = await supabase
-    .from("Event")
-    .select(`
-      id,
-      title,
-      date,
-      venue,
-      description,
-      isUpcoming,
-      createdAt,
-      updatedAt
-    `)
-    .order("date", { ascending: true });
-
-  const safeEvents = (events || []) as Event[];
+  const events = await getAllEvents();
 
   return (
     <AdminLayout title="Admin • Kalendář">
@@ -42,7 +15,7 @@ export default async function AdminCalendarPage() {
         <EventForm />
       </section>
 
-      <EventList events={safeEvents} />
+      <EventList events={events} />
     </AdminLayout>
   );
 }

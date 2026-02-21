@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAllPlaylists } from "@/lib/queries/playlists";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { PlaylistForm } from "./PlaylistForm";
 import { PlaylistList } from "./PlaylistList";
@@ -6,25 +6,7 @@ import { PlaylistList } from "./PlaylistList";
 export const dynamic = "force-dynamic";
 
 export default async function AdminPlaylistsPage() {
-  const supabase = await createClient();
-  
-  // Nahrazeno prisma.playlist.findMany(...)
-  const { data: playlists } = await supabase
-    .from("Playlist")
-    .select(`
-      id,
-      title,
-      description,
-      spotifyUrl,
-      isActive,
-      createdAt,
-      updatedAt
-    `)
-    .order("createdAt", { ascending: false });
-
-  // Fallback, kdyby data byla null (např. chyba sítě)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const safePlaylists = (playlists || []) as any[];
+  const playlists = await getAllPlaylists();
 
   return (
     <AdminLayout title="Admin • Playlisty">
@@ -33,7 +15,7 @@ export default async function AdminPlaylistsPage() {
         <PlaylistForm />
       </section>
 
-      <PlaylistList playlists={safePlaylists} />
+      <PlaylistList playlists={playlists} />
     </AdminLayout>
   );
 }

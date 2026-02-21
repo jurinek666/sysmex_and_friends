@@ -31,7 +31,9 @@ export async function getUpcomingEvents(limit = 5) {
         date,
         venue,
         description,
-        isUpcoming
+        isUpcoming,
+        createdAt,
+        updatedAt
       `)
       .eq("isUpcoming", true)
       .gte("date", now)
@@ -61,7 +63,9 @@ export async function getEventsForCalendar(limit = 100): Promise<Event[]> {
         date,
         venue,
         description,
-        isUpcoming
+        isUpcoming,
+        createdAt,
+        updatedAt
       `)
       .gte("date", now)
       .order("date", { ascending: true })
@@ -70,6 +74,33 @@ export async function getEventsForCalendar(limit = 100): Promise<Event[]> {
 
   if (error) {
     logSupabaseError("getEventsForCalendar", error);
+    return [];
+  }
+
+  return (data || []) as Event[];
+}
+
+export async function getAllEvents(): Promise<Event[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await withRetry(async () => {
+    return await supabase
+      .from("Event")
+      .select(`
+        id,
+        title,
+        date,
+        venue,
+        description,
+        isUpcoming,
+        createdAt,
+        updatedAt
+      `)
+      .order("date", { ascending: true });
+  });
+
+  if (error) {
+    logSupabaseError("getAllEvents", error);
     return [];
   }
 

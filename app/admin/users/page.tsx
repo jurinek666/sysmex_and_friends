@@ -1,33 +1,15 @@
-import { createClient } from "@/lib/supabase/server";
-import { requireAuth } from "@/lib/admin/auth";
+import { getAllProfiles } from "@/lib/queries/users";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { UserList } from "./UserList";
 
 export const dynamic = "force-dynamic";
 
-export interface ProfileRow {
-  id: string;
-  email: string;
-  display_name: string | null;
-  avatar_url: string | null;
-  role: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
 export default async function AdminUsersPage() {
-  await requireAuth();
-  const supabase = await createClient();
-
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("id, email, display_name, avatar_url, role, created_at, updated_at")
-    .order("created_at", { ascending: false });
+  const profiles = await getAllProfiles();
 
   // Propojení členů s profily: tabulka Member nemá sloupec profile_id (lze doplnit migrací).
+  // This logic was empty in original file anyway
   const linkedMembers: Record<string, string> = {};
-
-  const list = (profiles || []) as ProfileRow[];
 
   return (
     <AdminLayout title="Admin • Uživatelé">
@@ -35,7 +17,7 @@ export default async function AdminUsersPage() {
         <p className="text-gray-600 text-sm mb-4">
           Registrovaní uživatelé (členové týmu a správci). Můžete upravovat zobrazované jméno a roli. Smazání vyžaduje nastavení SUPABASE_SERVICE_ROLE_KEY.
         </p>
-        <UserList users={list} linkedMembers={linkedMembers} />
+        <UserList users={profiles} linkedMembers={linkedMembers} />
       </section>
     </AdminLayout>
   );

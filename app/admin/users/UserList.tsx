@@ -5,10 +5,10 @@ import { adminDeleteUser } from "../_actions";
 import { UserForm } from "./UserForm";
 import { useState } from "react";
 import { Edit2 } from "lucide-react";
-import type { ProfileRow } from "./page";
+import { Profile } from "@/lib/types";
 
 interface UserListProps {
-  users: ProfileRow[];
+  users: Profile[];
   linkedMembers?: Record<string, string>;
 }
 

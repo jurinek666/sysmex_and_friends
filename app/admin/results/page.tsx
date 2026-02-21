@@ -1,87 +1,31 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAllResults, getSeasons } from "@/lib/queries/results";
+import { getActiveMembers } from "@/lib/queries/members";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ResultForm } from "./ResultForm";
 import { ResultList } from "./ResultList";
-import { getActiveMembers } from "@/lib/queries/members";
 
 export const dynamic = "force-dynamic";
 
-interface Season {
-  id: string;
-  code: string;
-  name: string;
-}
-
-type ResultMemberRow = { member_id: string; sort_order?: number; Member?: { id: string; displayName: string } };
-
-interface Result {
-  id: string;
-  date: string;
-  venue: string;
-  teamName: string;
-  placement: number;
-  score: number;
-  note: string | null;
-  season: Season;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ResultMember?: any[];
-  memberIds?: string[];
-}
-
-function mapResultToMemberIds(r: Result): Result {
-  const rows = (r.ResultMember ?? []) as ResultMemberRow[];
-  const memberIds = [...rows]
-    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-    .map((row) => row.Member?.id ?? row.member_id)
-    .filter(Boolean);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { ResultMember: _, ...rest } = r;
-  return { ...rest, memberIds };
-}
-
 export default async function AdminResultsPage() {
-  const supabase = await createClient();
-
-  const { data: resultsRaw } = await supabase
-    .from("Result")
-    .select(`
-      id,
-      date,
-      venue,
-      teamName,
-      placement,
-      score,
-      note,
-      seasonId,
-      season:Season(id, code, name),
-      ResultMember(
-        member_id,
-        sort_order,
-        Member(
-          id,
-          displayName
-        )
-      )
-    `)
-    .order("date", { ascending: false })
-    .limit(50);
-
-  const [{ data: seasons }, members] = await Promise.all([
-    supabase.from("Season").select("id, code, name, startDate, endDate").order("startDate", { ascending: false }),
+  const [results, seasons, members] = await Promise.all([
+    getAllResults(50),
+    getSeasons(),
     getActiveMembers(),
   ]);
 
-  const safeResults = ((resultsRaw || []) as unknown as Result[]).map(mapResultToMemberIds);
-  const safeSeasons = (seasons || []) as unknown as Season[];
+  const resultsWithIds = results.map((r) => ({
+    ...r,
+    memberIds: r.participants.map((p) => p.id),
+  }));
 
   return (
     <AdminLayout title="Admin • Výsledky">
       <section className="bg-white p-6 rounded-2xl border shadow-sm mb-12">
         <h2 className="text-xl font-bold mb-4">Zadat výsledek</h2>
-        <ResultForm seasons={safeSeasons} members={members} />
+        <ResultForm seasons={seasons} members={members} />
       </section>
 
-      <ResultList results={safeResults} seasons={safeSeasons} members={members} />
+      <ResultList results={resultsWithIds} seasons={seasons} members={members} />
     </AdminLayout>
   );
 }
