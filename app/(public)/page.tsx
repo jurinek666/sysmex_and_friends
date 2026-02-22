@@ -29,7 +29,7 @@ export default async function Home() {
   const [recentPosts, latestResults, allPlaylists, members, albums, upcomingEvents] = await Promise.all([
     getRecentPosts(6),
     getLatestResults(5),
-    getAllPlaylists(),
+    getAllPlaylists(5),
     getActiveMembers(),
     getAlbumsWithRandomCoverPhotos(4),
     getUpcomingEvents(5),

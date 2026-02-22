@@ -32,12 +32,12 @@ export async function getActivePlaylist(): Promise<Playlist | null> {
   return data as Playlist | null;
 }
 
-export async function getAllPlaylists(): Promise<Playlist[]> {
+export async function getAllPlaylists(limit?: number): Promise<Playlist[]> {
   const supabase = await createClient();
   
   // Načteme všechny playlisty
   const { data, error } = await withRetry(async () => {
-    return await supabase
+    let query = supabase
       .from("Playlist")
       .select(`
         id,
@@ -47,6 +47,12 @@ export async function getAllPlaylists(): Promise<Playlist[]> {
         isActive
       `)
       .order("createdAt", { ascending: false });
+
+    if (limit) {
+      query = query.limit(limit);
+    }
+
+    return await query;
   });
 
   if (error) {
