@@ -48,7 +48,7 @@ export async function getAllPlaylists(limit?: number): Promise<Playlist[]> {
       `)
       .order("createdAt", { ascending: false });
 
-    if (limit) {
+    if (typeof limit === "number") {
       query = query.limit(limit);
     }
 
