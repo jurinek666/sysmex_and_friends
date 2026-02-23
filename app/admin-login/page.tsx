@@ -44,6 +44,7 @@ export default function AdminLoginPage() {
           <Link
             href="/"
             className="inline-flex items-center text-sm font-medium text-gray-400 hover:text-white transition-colors"
+            aria-label="Zpět na hlavní stránku"
           >
             ← ZPĚT
           </Link>
@@ -54,17 +55,22 @@ export default function AdminLoginPage() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-900/20 border border-red-900/50 rounded-lg text-red-200 text-sm">
+          <div
+            className="mb-6 p-4 bg-red-900/20 border border-red-900/50 rounded-lg text-red-200 text-sm"
+            role="alert"
+            aria-live="assertive"
+          >
             {error}
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">
+            <label htmlFor="admin-email" className="block text-sm font-medium text-gray-400 mb-1">
               Email
             </label>
             <input
+              id="admin-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -74,10 +80,11 @@ export default function AdminLoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">
+            <label htmlFor="admin-password" className="block text-sm font-medium text-gray-400 mb-1">
               Heslo
             </label>
             <input
+              id="admin-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
