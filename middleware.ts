@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { env } from '@/lib/env'
 import { fetchWithTimeout } from '@/lib/fetch-with-timeout'
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })

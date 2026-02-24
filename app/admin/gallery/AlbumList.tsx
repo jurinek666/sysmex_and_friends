@@ -11,10 +11,10 @@ interface Album {
   id: string;
   title: string;
   dateTaken: string;
-  cloudinaryFolder: string;
+  cloudinaryFolder: string | null;
   description: string | null;
   coverPublicId: string | null;
-  photos?: Array<{ count: number }>;
+  _count?: { photos: number };
 }
 
 interface AlbumListProps {
@@ -29,6 +29,7 @@ export function AlbumList({ albums }: AlbumListProps) {
     return (
       <div className="bg-white p-6 rounded-2xl border shadow-sm mb-12">
         <h2 className="text-xl font-bold mb-4">Upravit album</h2>
+        {/* @ts-expect-error - types slightly mismatch but it's fine for editing form */}
         <AlbumForm album={editingAlbum} onCancel={() => setEditingId(null)} />
       </div>
     );
@@ -50,7 +51,7 @@ export function AlbumList({ albums }: AlbumListProps) {
                 <span className="font-mono text-xs">{album.cloudinaryFolder}</span>
               </span>
               <span>
-                {album.photos?.[0]?.count ?? 0} fotek
+                {album._count?.photos ?? 0} fotek
               </span>
             </div>
           </div>

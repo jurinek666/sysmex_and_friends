@@ -51,7 +51,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
               name="title" 
               placeholder="Např. Vánoční večírek" 
               required 
-              defaultValue={album?.title}
+              defaultValue={album?.title || ""}
               className="w-full p-3 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
             />
           </div>
@@ -61,7 +61,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
               type="date" 
               name="dateTaken" 
               required 
-              defaultValue={dateValue}
+              defaultValue={dateValue || ""}
               className="w-full p-3 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
             />
           </div>
@@ -77,7 +77,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
               name="cloudinaryFolder" 
               placeholder="01_leden nebo galerie/01_leden" 
               required 
-              defaultValue={album?.cloudinaryFolder}
+              defaultValue={album?.cloudinaryFolder || ""}
               className="w-full p-3 pl-10 border rounded-xl font-mono text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
             />
           </div>
@@ -95,7 +95,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
           <textarea 
             name="description" 
             rows={2} 
-            defaultValue={album?.description || undefined}
+            defaultValue={album?.description || ""}
             className="w-full p-3 border rounded-xl bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
           />
         </div>
@@ -105,7 +105,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
           <input 
             name="coverPublicId" 
             placeholder="cloudinary public id" 
-            defaultValue={album?.coverPublicId || undefined}
+            defaultValue={album?.coverPublicId || ""}
             className="w-full p-3 border rounded-xl font-mono text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
           />
         </div>
