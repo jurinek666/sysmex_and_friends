@@ -36,7 +36,7 @@ export async function getFeaturedPost(): Promise<Post | null> {
   return result.data as Post | null;
 }
 
-export async function getRecentPosts(limit = 20): Promise<PostSummary[]> {
+export async function getRecentPosts(limit = 20, offset = 0): Promise<PostSummary[]> {
   const supabase = await createClient();
   
   const result = await withRetry(async () => {
@@ -56,7 +56,7 @@ export async function getRecentPosts(limit = 20): Promise<PostSummary[]> {
       `)
       .eq("isPublished", true)
       .order("publishedAt", { ascending: false })
-      .limit(limit);
+      .range(offset, offset + limit - 1);
   });
 
   if (result.error) {
