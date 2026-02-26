@@ -32,4 +32,19 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 
-export const env = envSchema.parse(process.env);
+// Skip validation during build time if environment variables are missing
+const isBuild = process.env.npm_lifecycle_event === "build";
+const parsed = envSchema.safeParse(process.env);
+
+if (!parsed.success) {
+  if (isBuild) {
+    console.warn("⚠️  Skipping strict env validation during build. Missing variables:", parsed.error.flatten().fieldErrors);
+    // Return process.env as any to allow build to proceed, assuming runtime will have correct envs
+    // We cast to any because we can't guarantee the shape
+  } else {
+    console.error("❌ Invalid environment variables:", parsed.error.flatten().fieldErrors);
+    throw new Error("Invalid environment variables");
+  }
+}
+
+export const env = parsed.success ? parsed.data : (process.env as any);
