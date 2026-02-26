@@ -47,4 +47,5 @@ if (!parsed.success) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const env = parsed.success ? parsed.data : (process.env as any);
