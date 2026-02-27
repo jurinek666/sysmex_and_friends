@@ -31,9 +31,12 @@ export default function LoginPage() {
 
       router.push("/tym/dashboard");
       router.refresh();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      setError(err.message || "Došlo k chybě při přihlášení.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Došlo k chybě při přihlášení.");
+      }
     } finally {
       setLoading(false);
     }
