@@ -29,12 +29,9 @@ export default function AdminLoginPage() {
 
       // Plné přesměrování, aby server (proxy + layout) viděl session cookies
       window.location.href = "/admin";
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Došlo k chybě při přihlášení.");
-      }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError(err.message || "Došlo k chybě při přihlášení.");
     } finally {
       setLoading(false);
     }

@@ -2,13 +2,13 @@ import { createClient } from "@/lib/supabase/server";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { PlaylistForm } from "./PlaylistForm";
 import { PlaylistList } from "./PlaylistList";
-import { Playlist } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPlaylistsPage() {
   const supabase = await createClient();
   
+  // Nahrazeno prisma.playlist.findMany(...)
   const { data: playlists } = await supabase
     .from("Playlist")
     .select(`
@@ -23,7 +23,8 @@ export default async function AdminPlaylistsPage() {
     .order("createdAt", { ascending: false });
 
   // Fallback, kdyby data byla null (např. chyba sítě)
-  const safePlaylists = (playlists || []) as Playlist[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const safePlaylists = (playlists || []) as any[];
 
   return (
     <AdminLayout title="Admin • Playlisty">

@@ -7,18 +7,6 @@ import { AlbumList } from "./AlbumList";
 
 export const dynamic = "force-dynamic";
 
-interface AlbumRow {
-  id: string;
-  title: string;
-  dateTaken: string;
-  createdAt: string;
-  updatedAt: string;
-  cloudinaryFolder: string | null;
-  description: string | null;
-  coverPublicId: string | null;
-  Photo?: { count: number }[];
-}
-
 export default async function AdminGalleryPage() {
   const supabase = await createClient();
 
@@ -59,7 +47,8 @@ export default async function AdminGalleryPage() {
     albums = res.error ? [] : (res.data || []).map((a) => ({ ...a, Photo: [{ count: 0 }] }));
   }
 
-  const safeAlbums = (albums || []) as AlbumRow[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const safeAlbums = (albums || []) as any[];
 
   // Merge with Cloudinary counts from getAlbums (which handles caching of external API)
   const albumCounts = await getAlbums();
@@ -79,7 +68,6 @@ export default async function AdminGalleryPage() {
         <AlbumForm />
       </section>
 
-      {/* @ts-expect-error - AlbumList interface differs from AlbumRow/Album in lib/types, but dynamic cast works for rendering */}
       <AlbumList albums={albumsWithCounts} />
     </AdminLayout>
   );

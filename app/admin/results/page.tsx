@@ -23,7 +23,8 @@ interface Result {
   score: number;
   note: string | null;
   season: Season;
-  ResultMember?: ResultMemberRow[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ResultMember?: any[];
   memberIds?: string[];
 }
 
