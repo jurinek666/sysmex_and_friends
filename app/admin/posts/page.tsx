@@ -10,7 +10,6 @@ export const dynamic = "force-dynamic";
 export default async function AdminPostsPage() {
   const supabase = await createClient();
   
-  // Nahrazeno prisma.post.findMany(...)
   const result = await withRetry(async () => {
     return await supabase
       .from("Post")
