@@ -27,13 +27,20 @@ const RESULT_SELECT = `
   )
 `;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapResultToParticipants<T extends Record<string, any>>(row: T): T & { participants: ResultParticipant[] } {
-  const rm = row.ResultMember as Array<{
-    member_id: string;
-    sort_order?: number;
-    Member?: { id: string; displayName: string }
-  } | null> | undefined;
+export type ResultMemberRow = {
+  member_id: string;
+  sort_order?: number;
+  Member?: { id: string; displayName: string };
+};
+
+export interface ResultRow extends Omit<ResultWithParticipants, 'participants' | 'season'> {
+  seasonId?: string;
+  season: Season;
+  ResultMember?: ResultMemberRow[];
+}
+
+function mapResultToParticipants(row: ResultRow): ResultWithParticipants {
+  const rm = row.ResultMember;
 
   const participants: ResultParticipant[] = (rm ?? [])
     .filter((r): r is NonNullable<typeof r> => r != null)
@@ -45,7 +52,7 @@ function mapResultToParticipants<T extends Record<string, any>>(row: T): T & { p
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { ResultMember: _, ...rest } = row;
-  return { ...rest, participants } as T & { participants: ResultParticipant[] };
+  return { ...rest, participants };
 }
 
 export async function getLatestResults(limit = 5): Promise<ResultWithParticipants[]> {
@@ -63,8 +70,7 @@ export async function getLatestResults(limit = 5): Promise<ResultWithParticipant
     return [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (result.data || []).map(mapResultToParticipants) as any as ResultWithParticipants[];
+  return ((result.data || []) as unknown as ResultRow[]).map(mapResultToParticipants);
 }
 
 export async function getResultsBySeasonCode(code?: string): Promise<ResultWithParticipants[]> {
@@ -89,8 +95,7 @@ export async function getResultsBySeasonCode(code?: string): Promise<ResultWithP
     return [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (result.data || []).map(mapResultToParticipants) as any as ResultWithParticipants[];
+  return ((result.data || []) as unknown as ResultRow[]).map(mapResultToParticipants);
 }
 
 export async function getSeasons(): Promise<Season[]> {
