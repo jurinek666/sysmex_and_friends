@@ -10,8 +10,9 @@ permissions:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  REGION: europe-west1
+  REGION: europe-central2
   SERVICE: sysmex-friends
+  REPOSITORY: sysmex-repo
 
 jobs:
   deploy:
@@ -23,24 +24,28 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider
-          service_account: github-ci@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+          workload_identity_provider: projects/742306752286/locations/global/workloadIdentityPools/github-pool/providers/GitHub-oidc
+          service_account: github-ci-builder@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
 
       - name: Configure Docker
-        run: gcloud auth configure-docker $REGION-docker.pkg.dev
+        run: gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 
       - name: Build and Push
         run: |
           docker build \
             --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
             --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} \
-            -t $REGION-docker.pkg.dev/$PROJECT_ID/sysmex-repo/sysmex-friends:latest .
-          docker push $REGION-docker.pkg.dev/$PROJECT_ID/sysmex-repo/sysmex-friends:latest
+            -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/sysmex-friends:latest .
+          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/sysmex-friends:latest
 
-      - name: Deploy
+      - name: Deploy to Cloud Run
         run: |
           gcloud run deploy $SERVICE \
-            --image $REGION-docker.pkg.dev/$PROJECT_ID/sysmex-repo/sysmex-friends:latest \
+            --image $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/sysmex-friends:latest \
             --region $REGION \
             --platform managed \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --quiet
