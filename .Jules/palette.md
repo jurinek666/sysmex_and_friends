@@ -15,3 +15,6 @@
 ## 2025-01-29 - Mobile Header Overlap
 **Learning:** Centered logos with absolute positioning can silently overlap with other centered elements (like mobile menu toggles) when the screen size reduces and surrounding elements disappear.
 **Action:** Always verify mobile layouts with real content overlap checks. Use `justify-end` or explicit spacing to ensure interactive elements like menu toggles are not obscured by centered decorative elements.
+## 2026-03-02 - Form Label Accessibility
+**Learning:** Missing `htmlFor` on labels and corresponding `id` on inputs is a common accessibility violation that makes it difficult for screen readers to associate the label with the input. It also prevents users from clicking the label to focus the input.
+**Action:** Always ensure that form labels explicitly reference their inputs using `htmlFor` and `id`.
