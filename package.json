@@ -70,7 +70,6 @@
   "overrides": {
     "glob": "^10.4.5",
     "tar": "^7.5.8",
-    "minimatch": "^9.0.5",
-    "rollup": "^4.59.0"
+    "minimatch": "^10.2.1"
   }
 }
