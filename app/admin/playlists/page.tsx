@@ -23,8 +23,7 @@ export default async function AdminPlaylistsPage() {
     .order("createdAt", { ascending: false });
 
   // Fallback, kdyby data byla null (např. chyba sítě)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const safePlaylists = (playlists || []) as any[];
+  const safePlaylists = (playlists || []) as import("@/lib/types").Playlist[];
 
   return (
     <AdminLayout title="Admin • Playlisty">

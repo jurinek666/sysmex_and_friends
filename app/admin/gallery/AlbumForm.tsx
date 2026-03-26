@@ -9,7 +9,7 @@ interface Album {
   id: string;
   title: string;
   dateTaken: string;
-  cloudinaryFolder: string;
+  cloudinaryFolder: string | null;
   description: string | null;
   coverPublicId: string | null;
 }
@@ -77,7 +77,7 @@ export function AlbumForm({ album, onCancel }: AlbumFormProps) {
               name="cloudinaryFolder" 
               placeholder="01_leden nebo galerie/01_leden" 
               required 
-              defaultValue={album?.cloudinaryFolder}
+              defaultValue={album?.cloudinaryFolder || ""}
               className="w-full p-3 pl-10 border rounded-xl font-mono text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" 
             />
           </div>

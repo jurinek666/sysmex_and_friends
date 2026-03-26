@@ -17,9 +17,40 @@ interface AlbumRow {
   Photo?: { count: number }[];
 }
 
-interface AlbumDetailRow extends AlbumRow {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Photo: any[];
+interface PhotoRow {
+  id?: string;
+  cloudinaryPublicId?: string;
+  cloudinary_public_id?: string;
+  public_id?: string;
+  caption?: string | null;
+  sortOrder?: number;
+  sort_order?: number;
+}
+
+interface AlbumDetailRow extends Omit<AlbumRow, 'Photo'> {
+  Photo?: PhotoRow[];
+}
+
+export async function getSitemapAlbums(): Promise<{ id: string; dateTaken: string; createdAt: string }[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await withRetry(async () => {
+    return await supabase
+      .from("Album")
+      .select(`
+        id,
+        dateTaken,
+        createdAt
+      `)
+      .order("dateTaken", { ascending: false });
+  });
+
+  if (error) {
+    logSupabaseError("getSitemapAlbums", error);
+    return [];
+  }
+
+  return (data || []) as { id: string; dateTaken: string; createdAt: string }[];
 }
 
 export async function getAlbums(): Promise<Album[]> {
@@ -116,8 +147,7 @@ export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4): Promise<A
 async function applyPhotosAndCloudinary(data: AlbumDetailRow): Promise<AlbumDetail> {
   const rawPhotos = Array.isArray(data.Photo) ? data.Photo : [];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let photos: AlbumPhoto[] = rawPhotos.map((p: any, i: number) => ({
+  let photos: AlbumPhoto[] = rawPhotos.map((p, i) => ({
     id: p.id || `local-${i}`,
     cloudinaryPublicId: p.cloudinaryPublicId || p.cloudinary_public_id || p.public_id || "",
     caption: p.caption || null,
