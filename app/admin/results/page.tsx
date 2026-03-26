@@ -28,7 +28,7 @@ interface Result {
 }
 
 function mapResultToMemberIds(r: Result): Result {
-  const rows = (r.ResultMember ?? []) as ResultMemberRow[];
+  const rows = r.ResultMember ?? [];
   const memberIds = [...rows]
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
     .map((row) => row.Member?.id ?? row.member_id)

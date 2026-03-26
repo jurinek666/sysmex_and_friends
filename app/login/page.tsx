@@ -33,7 +33,7 @@ export default function LoginPage() {
       router.refresh();
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message || "Došlo k chybě při přihlášení.");
+        setError(err.message);
       } else {
         setError("Došlo k chybě při přihlášení.");
       }
