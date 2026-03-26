@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
-import { getRecentPosts } from '@/lib/queries/posts'
-import { getAlbums } from '@/lib/queries/albums'
+import { getSitemapPosts } from '@/lib/queries/posts'
+import { getSitemapAlbums } from '@/lib/queries/albums'
 
 // Define the base URL of the website
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://sysmex-friends.cz'
@@ -8,8 +8,8 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://sysmex-friends.cz'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch data for dynamic routes
   // Fetching a large number of posts to approximate "all" posts as requested
-  const posts = await getRecentPosts(1000)
-  const albums = await getAlbums()
+  const posts = await getSitemapPosts(1000)
+  const albums = await getSitemapAlbums()
 
   // Define static routes
   const staticRoutes: MetadataRoute.Sitemap = [

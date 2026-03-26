@@ -17,9 +17,18 @@ interface AlbumRow {
   Photo?: { count: number }[];
 }
 
-interface AlbumDetailRow extends AlbumRow {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Photo: any[];
+interface AlbumPhotoRaw {
+  id: string;
+  cloudinaryPublicId?: string;
+  cloudinary_public_id?: string;
+  public_id?: string;
+  caption: string | null;
+  sortOrder?: number;
+  sort_order?: number;
+}
+
+interface AlbumDetailRow extends Omit<AlbumRow, 'Photo'> {
+  Photo: AlbumPhotoRaw[];
 }
 
 export async function getAlbums(): Promise<Album[]> {
@@ -116,8 +125,7 @@ export async function getAlbumsWithRandomCoverPhotos(maxToEnrich = 4): Promise<A
 async function applyPhotosAndCloudinary(data: AlbumDetailRow): Promise<AlbumDetail> {
   const rawPhotos = Array.isArray(data.Photo) ? data.Photo : [];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let photos: AlbumPhoto[] = rawPhotos.map((p: any, i: number) => ({
+  let photos: AlbumPhoto[] = rawPhotos.map((p, i) => ({
     id: p.id || `local-${i}`,
     cloudinaryPublicId: p.cloudinaryPublicId || p.cloudinary_public_id || p.public_id || "",
     caption: p.caption || null,
