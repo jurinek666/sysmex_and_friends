@@ -11,7 +11,7 @@ interface Album {
   id: string;
   title: string;
   dateTaken: string;
-  cloudinaryFolder: string;
+  cloudinaryFolder: string | null;
   description: string | null;
   coverPublicId: string | null;
   photos?: Array<{ count: number }>;

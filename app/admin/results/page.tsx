@@ -23,13 +23,12 @@ interface Result {
   score: number;
   note: string | null;
   season: Season;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ResultMember?: any[];
+  ResultMember?: ResultMemberRow[];
   memberIds?: string[];
 }
 
 function mapResultToMemberIds(r: Result): Result {
-  const rows = (r.ResultMember ?? []) as ResultMemberRow[];
+  const rows = r.ResultMember ?? [];
   const memberIds = [...rows]
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
     .map((row) => row.Member?.id ?? row.member_id)

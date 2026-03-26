@@ -29,9 +29,12 @@ export default function AdminLoginPage() {
 
       // Plné přesměrování, aby server (proxy + layout) viděl session cookies
       window.location.href = "/admin";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      setError(err.message || "Došlo k chybě při přihlášení.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Došlo k chybě při přihlášení.");
+      }
     } finally {
       setLoading(false);
     }
@@ -61,10 +64,11 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-1">
               Email
             </label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -74,10 +78,11 @@ export default function AdminLoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-400 mb-1">
               Heslo
             </label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
