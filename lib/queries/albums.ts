@@ -31,6 +31,28 @@ interface AlbumDetailRow extends Omit<AlbumRow, 'Photo'> {
   Photo?: PhotoRow[];
 }
 
+export async function getSitemapAlbums(): Promise<{ id: string; dateTaken: string; createdAt: string }[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await withRetry(async () => {
+    return await supabase
+      .from("Album")
+      .select(`
+        id,
+        dateTaken,
+        createdAt
+      `)
+      .order("dateTaken", { ascending: false });
+  });
+
+  if (error) {
+    logSupabaseError("getSitemapAlbums", error);
+    return [];
+  }
+
+  return (data || []) as { id: string; dateTaken: string; createdAt: string }[];
+}
+
 export async function getAlbums(): Promise<Album[]> {
   const supabase = await createClient();
 
