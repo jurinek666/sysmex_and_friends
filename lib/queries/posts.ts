@@ -125,3 +125,26 @@ export async function getAllPosts(): Promise<Post[]> {
 
   return (result.data || []) as Post[];
 }
+
+export async function getSitemapPosts(limit: number): Promise<Array<{ slug: string; publishedAt: string; updatedAt: string | null }>> {
+  const supabase = await createClient();
+
+  const result = await withRetry(async () => {
+    return await supabase
+      .from("Post")
+      .select(`
+        slug,
+        publishedAt,
+        updatedAt
+      `)
+      .eq("isPublished", true)
+      .order("publishedAt", { ascending: false })
+      .limit(limit);
+  });
+
+  if (result.error) {
+    return [];
+  }
+
+  return (result.data || []) as Array<{ slug: string; publishedAt: string; updatedAt: string | null }>;
+}
