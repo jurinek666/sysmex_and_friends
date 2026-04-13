@@ -197,3 +197,25 @@ export async function getAlbum(id: string): Promise<AlbumDetail | null> {
 
   return await applyPhotosAndCloudinary(data as unknown as AlbumDetailRow);
 }
+
+export async function getSitemapAlbums(): Promise<Array<{ id: string; dateTaken: string | null; createdAt: string }>> {
+  const supabase = await createClient();
+
+  const { data, error } = await withRetry(async () => {
+    return await supabase
+      .from("Album")
+      .select(`
+        id,
+        dateTaken,
+        createdAt
+      `)
+      .order("dateTaken", { ascending: false });
+  });
+
+  if (error) {
+    logSupabaseError("getSitemapAlbums", error);
+    return [];
+  }
+
+  return (data || []) as Array<{ id: string; dateTaken: string | null; createdAt: string }>;
+}
